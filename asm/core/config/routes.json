@@ -1,0 +1,172 @@
+[
+  {
+    "name": "module",
+    "match": "api",
+    "value": "api",
+    "nodes": [
+      {
+        "name": "controller",
+        "match": 0,
+        "value": "main",
+        "nodes": [
+          {
+            "name": "action",
+            "match": 0,
+            "value": "index"
+          }
+        ]
+      },
+      {
+        "name": "controller",
+        "match": "([a-z][a-zA-Z\\_-]{2,31})",
+        "value": "$1",
+        "nodes": [
+          {
+            "name": "action",
+            "match": "([a-z][a-zA-Z\\_-]{2,31})",
+            "value": "$1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "module",
+    "match": 0,
+    "value": "main",
+    "nodes": [
+      {
+        "name": "controller",
+        "match": "user",
+        "value": "user",
+        "nodes": [
+          {
+            "name": "action",
+            "match": "login",
+            "value": "login"
+          },
+          {
+            "name": "action",
+            "match": "register",
+            "value": "register",
+            "nodes": [
+              {
+                "name": "token",
+                "match": "([0-9a-z]{32})",
+                "value": "$1"
+              }
+            ]
+          },
+          {
+            "name": "action",
+            "match": "view",
+            "value": "view",
+            "nodes": [
+              {
+                "name": "id",
+                "match": "([1-9][0-9]{0,6})",
+                "value": "$1",
+                "nodes": [
+                  {
+                    "name": "action",
+                    "match": "delete",
+                    "value": "delete"
+                  },
+                  {
+                    "name": "action",
+                    "match": 0,
+                    "value": "delete",
+                    "method": "DELETE"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "action",
+            "match": 0,
+            "value": "index"
+          }
+        ]
+      },
+      {
+        "name": "controller",
+        "match": "blog",
+        "value": "blog",
+        "nodes": [
+          {
+            "name": "action",
+            "match": 0,
+            "value": "index",
+            "nodes": [
+              {
+                "name": "year",
+                "match": "([12][0-9]{3})",
+                "value": "$1",
+                "nodes": [
+                  {
+                    "name": "month",
+                    "match": "(([0][0-9])|([1][12]))",
+                    "value": "$1",
+                    "_match": "(([0][0-9])|([1][12]))",
+                    "_value": "$1",
+                    "nodes": [
+                      {
+                        "name": "day",
+                        "match": "(([0-2][0-9])|([3][01]))",
+                        "value": "$1",
+                        "_match": "(([0-2][0-9])|([3][01]))",
+                        "_value": "$1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "id",
+                "match": "([1-9][0-9]{6})",
+                "value": "$1",
+                "nodes": [
+                  {
+                    "name": "action",
+                    "match": 0,
+                    "value": "view"
+                  },
+                  {
+                    "name": "action",
+                    "match": "edit",
+                    "value": "edit"
+                  },
+                  {
+                    "name": "action",
+                    "match": "delete",
+                    "value": "delete"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "controller",
+        "match": 0,
+        "value": "site",
+        "nodes": [
+          {
+            "name": "action",
+            "match": 0,
+            "value": "index",
+            "nodes": [
+              {
+                "name": "page",
+                "match": "([1-9][0-9]{0,7})",
+                "value": "$1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

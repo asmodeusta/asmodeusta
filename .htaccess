@@ -1,0 +1,41 @@
+# HTID:3177381: DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES BELOW
+php_value display_errors 1
+# DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES ABOVE HTID:3177381:
+
+# Do not remove this line or mod_rewrite rules and search engine friendly URLs will stop working
+AddDefaultCharset utf-8
+
+RewriteEngine on
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php
+
+Options All -Indexes
+
+#<IfModule mod_deflate.c>
+#  AddOutputFilterByType DEFLATE application/xml application/javascript application/x-javascript text/html text/javascript text/css
+#</IfModule>
+
+#<FilesMatch ".(flv|gif|jpg|jpeg|png|ico|swf|js|css|pdf)$">
+#  Header set Cache-Control "max-age=2592000"
+#</FilesMatch>
+
+# Попробуйте эту настройку .htaccess, если у Вас возникли проблемы с отображением
+# стилей css
+#AddDefaultCharset cp-1251
+#ErrorDocument 404 /
+#RewriteEngine On
+#RewriteCond %{REQUEST_FILENAME} -s [OR]
+#RewriteCond %{REQUEST_FILENAME} -l [OR]
+#RewriteCond %{REQUEST_FILENAME} -d
+#RewriteRule ^.*$ - [L]
+#RewriteRule ^.*$ index.php [L]
+
+
+RewriteEngine On
+RewriteCond %{SERVER_PORT} !^443$
+RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+

@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #ddddff;
+    min-height: 100vh;
+}
+
+.palette {
+    margin: 5% 0 0;
+    width: 100%;
+    min-height: 400px;
+    min-height: 40vh;
+}
+.palette>.item {
+    float: left;
+    margin: 0;
+    width: 20%;
+    min-height: 400px;
+    min-height: 40vh;
+}
+
+.palette-1>.background-dark {
+    background-color: #000000;
+}
+.palette-1>.background-soft-dark {
+    background-color: #3d3d3d;
+}
+.palette-1>.background-soft {
+    background-color: #848484;
+}
+.palette-1>.background-soft-light {
+    background-color: #bbbbbb;
+}
+.palette-1>.background-light {
+    background-color: #ffffff;
+}
+
+.palette-2>.background-dark {
+    background-color: #282828;
+}
+.palette-2>.background-soft-dark {
+    background-color: #303030;
+}
+.palette-2>.background-soft {
+    background-color: #444444;
+}
+.palette-2>.background-soft-light {
+    background-color: #9b9b9b;
+}
+.palette-2>.background-light {
+    background-color: #eeeeee;
+}

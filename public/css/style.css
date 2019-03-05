@@ -1,0 +1,170 @@
+/* Reset */
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video,
+form, input {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+    /*overflow-x: hidden;*/
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.color-palette {
+    background-color: #0085b6;
+    background-color: #d62845;
+    background-color: #e13350;
+    background-color: #e12a49;
+    background-color: #00729d;
+    background-color: #282828;
+    background-color: #999999;
+    background-color: #999999;
+    background-color: #4182b5;
+    background-color: #508fc0;
+    background-color: #fefefe;
+    background-color: #2a3744;
+}
+body {
+    width: 100%;
+    min-height: 100%;
+
+    font: normal 16px "Roboto", Arial, sans-serif;
+    line-height: 1.5;
+
+    background-color: #fefefe;
+    color: #2a3744;
+}
+div, ul, li, form {
+    display: block;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+img {
+    max-width: 100%
+}
+h1, h2 {
+    font-size: 20px;
+}
+h3, h4 {
+    font-size: 18px;
+}
+h5, h6 {
+    font-size: 14px;
+    /*color: #489eba;*/
+}
+p {
+    line-height: 1.5;
+    text-align: justify;
+}
+a {
+    color: #0085b6;
+    text-decoration: none;
+    outline: none;
+    border: none;
+}
+a:hover, a:active, a:focus {
+    color: #00729d;
+}
+a img {
+    outline: none;
+    border: none;
+}
+
+/*** Default classes ***/
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+.container {
+    max-width: 768px;
+    margin: 0 auto;
+}
+
+
+/*** Interface blocks ***/
+.wrapper {
+    width: 100%;
+    /*min-height: 95vh;*/
+}
+.header {
+    width: 100%;
+    z-index: 9999;
+    overflow: hidden;
+
+    background-color: #282828;
+    color: #ddddff;
+}
+.nav-main {
+    width: 300px;
+}
+.nav-main li {
+    display: block;
+    list-style-type: none;
+    width: 300px;
+    line-height: 30px;
+}
+.nav-main li>a {
+    display: block;
+    width: 100%;
+    border-bottom: solid rgba(200, 200, 200, 0) 1px;
+    transition: border-bottom-color 500ms ease;
+}
+.nav-main li>a:hover {
+    border-bottom-color: rgba(200, 200, 200, 0.2);
+}
+.nav-main li>a>span.icon {
+    display: block;
+    float: left;
+    width: 30px;
+}
+.nav-main li>a>span.text {
+    display: inline-block;
+    max-width: 100%;
+}
+.content {
+
+    width: 100%;
+    margin-top: 32px;
+}
+
