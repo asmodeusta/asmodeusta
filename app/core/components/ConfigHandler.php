@@ -3,7 +3,7 @@
 class ConfigHandler
 {
 
-    protected $section = 'main';
+    protected $section = 'site';
     protected $filename;
     protected $config = [];
 

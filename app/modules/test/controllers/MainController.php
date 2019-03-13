@@ -3,7 +3,7 @@
 class MainController extends Controller
 {
 
-    protected $module = "main";
+    protected $module = "site";
     protected $controller = "user";
 
     protected function actionIndex() {

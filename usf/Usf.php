@@ -2,6 +2,7 @@
 
 namespace Usf;
 
+use Usf\Core\Components\Router;
 use Usf\Core\Src\AutoloaderNamespaces;
 
 /**
@@ -32,7 +33,14 @@ class Usf
      *
      * @var AutoloaderNamespaces
      */
-    private $autoloaderNamespaces;
+    private $autoloader;
+
+    /**
+     * Router
+     *
+     * @var Router
+     */
+    private $router;
 
 
     /*********** + Static methods + ***********/
@@ -78,13 +86,15 @@ class Usf
         /**
          * Connect autoloader
          */
-        $this->autoloaderNamespaces = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
+        require_once DIR_CORE . '/src/AutoloaderNamespaces.php';
+        $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
+
     }
 
     /**
      * Usf destructor
      */
-    private function __destruct()
+    public function __destruct()
     {
         echo '<pre>', 'Usf time: ', microtime( true ) - $this->usfStartTime, ' seconds', '</pre>';
     }

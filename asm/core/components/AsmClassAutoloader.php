@@ -61,7 +61,7 @@ class AsmClassAutoloader
 
         $this->register();
 
-        self::$loaders[static::class] = $this;
+        self::$loaders[ static::class ] = $this;
     }
 
     /**
@@ -91,6 +91,7 @@ class AsmClassAutoloader
             // Creating full path to file
             $fileName .= str_replace( $this->separator, DIRECTORY_SEPARATOR, $class ) . $this->extension;
             $fileName = $this->path . DIRECTORY_SEPARATOR . $fileName;
+
             // If file exists - including it
             if ( is_file( $fileName ) ) {
                 require_once $fileName;
@@ -106,6 +107,16 @@ class AsmClassAutoloader
      */
     protected function validateNamespace( $namespace )
     {
-        return preg_match('~^([a-zA-z0-9_\-]+)?(' . addslashes( $this->separator ) .'[a-zA-z0-9_\-]+)$~', $namespace);
+        return preg_match('~^([a-zA-z0-9_\-]+)?(' . addslashes( $this->separator ) .'[a-zA-z0-9_\-]+)|([a-zA-z0-9_\-]+)$~', $namespace);
     }
+
+    /**
+     * DEBUGGING
+     */
+    public static function showLoaders() {
+        echo '<pre>';
+        var_dump(self::$loaders);
+        echo '</pre>';
+    }
+
 }

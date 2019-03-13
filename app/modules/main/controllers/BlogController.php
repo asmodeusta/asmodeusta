@@ -3,7 +3,7 @@
 class BlogController extends Controller
 {
 
-    protected $module = "main";
+    protected $module = "site";
     protected $controller = "blog";
 
     protected function actionIndex($year = 0, $month = 0, $day = 0) {

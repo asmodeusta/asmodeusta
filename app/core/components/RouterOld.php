@@ -7,7 +7,7 @@ class RouterOld
     const PARAM_RULE_PATTERN = '/<param:.*>';
     const PARAM_RULE_PATH = '/<param>';
 
-    const DEFAULT_MODULE = 'main';
+    const DEFAULT_MODULE = 'site';
     const DEFAULT_CONTROLLER = 'site';
     const DEFAULT_ACTION = 'index';
 

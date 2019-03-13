@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'login' => 'main/user/login',
-    'register' => 'main/user/register',
+    'login' => 'site/user/login',
+    'register' => 'site/user/register',
 ];

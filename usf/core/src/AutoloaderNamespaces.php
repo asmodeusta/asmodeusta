@@ -44,7 +44,7 @@ class AutoloaderNamespaces
     protected static $loaders = [];
 
     /**
-     * AsmClassAutoloader constructor.
+     * AutoloaderNamespaces constructor.
      * @param string $directory
      * @param string $namespace
      * @param string $separator
@@ -108,6 +108,9 @@ class AutoloaderNamespaces
      */
     protected function validateNamespace( $namespace )
     {
-        return preg_match('~^([a-zA-z0-9_\-]+)?(' . addslashes( $this->separator ) .'[a-zA-z0-9_\-]+)$~', $namespace);
+        //return preg_match('~^([a-zA-z0-9_]+)(' . addslashes( $this->separator ) .'[a-zA-z0-9_]+)|([a-zA-z0-9_]+)$~', $namespace);
+        return preg_match('~^((?:' . addslashes( $this->separator ) .'{0,2}\w+|\w+'
+            . addslashes( $this->separator ) .'{1,2})(?:\w+'
+            . addslashes( $this->separator ) .'{0,2})+)$~', $namespace);
     }
 }

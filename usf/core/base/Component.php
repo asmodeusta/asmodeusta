@@ -1,10 +1,10 @@
 <?php
 
-namespace Core\Base;
+namespace Usf\Core\Base;
 
 /**
  * Class Component
- * @package Core\Base
+ * @package Usf\Core\Base
  */
 class Component
 {
@@ -15,6 +15,9 @@ class Component
      */
     protected $errors = [];
 
+    /**
+     * Component constructor.
+     */
     public function __construct()
     {
 
@@ -32,6 +35,12 @@ class Component
         $this->errors[ $group ][ $importance ][] = $message;
     }
 
+    /**
+     * Get all errors
+     *
+     * @param string $group
+     * @return array|null
+     */
     public function getErrors( $group = 'main' )
     {
         $result = null;
@@ -44,6 +53,20 @@ class Component
             } );
         }
         return $result;
+    }
+
+    /**
+     * Clear errors
+     *
+     * @param string $group
+     * @return $this
+     */
+    public function clearErrors( $group = 'main' )
+    {
+        if ( array_key_exists( $group, $this->errors ) ) {
+            unset( $this->errors[ $group ] );
+        }
+        return $this;
     }
 
 }

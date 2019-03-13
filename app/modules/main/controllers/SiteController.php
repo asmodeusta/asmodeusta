@@ -4,7 +4,7 @@ class SiteController extends Controller
 {
 
     protected function actionIndex($id = 0) {
-        $params = ['module'=>'fightclub','controller'=>'main','action'=>'index'];
+        $params = ['module'=>'fightclub','controller'=>'site','action'=>'index'];
         $url = app()->router->createUrl($params);
         ?>
         <div class="heart"></div>

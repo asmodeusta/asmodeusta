@@ -186,8 +186,8 @@ window.onload=function(){
     dom('[class*="css-icon"]').forEach(function(e){
         e.addEventListener('click',function(){this.classList.toggle('active');});
     });
-    dom.one('#main-menu-toggle>a').addEventListener('click',function(){
-        dom.one('#main-menu').classList.toggle('active');
+    dom.one('#site-menu-toggle>a').addEventListener('click',function(){
+        dom.one('#site-menu').classList.toggle('active');
     });
     dom.one('#search>.toggle').addEventListener('click',function(){
         this.parentNode.classList.toggle('active');

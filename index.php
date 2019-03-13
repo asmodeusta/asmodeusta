@@ -50,12 +50,17 @@ defined( 'ASM' ) or define( 'ASM', ROOT . '/asm' );
 defined( 'CORE' ) or define( 'CORE', ASM . '/core' );
 defined( 'MODULES' ) or define( 'MODULES', ASM . '/modules');
 
-require_once CORE . '/components/AsmClassAutoloader.php';
+require_once ROOT . '/asm/core/Asm.php';
+
+\Core\Asm();
 
 require_once 'usf/Usf.php';
 use Usf\Usf;
-Usf::start();
+$usf = Usf::start();
 // Some activity
+unset($usf);
+echo '<br/>test<br/>';
 Usf::stop();
+echo '<br/>test2<br/>';
 
 //echo '<pre>', microtime(true)-$start_time, '</pre>';

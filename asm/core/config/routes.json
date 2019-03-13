@@ -6,12 +6,12 @@
     "nodes": [
       {
         "name": "controller",
-        "match": 0,
+        "match": "main",
         "value": "main",
         "nodes": [
           {
             "name": "action",
-            "match": 0,
+            "match": "index",
             "value": "index"
           }
         ]
@@ -32,8 +32,8 @@
   },
   {
     "name": "module",
-    "match": 0,
-    "value": "main",
+    "match": "site",
+    "value": "site",
     "nodes": [
       {
         "name": "controller",
@@ -65,26 +65,13 @@
               {
                 "name": "id",
                 "match": "([1-9][0-9]{0,6})",
-                "value": "$1",
-                "nodes": [
-                  {
-                    "name": "action",
-                    "match": "delete",
-                    "value": "delete"
-                  },
-                  {
-                    "name": "action",
-                    "match": 0,
-                    "value": "delete",
-                    "method": "DELETE"
-                  }
-                ]
+                "value": "$1"
               }
             ]
           },
           {
             "name": "action",
-            "match": 0,
+            "match": "index",
             "value": "index"
           }
         ]
@@ -96,7 +83,7 @@
         "nodes": [
           {
             "name": "action",
-            "match": 0,
+            "match": "index",
             "value": "index",
             "nodes": [
               {
@@ -106,17 +93,13 @@
                 "nodes": [
                   {
                     "name": "month",
-                    "match": "(([0][0-9])|([1][12]))",
+                    "match": "(([1-9])|([1][0-2]))",
                     "value": "$1",
-                    "_match": "(([0][0-9])|([1][12]))",
-                    "_value": "$1",
                     "nodes": [
                       {
                         "name": "day",
-                        "match": "(([0-2][0-9])|([3][01]))",
-                        "value": "$1",
-                        "_match": "(([0-2][0-9])|([3][01]))",
-                        "_value": "$1"
+                        "match": "(([1-9])|([1-2][0-9])|([3][01]))",
+                        "value": "$1"
                       }
                     ]
                   }
@@ -150,12 +133,12 @@
       },
       {
         "name": "controller",
-        "match": 0,
-        "value": "site",
+        "match": "main",
+        "value": "main",
         "nodes": [
           {
             "name": "action",
-            "match": 0,
+            "match": "index",
             "value": "index",
             "nodes": [
               {
