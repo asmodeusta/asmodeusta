@@ -8,6 +8,19 @@ namespace Usf\Core\Base;
  */
 abstract class Component
 {
+
+    /**
+     * Reflector for getting information about class
+     * @var \ReflectionClass
+     */
+    protected $reflector = null;
+
+    /**
+     * Directory of class file
+     * @var string
+     */
+    protected $directory = null;
+
     /**
      * Errors while processing component methods
      *
@@ -16,11 +29,29 @@ abstract class Component
     protected $errors = [];
 
     /**
-     * Component constructor.
+     * Get reflector
+     * @return \ReflectionClass
+     * @throws \ReflectionException
      */
-    public function __construct()
+    protected function getReflector()
     {
+        if ( is_null( $this->reflector ) ) {
+            $this->reflector = new \ReflectionClass( get_class( $this ) );
+        }
+        return $this->reflector;
+    }
 
+    /**
+     * Get directory
+     * @return string
+     * @throws \ReflectionException
+     */
+    protected function getDirectory()
+    {
+        if ( is_null( $this->directory ) ) {
+            $this->directory = dirname( $this->getReflector()->getFileName() );
+        }
+        return $this->directory;
     }
 
     /**
@@ -46,7 +77,8 @@ abstract class Component
         $result = null;
         if ( array_key_exists( $group, $this->errors ) ) {
             $result = [];
-            array_walk_recursive(asort( $this->errors[ $group ] ), function ( $item, $key ) use ( &$result ) {
+            asort( $this->errors[ $group ] );
+            array_walk_recursive($this->errors[ $group ], function ( $item, $key ) use ( &$result ) {
                 if ( !is_array( $item ) ) {
                     $result[] = $item;
                 }

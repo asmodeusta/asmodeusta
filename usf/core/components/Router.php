@@ -3,6 +3,10 @@
 namespace Usf\Core\Components;
 
 use Usf\Core\Base\Component;
+use Usf\Core\Base\Exceptions\ControllerException;
+use Usf\Core\Base\Exceptions\ModuleException;
+use Usf\Core\Base\Exceptions\RequestException;
+use Usf\Core\Base\Exceptions\RouterException;
 
 /**
  * Class Router
@@ -54,10 +58,9 @@ class Router extends Component
     private $routes = [];
 
     /**
-     * Request parced seqments
-     * @var array
+     * @var Request
      */
-    private $requestSegments = [];
+    protected $request;
 
     /**
      * Router constructor.
@@ -65,7 +68,6 @@ class Router extends Component
      */
     public function __construct( array $routes = [] )
     {
-        parent::__construct();
         /**
          * Setting request path
          */
@@ -121,29 +123,34 @@ class Router extends Component
      */
     public function parseRequest()
     {
-        $segments = $this->parseRequestPath( $this->requestPath, $this->routes );
-        if ( $this->checkRequestSegments( $segments ) ) {
-            $moduleClassName = ucfirst( $segments[ 'module' ] ) . 'Module';
-            $moduleDir = DIR_MODULES . '/' . $segments[ 'module' ];
-            $moduleFile = $moduleDir . '/' . $moduleClassName . '.php';
-            if ( is_dir( $moduleDir ) && is_file( $moduleFile ) ) {
-                include_once $moduleFile;
-                $module = new $moduleClassName;
-                if ( $controller = $module->getController( $segments[ 'controller' ] ) ) {
-                    if ( $action = $controller->getAction() ) {
-                        $this->requestSegments[ 'module' ] = $module;
-                        $this->requestSegments[ 'controller' ] = $controller;
-                        $this->requestSegments[ 'action' ] = $action;
-                        $this->requestSegments[ 'segments' ] = $segments;
-                    } else {
-                        $this->addErrorMessage( 'Action "' . $segments[ 'action' ] . '" does not exist!' );
-                    }
+        $data = $this->parseRequestPath( $this->requestPath, $this->routes );
+        if ( $this->checkRequestData( $data ) ) {
+            $segments[ 'data' ] = $data;
+            try {
+                $moduleClassName = ucfirst( $data[ 'module' ] ) . 'Module';
+                $moduleFile = DIR_MODULES . '/' . $data[ 'module' ] . '/' . $moduleClassName . '.php';
+                if ( is_file( $moduleFile ) ) {
+                    include_once $moduleFile;
+                    $callback = ( new $moduleClassName() )
+                        ->getController( $data[ 'controller' ] )
+                        ->getAction( $data[ 'action' ] );
+                    $segments[ 'callback' ] = $callback;
+                    $this->request = new Request( $segments );
                 } else {
-                    $this->addErrorMessage( 'Controller "' . $segments[ 'controller' ] . '" does not exist!' );
+                    throw new RouterException( 'Module "' . $data[ 'module' ] . '" not found!' );
                 }
-            } else {
-                $this->addErrorMessage( 'Module "' . $segments[ 'module' ] . '" does not exist!' );
+            } catch ( RouterException $exception ) {
+                $this->addErrorMessage( $exception->getMessage() );
+            } catch ( ModuleException $exception ) {
+                $this->addErrorMessage( $exception->getMessage() );
+            } catch ( ControllerException $exception ) {
+                $this->addErrorMessage( $exception->getMessage() );
+            } catch ( RequestException $exception ) {
+                $this->addErrorMessage( $exception->getMessage() );
+            } catch ( \Exception $exception) {
+                $this->addErrorMessage( $exception->getMessage() );
             }
+            var_dump( $this->createUrl( $data ) );
         } else {
             $this->addErrorMessage( 'Wrong request path!' );
         }
@@ -157,7 +164,7 @@ class Router extends Component
      * @param array $segments
      * @return bool
      */
-    private function checkRequestSegments( array $segments )
+    private function checkRequestData(array $segments )
     {
         return array_key_exists( 'module', $segments )
             && array_key_exists( 'controller', $segments )
@@ -166,11 +173,11 @@ class Router extends Component
 
     /**
      * Get request segments
-     * @return array
+     * @return Request
      */
-    private function getRequestSegments()
+    public function getRequest()
     {
-        return $this->requestSegments;
+        return $this->request;
     }
 
     /**
@@ -231,7 +238,7 @@ class Router extends Component
                     }
                     $path = substr( $path, $needlePos );
                 } elseif ( preg_match( $pattern, $defaultValue ) ) {
-                    $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $section );
+                    $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue );
                 } else {
                     continue;
                 }
@@ -283,6 +290,11 @@ class Router extends Component
             && array_key_exists( 'value', $route );
     }
 
+    public function createUrl( array $segments )
+    {
+        return $this->generateUrl( $segments, $this->routes );
+    }
+
     /**
      * Create url based on routes
      *
@@ -290,7 +302,7 @@ class Router extends Component
      * @param array $routes
      * @return string
      */
-    public function createUrl( array &$segments, array $routes )
+    public function generateUrl( array &$segments, array $routes )
     {
         $path = "";
 
@@ -317,9 +329,24 @@ class Router extends Component
             // Check match
             if ( array_key_exists( $route[ 'name' ], $segments ) ) {
 
-                if ( ( array_key_exists( $route[ 'name' ], $this->defaults ) && $route[ 'value' ] === $this->defaults[ $route[ 'name' ] ] )
-                    || $route[ 'match' ] === 0 ) {
+                if ( $route[ 'match' ] === 0 ) {
                     // noop
+                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                    $defaultValue = $this->defaults[ $route[ 'name' ] ];
+                    $section = $segments[ $route[ 'name' ] ];
+                    $match = $route[ 'match' ];
+                    $value = $route[ 'value' ];
+                    $this->remakePattern( $match, $value );
+
+                    $pattern = "~^" . $value . "$~";
+                    if ( preg_match( $pattern, $section ) ) {
+                        $newValue = preg_replace( $pattern, $route[ 'value' ], $section );
+                        if ( $newValue !== $defaultValue ) {
+                            $path .= "/" . $newValue;
+                        }
+                    } else {
+                        continue;
+                    }
                 } else {
                     $section = $segments[ $route[ 'name' ] ];
 
@@ -337,7 +364,7 @@ class Router extends Component
                 }
 
                 if ( array_key_exists( 'nodes', $route ) ) {
-                    $path .= $this->createUrl( $segments, $route[ 'nodes' ] );
+                    $path .= $this->generateUrl( $segments, $route[ 'nodes' ] );
                 }
             }
         }

@@ -8,7 +8,7 @@ use Usf\Core\Base\Interfaces\ConfigHandlerInterface;
  * Class ConfigHandler
  * @package Usf\Core\Base
  */
-abstract class ConfigHandler implements ConfigHandlerInterface
+abstract class ConfigHandler extends Component implements ConfigHandlerInterface
 {
 
     protected const WRITE_ON_DESTRUCT = false;

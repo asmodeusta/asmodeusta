@@ -33,7 +33,7 @@ class Asm
             'controller' => 'main',
             'action' => 'index'
         ];
-        $this->router->addRoutes( $routes )->setDefaults( $defaults )->parseRequest();
+        //$this->router->addRoutes( $routes )->setDefaults( $defaults )->parseRequest();
     }
 
     private function __clone()

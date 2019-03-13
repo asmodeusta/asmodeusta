@@ -42,6 +42,8 @@ class Usf
      */
     private $router;
 
+    private $defaults;
+
 
     /*********** + Static methods + ***********/
 
@@ -97,7 +99,30 @@ class Usf
 
     public function init()
     {
+        $routesJson = file_get_contents( DIR_USF . '/config/routes.json' );
+        $routes = json_decode( $routesJson, true, 512, JSON_BIGINT_AS_STRING );
+        $defaults = [
+            'language' => 'en',
+            'module' => 'site',
+            'controller' => 'main',
+            'action' => 'index'
+        ];
+        $this->router->addRoutes( $routes )->setDefaults( $defaults );
 
+    }
+
+    public function run()
+    {
+        echo '<pre>';
+        $this->router->parseRequest();
+        if ( ! $errors = $this->router->getErrors() ) {
+            $request = $this->router->getRequest();
+            $request->call();
+            var_dump( $request );
+        } else {
+            var_dump( $errors );
+        }
+        echo '</pre>';
     }
 
     /**

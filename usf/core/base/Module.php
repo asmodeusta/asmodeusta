@@ -2,35 +2,39 @@
 
 namespace Usf\Core\Base;
 
+use Usf\Core\Base\Exceptions\ModuleException;
 use Usf\Core\Base\Interfaces\ModuleInterface;
 
-abstract class Module implements ModuleInterface
+abstract class Module extends Component implements ModuleInterface
 {
-    protected $reflector;
 
-    protected $dir;
-
-    public function __construct()
-    {
-        $this->reflector = new \ReflectionClass( get_class( $this ) );
-        $this->dir = dirname( $this->reflector->getFileName() );
-    }
-
+    /**
+     * @param string $controllerClassName
+     * @return string
+     * @throws ModuleException
+     * @throws \ReflectionException
+     */
     public function getControllerFile( $controllerClassName )
     {
-        $controllerFilename = $this->dir . '/controllers/' . $controllerClassName . '.php';
+        $controllerFilename = $this->getDirectory() . '/controllers/' . $controllerClassName . '.php';
         if ( ! is_file( $controllerFilename ) ) {
-            $controllerFilename = null;
+            throw new ModuleException( 'Controller class "' . $controllerClassName . '" not found!' );
         }
         return $controllerFilename;
     }
 
+    /**
+     * @param string $controllerName
+     * @return Controller|null
+     * @throws ModuleException
+     * @throws \ReflectionException
+     */
     public function getController( $controllerName )
     {
         $controller = null;
-        $controllerClassName = ucfirst( $controller ) . 'Controller';
-        if ( $controllerFilename = $this->getControllerFilename( $controllerClassName ) ) {
-            require_once $controllerFilename;
+        $controllerClassName = ucfirst( $controllerName ) . 'Controller';
+        if ( $controllerFile = $this->getControllerFile( $controllerClassName ) ) {
+            require_once $controllerFile;
             $controller = new $controllerClassName;
         }
         return $controller;
