@@ -6,7 +6,7 @@ namespace Usf\Core\Base;
  * Class Component
  * @package Usf\Core\Base
  */
-class Component
+abstract class Component
 {
     /**
      * Errors while processing component methods

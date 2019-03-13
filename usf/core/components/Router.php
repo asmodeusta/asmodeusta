@@ -34,8 +34,6 @@ class Router extends Component
      */
     private $defaults = [];
 
-    private $level = 0;
-
     /**
      * Routes
      * @Keys:
@@ -124,23 +122,55 @@ class Router extends Component
     public function parseRequest()
     {
         $segments = $this->parseRequestPath( $this->requestPath, $this->routes );
-        if ( array_key_exists( 'module', $segments ) ) {
+        if ( $this->checkRequestSegments( $segments ) ) {
             $moduleClassName = ucfirst( $segments[ 'module' ] ) . 'Module';
             $moduleDir = DIR_MODULES . '/' . $segments[ 'module' ];
             $moduleFile = $moduleDir . '/' . $moduleClassName . '.php';
             if ( is_dir( $moduleDir ) && is_file( $moduleFile ) ) {
                 include_once $moduleFile;
                 $module = new $moduleClassName;
-                echo $module->getFile();
+                if ( $controller = $module->getController( $segments[ 'controller' ] ) ) {
+                    if ( $action = $controller->getAction() ) {
+                        $this->requestSegments[ 'module' ] = $module;
+                        $this->requestSegments[ 'controller' ] = $controller;
+                        $this->requestSegments[ 'action' ] = $action;
+                        $this->requestSegments[ 'segments' ] = $segments;
+                    } else {
+                        $this->addErrorMessage( 'Action "' . $segments[ 'action' ] . '" does not exist!' );
+                    }
+                } else {
+                    $this->addErrorMessage( 'Controller "' . $segments[ 'controller' ] . '" does not exist!' );
+                }
             } else {
                 $this->addErrorMessage( 'Module "' . $segments[ 'module' ] . '" does not exist!' );
             }
         } else {
-            $this->addErrorMessage( 'Missing module!' );
+            $this->addErrorMessage( 'Wrong request path!' );
         }
 
         ret:
         return $this;
+    }
+
+    /**
+     * Check request segments
+     * @param array $segments
+     * @return bool
+     */
+    private function checkRequestSegments( array $segments )
+    {
+        return array_key_exists( 'module', $segments )
+            && array_key_exists( 'controller', $segments )
+            && array_key_exists( 'action', $segments );
+    }
+
+    /**
+     * Get request segments
+     * @return array
+     */
+    private function getRequestSegments()
+    {
+        return $this->requestSegments;
     }
 
     /**
@@ -153,8 +183,6 @@ class Router extends Component
      */
     private function parseRequestPath( &$path, $routes, &$segments = [] )
     {
-        $this->level++;
-
         $oldPath = $path;
         $oldSegments = $segments;
 
@@ -238,8 +266,6 @@ class Router extends Component
         if ( $path !== "" ) {
             $segments = [];
         }
-
-        $this->level--;
 
         return $segments;
     }

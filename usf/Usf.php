@@ -19,7 +19,7 @@ class Usf
      *
      * @var Usf
      */
-    private static $usf;
+    private static $usf = null;
 
     /**
      * Usf start time
@@ -52,7 +52,7 @@ class Usf
      */
     public static function start()
     {
-        if ( !isset( self::$usf ) ) {
+        if ( is_null( self::$usf ) ) {
             self::$usf= new self();
         }
         return self::$usf;
@@ -88,6 +88,15 @@ class Usf
          */
         require_once DIR_CORE . '/src/AutoloaderNamespaces.php';
         $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
+
+        /**
+         * Create Router
+         */
+        $this->router = new Router();
+    }
+
+    public function init()
+    {
 
     }
 
