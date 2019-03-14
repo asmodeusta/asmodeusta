@@ -7,6 +7,8 @@ use Usf\Core\Base\Exceptions\ControllerException;
 use Usf\Core\Base\Exceptions\ModuleException;
 use Usf\Core\Base\Exceptions\RequestException;
 use Usf\Core\Base\Exceptions\RouterException;
+use Usf\Core\Base\Controller;
+use Usf\Core\Base\Module;
 
 /**
  * Class Router
@@ -19,6 +21,12 @@ class Router extends Component
      * @var string
      */
     private $requestPath;
+
+    /**
+     * Request query
+     * @var string
+     */
+    private $requestQuery;
 
     /**
      * Request Method
@@ -63,16 +71,22 @@ class Router extends Component
     protected $request;
 
     /**
+     * @var Module
+     */
+    protected $module;
+
+    /**
      * Router constructor.
      * @param array $routes
      */
     public function __construct( array $routes = [] )
     {
         /**
-         * Setting request path
+         * Setting request data
          */
-        $requestUri = trim( $_SERVER[ 'REQUEST_URI' ], '/' );
-        $this->requestPath = parse_url( $requestUri, PHP_URL_PATH );
+        $requestData = parse_url( $_SERVER[ 'REQUEST_URI' ] );
+        $this->requestQuery = array_key_exists( 'query', $requestData ) ? '?' . $requestData[ 'query' ] : '';
+        $this->requestPath = array_key_exists( 'path', $requestData ) ? trim( $requestData[ 'path' ], '/' ) : '';
 
         /**
          * Setting request method
@@ -94,11 +108,16 @@ class Router extends Component
      * Adding routes
      *
      * @param array $routes
+     * @param bool $overwrite
      * @return Router
      */
-    public function addRoutes( array $routes )
+    public function addRoutes( array $routes, $overwrite = false )
     {
-        $this->routes += $routes;
+        if ( $overwrite ) {
+            $this->routes += $routes;
+        } else {
+            $this->routes = $routes + $this->routes;
+        }
 
         return $this;
     }
@@ -109,9 +128,13 @@ class Router extends Component
      * @param array $defaults
      * @return Router
      */
-    public function setDefaults( array $defaults )
+    public function addDefaults( array $defaults, $overwrite = false )
     {
-        $this->defaults = $defaults;
+        if ( $overwrite ) {
+            $this->defaults = $defaults;
+        } else {
+            $this->defaults = $defaults + $this->defaults;
+        }
 
         return $this;
     }
@@ -123,18 +146,33 @@ class Router extends Component
      */
     public function parseRequest()
     {
-        $data = $this->parseRequestPath( $this->requestPath, $this->routes );
+        $path = $this->requestPath;
+        // Parsing request path to get module, controller, action and other request params
+        $data = $this->parseRequestPath( $path, $this->routes );
+        // Checking request data
         if ( $this->checkRequestData( $data ) ) {
+            // Checking if url is valid
+            if ( $this->requestMethod === 'get' ) {
+                // Creating url based on parsed request params
+                $path = $this->createUrl( $data );
+                // Check if generated path is different from actual, then redirect
+                if ( $path !== $this->requestPath ) {
+                    $url = '/' . $path . ( empty( $this->requestQuery ) ? '' : '/' . $this->requestQuery );
+                    redirect( $url );
+                }
+            }
             $segments[ 'data' ] = $data;
+            // Searching callback for current request
             try {
                 $moduleClassName = ucfirst( $data[ 'module' ] ) . 'Module';
                 $moduleFile = DIR_MODULES . '/' . $data[ 'module' ] . '/' . $moduleClassName . '.php';
                 if ( is_file( $moduleFile ) ) {
                     include_once $moduleFile;
-                    $callback = ( new $moduleClassName() )
+                    $callback = ( $this->module = new $moduleClassName() )
                         ->getController( $data[ 'controller' ] )
                         ->getAction( $data[ 'action' ] );
                     $segments[ 'callback' ] = $callback;
+                    // Generating request object based on request params
                     $this->request = new Request( $segments );
                 } else {
                     throw new RouterException( 'Module "' . $data[ 'module' ] . '" not found!' );
@@ -150,7 +188,6 @@ class Router extends Component
             } catch ( \Exception $exception) {
                 $this->addErrorMessage( $exception->getMessage() );
             }
-            var_dump( $this->createUrl( $data ) );
         } else {
             $this->addErrorMessage( 'Wrong request path!' );
         }
@@ -229,27 +266,24 @@ class Router extends Component
             // Check match
             if ( $route[ 'match' ] === 0 ) {
                 $segments[ $route[ 'name' ] ] = $route[ 'value' ];
-            } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
-                $defaultValue = $this->defaults[ $route[ 'name' ] ];
-                $pattern = "~^" . $route[ 'match' ] . "$~";
-                if ( preg_match( $pattern, $section ) ) {
-                    if ( $route[ 'name' ] !== 0 ) {
-                        $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $section );
-                    }
-                    $path = substr( $path, $needlePos );
-                } elseif ( preg_match( $pattern, $defaultValue ) ) {
-                    $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue );
-                } else {
-                    continue;
-                }
             } else {
-                $pattern = "~^" . $route[ 'match' ] . "$~";
-                if ( preg_match( $pattern, $section ) ) {
-                    if ( $route[ 'name' ] !== 0 ) {
-                        $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $section );
-                    }
-                    $path = substr( $path, $needlePos );
+                if ( array_key_exists( 'default', $route ) ) {
+                    $defaultValue = $route[ 'default' ];
+                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                    $defaultValue = $this->defaults[ $route[ 'name' ] ];
                 } else {
+                    $defaultValue = null;
+                }
+                if ( ! $this->matchRoute(
+                    $route[ 'name' ],
+                    $route[ 'match' ],
+                    $route[ 'value' ],
+                    $segments,
+                    $path,
+                    $section,
+                    $needlePos,
+                    $defaultValue
+                ) ) {
                     continue;
                 }
             }
@@ -275,6 +309,23 @@ class Router extends Component
         }
 
         return $segments;
+    }
+
+    private function matchRoute( $name, $match, $value, &$segments, &$path, $section, $needlePos, $defaultValue = null )
+    {
+        $result = true;
+        $pattern = "~^" . $match . "$~";
+        if ( preg_match( $pattern, $section ) ) {
+            if ( $name !== 0 ) {
+                $segments[ $name ] = preg_replace( $pattern, $value, $section );
+            }
+            $path = substr( $path, $needlePos );
+        } elseif ( ! is_null( $defaultValue ) && preg_match( $pattern, $defaultValue ) ) {
+            $segments[ $name ] = preg_replace( $pattern, $value, $defaultValue );
+        } else {
+            $result = false;
+        }
+        return $result;
     }
 
     /**
@@ -364,12 +415,12 @@ class Router extends Component
                 }
 
                 if ( array_key_exists( 'nodes', $route ) ) {
-                    $path .= $this->generateUrl( $segments, $route[ 'nodes' ] );
+                    $path .= '/' . $this->generateUrl( $segments, $route[ 'nodes' ] );
                 }
             }
         }
 
-        return $path;
+        return trim( $path, '/' );
     }
 
     /**

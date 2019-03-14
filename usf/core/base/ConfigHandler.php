@@ -11,6 +11,9 @@ use Usf\Core\Base\Interfaces\ConfigHandlerInterface;
 abstract class ConfigHandler extends Component implements ConfigHandlerInterface
 {
 
+    /**
+     * Write file when class destructs
+     */
     protected const WRITE_ON_DESTRUCT = false;
 
     /**
@@ -29,7 +32,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * File match
      * @var string
      */
-    protected $fileMatch;
+    protected $fileMatch = '~\.([\w]+)$~';
 
     /**
      * Section of config file
@@ -87,7 +90,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
     {
         $result = false;
         if ( is_file( $file ) ) {
-            $result = true;
+            $result = (bool) preg_match( $this->fileMatch, $file );
         }
         return $result;
     }
@@ -130,7 +133,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      */
     public function getConfig()
     {
-        $result = null;
+        $result = [];
         if ( $this->checkThisSectionExists() ) {
             $result = $this->configuration[ $this->section ];
         }

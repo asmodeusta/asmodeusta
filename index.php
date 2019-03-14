@@ -54,11 +54,6 @@ require_once ROOT . '/asm/core/Asm.php';
 
 \Core\Asm();
 
-require_once 'usf/Usf.php';
-use Usf\Usf;
-$usf = Usf::start();
-$usf->init();
-$usf->run();
-Usf::stop();
+require_once 'usf/usf-init.php';
 
 //echo '<pre>', microtime(true)-$start_time, '</pre>';

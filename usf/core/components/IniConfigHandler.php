@@ -4,29 +4,51 @@ namespace Usf\Core\Components;
 
 use Usf\Core\Base\ConfigHandler;
 
+/**
+ * Class IniConfigHandler
+ * @package Usf\Core\Components
+ */
 class IniConfigHandler extends ConfigHandler
 {
 
-    protected $fileMatch = '~^([a-zA-Z][\w]+)\.ini$~';
+    /**
+     * File match
+     * @var string
+     */
+    protected $fileMatch = '~\.ini$~';
 
-    protected function validateFile( $file )
+    /**
+     * Read configuration from file
+     * @return bool
+     */
+    protected function read()
     {
-        if ( $result = parent::validateFile( $file ) ) {
-            $result = preg_match( $this->fileMatch, $file );
+        $result = parse_ini_file( $this->file, true );
+        if ( $result !== false ) {
+            $this->configuration = $result;
         }
         return $result;
     }
 
-    protected function read()
-    {
-        $this->configuration = parse_ini_file( $this->file );
-    }
-
+    /**
+     * Write configuration to file
+     * @return bool
+     */
     protected function write()
     {
-        $file = fopen( $this->filePath, 'w+' );
+        $content = $this->convertArrayToIni( $this->configuration );
+        if ( ! $result = file_put_contents( $this->filePath, $content, LOCK_EX ) ) {
+            $this->addErrorMessage( 'Could not write file "' . $this->filePath . '"' );
+        }
+        return (bool) $result;
     }
 
+    /**
+     * Converts array to ini-string
+     * @param array $arr
+     * @param array $parent
+     * @return string
+     */
     private function convertArrayToIni(array $arr, array $parent = [] )
     {
         $result = '';

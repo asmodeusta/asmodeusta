@@ -2,6 +2,7 @@
 
 namespace Usf;
 
+use Usf\Core\Base\Exceptions\UsfException;
 use Usf\Core\Components\Router;
 use Usf\Core\Src\AutoloaderNamespaces;
 
@@ -13,6 +14,10 @@ use Usf\Core\Src\AutoloaderNamespaces;
  */
 class Usf
 {
+
+    private const DEFAULT_ROUTES_FILE = DIR_USF . '/config/routes.json';
+
+    private const DEFAULT_DB_PARAMS_FILE = DIR_USF . '/config/db.json';
 
     /**
      * Single instance of the class
@@ -42,7 +47,11 @@ class Usf
      */
     private $router;
 
-    private $defaults;
+    private $routesFile = self::DEFAULT_ROUTES_FILE;
+
+    private $routes;
+
+    private $lang;
 
 
     /*********** + Static methods + ***********/
@@ -97,32 +106,65 @@ class Usf
         $this->router = new Router();
     }
 
+    /**
+     * Set routes file
+     * @param $file
+     * @return $this
+     */
+    public function setRoutesFile( $file )
+    {
+        if ( is_file( $file ) ) {
+            $this->routesFile = $file;
+        }
+        return $this;
+    }
+
     public function init()
     {
-        $routesJson = file_get_contents( DIR_USF . '/config/routes.json' );
-        $routes = json_decode( $routesJson, true, 512, JSON_BIGINT_AS_STRING );
-        $defaults = [
-            'language' => 'en',
-            'module' => 'site',
-            'controller' => 'main',
-            'action' => 'index'
-        ];
-        $this->router->addRoutes( $routes )->setDefaults( $defaults );
+        $this->routes = $this->getConfigHandler( $this->routesFile );
+        $this->router
+            ->addRoutes( $this->routes->setSection( 'routes' )->getConfig() )
+            ->addDefaults( $this->routes->setSection( 'defaults' )->getConfig() );
+    }
 
+    /**
+     * @param string $file
+     * @return mixed
+     * @throws UsfException
+     */
+    private function getConfigHandler( $file )
+    {
+        $matches = [];
+        if ( is_file( $file ) && preg_match( '~\.([\w]+)$~', $file, $matches ) ) {
+            $file = realpath( $file );
+            $fileExt = $matches[ 1 ];
+            $configHandlerClassname = ucfirst( $fileExt ) . 'ConfigHandler';
+            $configHandlerNamespace = __NAMESPACE__ . '\Core\Components\\' . $configHandlerClassname;
+            try {
+                $configHandler = new $configHandlerNamespace( $file );
+                return $configHandler;
+            } catch( \Exception $exception ) {
+                throw new UsfException( 'Class "' . $configHandlerNamespace . '" not found.' );
+            }
+        } else {
+            throw new UsfException( 'Undefined file format: ' . $file );
+        }
     }
 
     public function run()
     {
-        echo '<pre>';
         $this->router->parseRequest();
         if ( ! $errors = $this->router->getErrors() ) {
             $request = $this->router->getRequest();
+            if ( $lang = $request->takeDataValue( 'lang' ) ) {
+                $this->lang = $lang;
+            }
             $request->call();
-            var_dump( $request );
         } else {
-            var_dump( $errors );
+            echo '<pre>';
+            var_dump($errors);
+            echo '</pre>';
         }
-        echo '</pre>';
     }
 
     /**
@@ -130,7 +172,7 @@ class Usf
      */
     public function __destruct()
     {
-        echo '<pre>', 'Usf time: ', microtime( true ) - $this->usfStartTime, ' seconds', '</pre>';
+        //echo '<pre>', 'Usf time: ', microtime( true ) - $this->usfStartTime, ' seconds', '</pre>';
     }
 
     /**
@@ -138,30 +180,6 @@ class Usf
      */
     private function defineConstants()
     {
-        /**
-         * Dir constants:
-         * - consists of "DIR_"-prefix and name of important part of te application
-         */
-
-        /**
-         * Root directory of the site
-         */
-        defined( 'DIR_ROOT' ) or define( 'DIR_ROOT', dirname( __DIR__ ) );
-
-        /**
-         * Framework directory
-         */
-        defined( 'DIR_USF' ) or define( 'DIR_USF', dirname( __FILE__ ) );
-
-        /**
-         * Directory of framework core files
-         */
-        defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . '/core' );
-
-        /**
-         * Modules directory
-         */
-        defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_USF . '/modules' );
 
     }
 
