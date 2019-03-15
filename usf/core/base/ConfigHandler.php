@@ -128,6 +128,15 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
     abstract protected function write();
 
     /**
+     * Get full configuration
+     * @return array
+     */
+    public function getFullConfig()
+    {
+        return $this->configuration;
+    }
+
+    /**
      * Get configuration
      * @return array
      */
@@ -175,6 +184,18 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
             $this->section = $section;
         }
         return $this;
+    }
+
+    /**
+     * Set configuration
+     * @param array $config
+     */
+    public function setFullConfig( array $config )
+    {
+        if ( $this->configuration !== $config ) {
+            $this->configuration = $config;
+            $this->modified = true;
+        }
     }
 
     /**

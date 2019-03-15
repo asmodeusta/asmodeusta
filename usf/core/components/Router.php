@@ -8,13 +8,15 @@ use Usf\Core\Base\Exceptions\ModuleException;
 use Usf\Core\Base\Exceptions\RequestException;
 use Usf\Core\Base\Exceptions\RouterException;
 use Usf\Core\Base\Controller;
+use Usf\Core\Base\Interfaces\ConfigurableInterface;
 use Usf\Core\Base\Module;
+use Usf\Core\Base\Factories\ConfigHandlerFactory;
 
 /**
  * Class Router
  * @package Core\Components
  */
-class Router extends Component
+class Router extends Component implements ConfigurableInterface
 {
     /**
      * Request URL
@@ -77,9 +79,9 @@ class Router extends Component
 
     /**
      * Router constructor.
-     * @param array $routes
+     * @param array $config
      */
-    public function __construct( array $routes = [] )
+    public function __construct( array $config = [] )
     {
         /**
          * Setting request data
@@ -101,7 +103,41 @@ class Router extends Component
         /**
          * Adding routes
          */
-        $this->addRoutes( $routes );
+        $this->setupConfig( $config );
+    }
+
+    /**
+     * @param string $file
+     */
+    public function setupConfigFromFile( $file )
+    {
+        $handler = ConfigHandlerFactory::create( $file );
+        $this->setupConfig( $handler->getFullConfig() );
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setupConfig( array $config )
+    {
+        /**
+         * Setup routes
+         */
+        if ( empty( $this->routes ) && array_key_exists( 'routes', $config ) ) {
+            $this->routes = $config[ 'routes' ];
+        }
+
+        /**
+         * Setup defaults
+         */
+        if ( empty( $this->defaults ) && array_key_exists( 'defaults', $config ) ) {
+            $this->defaults = $config[ 'defaults' ];
+        }
+    }
+
+    protected function addRouteRecursive( &$currentRoute, &$newRoute, $rewrite = false )
+    {
+
     }
 
     /**
@@ -126,6 +162,7 @@ class Router extends Component
      * Setting defaults
      *
      * @param array $defaults
+     * @param bool $overwrite
      * @return Router
      */
     public function addDefaults( array $defaults, $overwrite = false )
@@ -168,9 +205,9 @@ class Router extends Component
                 $moduleFile = DIR_MODULES . '/' . $data[ 'module' ] . '/' . $moduleClassName . '.php';
                 if ( is_file( $moduleFile ) ) {
                     include_once $moduleFile;
-                    $callback = ( $this->module = new $moduleClassName() )
-                        ->getController( $data[ 'controller' ] )
-                        ->getAction( $data[ 'action' ] );
+                    $module = new $moduleClassName();
+                    $controller = $module->getController( $data[ 'controller' ] );
+                    $callback = $controller->getAction( $data[ 'action' ] );
                     $segments[ 'callback' ] = $callback;
                     // Generating request object based on request params
                     $this->request = new Request( $segments );
@@ -380,6 +417,25 @@ class Router extends Component
             // Check match
             if ( array_key_exists( $route[ 'name' ], $segments ) ) {
 
+                if ( array_key_exists( 'default', $route ) ) {
+                    $defaultValue = $route[ 'default' ];
+                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                    $defaultValue = $this->defaults[ $route[ 'name' ] ];
+                } else {
+                    $defaultValue = null;
+                }
+                if ( ! $this->matchRouteForCreate(
+                    $route[ 'name' ],
+                    $route[ 'match' ],
+                    $route[ 'value' ],
+                    $segments,
+                    $path,
+                    $defaultValue
+                ) ) {
+                    continue;
+                }
+
+                /*
                 if ( $route[ 'match' ] === 0 ) {
                     // noop
                 } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
@@ -413,6 +469,7 @@ class Router extends Component
                         continue;
                     }
                 }
+                */
 
                 if ( array_key_exists( 'nodes', $route ) ) {
                     $path .= '/' . $this->generateUrl( $segments, $route[ 'nodes' ] );
@@ -424,10 +481,39 @@ class Router extends Component
     }
 
     /**
+     *
+     *
+     * @param string $name
+     * @param string $match
+     * @param string $value
+     * @param array $segments
+     * @param string $path
+     * @param null|string $defaultValue
+     * @return bool
+     */
+    private function matchRouteForCreate( $name, $match, $value, $segments, &$path, $defaultValue = null )
+    {
+        $result = true;
+        $section = $segments[ $name ];
+        $this->remakePattern( $match, $value );
+
+        $pattern = "~^" . $value . "$~";
+        if ( preg_match( $pattern, $section ) ) {
+            $newValue = preg_replace( $pattern, $match, $section);
+            if ( $newValue !== $defaultValue ) {
+                $path .= "/" . $newValue;
+            }
+        } else {
+            $result = false;
+        }
+        return $result;
+    }
+
+    /**
      * Remakes pattern and value for matching to create url
      *
-     * @param $match
-     * @param $value
+     * @param string $match
+     * @param string $value
      */
     private function remakePattern( &$match, &$value ) {
         $oldMatch = $match;

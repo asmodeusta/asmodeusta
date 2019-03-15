@@ -1,5 +1,8 @@
 <?php
 
+use Usf\Usf;
+require_once 'Usf.php';
+
 /**
  * Dir constants:
  * - consists of "DIR_"-prefix and name of important part of te application
@@ -25,6 +28,9 @@ defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . '/core' );
  */
 defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_USF . '/modules' );
 
+/**
+ * Including files in 'include' path
+ */
 $includeDir = DIR_USF . '/include';
 foreach ( scandir( $includeDir ) as $file ) {
     ob_start();
@@ -35,13 +41,25 @@ foreach ( scandir( $includeDir ) as $file ) {
     // Clean output stream
     ob_clean();
 }
+/** */
 
-require_once 'Usf.php';
-use Usf\Usf;
+
+/**
+ * Start
+ */
 $usf = Usf::start();
 
-$usf->setRoutesFile( DIR_USF . '/config/routes_test.json' );
-
+/**
+ * Init
+ */
 $usf->init();
+
+/**
+ * Run
+ */
 $usf->run();
-Usf::stop();
+
+/**
+ * End
+ */
+Usf::end();

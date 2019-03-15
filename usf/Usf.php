@@ -2,7 +2,8 @@
 
 namespace Usf;
 
-use Usf\Core\Base\Exceptions\UsfException;
+use Usf\Core\Base\ConfigHandler;
+use Usf\Core\Components\Database;
 use Usf\Core\Components\Router;
 use Usf\Core\Src\AutoloaderNamespaces;
 
@@ -12,12 +13,8 @@ use Usf\Core\Src\AutoloaderNamespaces;
  *
  * @package Usf
  */
-class Usf
+final class Usf
 {
-
-    private const DEFAULT_ROUTES_FILE = DIR_USF . '/config/routes.json';
-
-    private const DEFAULT_DB_PARAMS_FILE = DIR_USF . '/config/db.json';
 
     /**
      * Single instance of the class
@@ -27,11 +24,27 @@ class Usf
     private static $usf = null;
 
     /**
+     * Array of protected properties for reading
+     * @var array
+     */
+    private $readableProperties = [
+        'router',
+        'db',
+        'usfStartTime'
+    ];
+
+    /**
      * Usf start time
      *
      * @var float
      */
     private $usfStartTime;
+
+    /**
+     * Language of the page
+     * @var string
+     */
+    private $lang;
 
     /**
      * Class autoloader by namespaces
@@ -41,17 +54,32 @@ class Usf
     private $autoloader;
 
     /**
+     * Router ConfigHandler
+     *
+     * @var ConfigHandler
+     */
+    private $routerConfigHandler;
+
+    /**
      * Router
      *
      * @var Router
      */
     private $router;
 
-    private $routesFile = self::DEFAULT_ROUTES_FILE;
+    /**
+     * Database ConfigHandler
+     *
+     * @var ConfigHandler
+     */
+    private $dbConfigHandler;
 
-    private $routes;
-
-    private $lang;
+    /**
+     * Database
+     *
+     * @var Database
+     */
+    private $db;
 
 
     /*********** + Static methods + ***********/
@@ -72,7 +100,7 @@ class Usf
     /**
      * Stops the app
      */
-    public static function stop()
+    public static function end()
     {
         self::$usf = null;
     }
@@ -87,12 +115,10 @@ class Usf
      */
     private function __construct()
     {
-        $this->usfStartTime = microtime( true );
-
         /**
-         * First define basic constants of the app
+         * Start time
          */
-        $this->defineConstants();
+        $this->usfStartTime = microtime( true );
 
         /**
          * Connect autoloader
@@ -106,51 +132,29 @@ class Usf
         $this->router = new Router();
     }
 
-    /**
-     * Set routes file
-     * @param $file
-     * @return $this
-     */
-    public function setRoutesFile( $file )
+    public function __get($name)
     {
-        if ( is_file( $file ) ) {
-            $this->routesFile = $file;
+        $result = null;
+        if ( in_array( $name, $this->readableProperties ) ) {
+            $result = $this->$name;
         }
-        return $this;
+        return $result;
     }
 
+    /**
+     * Initialize
+     */
     public function init()
     {
-        $this->routes = $this->getConfigHandler( $this->routesFile );
-        $this->router
-            ->addRoutes( $this->routes->setSection( 'routes' )->getConfig() )
-            ->addDefaults( $this->routes->setSection( 'defaults' )->getConfig() );
+        /**
+         * Router
+         */
+        $this->router->setupConfigFromFile( DIR_USF . '/config/router.config.json' );
     }
 
     /**
-     * @param string $file
-     * @return mixed
-     * @throws UsfException
+     * Run
      */
-    private function getConfigHandler( $file )
-    {
-        $matches = [];
-        if ( is_file( $file ) && preg_match( '~\.([\w]+)$~', $file, $matches ) ) {
-            $file = realpath( $file );
-            $fileExt = $matches[ 1 ];
-            $configHandlerClassname = ucfirst( $fileExt ) . 'ConfigHandler';
-            $configHandlerNamespace = __NAMESPACE__ . '\Core\Components\\' . $configHandlerClassname;
-            try {
-                $configHandler = new $configHandlerNamespace( $file );
-                return $configHandler;
-            } catch( \Exception $exception ) {
-                throw new UsfException( 'Class "' . $configHandlerNamespace . '" not found.' );
-            }
-        } else {
-            throw new UsfException( 'Undefined file format: ' . $file );
-        }
-    }
-
     public function run()
     {
         $this->router->parseRequest();
@@ -173,14 +177,6 @@ class Usf
     public function __destruct()
     {
         //echo '<pre>', 'Usf time: ', microtime( true ) - $this->usfStartTime, ' seconds', '</pre>';
-    }
-
-    /**
-     * Define basic framework constants
-     */
-    private function defineConstants()
-    {
-
     }
 
     /*********** - Object methods - ***********/

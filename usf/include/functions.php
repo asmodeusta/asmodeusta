@@ -1,14 +1,36 @@
 <?php
 
+use Usf\Usf;
+
+/**
+ * Get Usf single object
+ * @return Usf
+ */
+function usf()
+{
+    return Usf::start();
+}
+
 /**
  * If var is null returns default value
  * @param mixed $var
  * @param mixed $default
- * @return null
+ * @return mixed
  */
 function if_null( $var, $default )
 {
     return is_null( $var ) ? $default : $var;
+}
+
+/**
+ * If var is null returns default value
+ * @param mixed $var
+ * @param mixed $default
+ * @return mixed
+ */
+function if_set( $var, $default  )
+{
+    return isset( $var ) ? $var : $default;
 }
 
 /**

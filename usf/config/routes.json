@@ -112,8 +112,9 @@
                 "nodes": [
                   {
                     "name": "action",
-                    "match": 0,
-                    "value": "view"
+                    "match": "view",
+                    "value": "view",
+                    "default": "view"
                   },
                   {
                     "name": "action",

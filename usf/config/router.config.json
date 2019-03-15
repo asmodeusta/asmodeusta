@@ -1,0 +1,64 @@
+{
+  "routes":
+  [
+    {
+      "name": "lang",
+      "match": "(en|ua)",
+      "value": "$1",
+      "nodes":
+      [
+        {
+          "name": "module",
+          "match": "site",
+          "value": "site",
+          "nodes":
+          [
+            {
+              "name": "controller",
+              "match": "main",
+              "value": "main",
+              "nodes":
+              [
+                {
+                  "name": "action",
+                  "match": "index",
+                  "value": "index",
+                  "nodes":
+                  [
+                    {
+                      "name": "page",
+                      "match": "([1-9][0-9]{0,7})",
+                      "value": "$1",
+                      "default": "1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "controller",
+              "match": "settings",
+              "value": "settings",
+              "nodes":
+              [
+                {
+                  "name": "action",
+                  "match": "index",
+                  "value": "index"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "defaults":
+  {
+    "lang": "en",
+    "module": "site",
+    "controller": "main",
+    "action": "index",
+    "page": "1"
+  }
+}
