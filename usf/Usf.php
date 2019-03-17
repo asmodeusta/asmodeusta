@@ -147,6 +147,11 @@ final class Usf
     public function init()
     {
         /**
+         * Database
+         */
+        $this->db = new Database( DIR_USF . '/config/db.config.json' );
+
+        /**
          * Router
          */
         $this->router->setupConfigFromFile( DIR_USF . '/config/router.config.json' );

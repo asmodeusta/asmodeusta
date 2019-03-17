@@ -20,9 +20,9 @@ class Database implements ConfigurableInterface
     protected $collate;
     protected $prefix;
 
-    public function __construct(  array $config = []  )
+    public function __construct(  $configFile  )
     {
-        $this->setupConfig( $config );
+        $this->setupConfigFromFile( $configFile );
     }
 
     public function setupConfig( array $config )

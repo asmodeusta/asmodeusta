@@ -9,6 +9,6 @@ namespace Usf\Core\Base\Interfaces;
 interface ModuleInterface
 {
 
-
+    function getController( $controllerName );
 
 }

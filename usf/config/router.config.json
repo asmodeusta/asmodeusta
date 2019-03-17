@@ -32,6 +32,11 @@
                       "default": "1"
                     }
                   ]
+                },
+                {
+                  "name": "action",
+                  "match": "(heart)",
+                  "value": "$1"
                 }
               ]
             },
