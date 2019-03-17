@@ -24,4 +24,12 @@ class EmptyConfigHandler extends ConfigHandler
     {
         return true;
     }
+
+    /**
+     * @return bool
+     */
+    public function save()
+    {
+        return true;
+    }
 }

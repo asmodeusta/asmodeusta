@@ -10,6 +10,40 @@ class MainController extends Controller
         var_dump( $page );
     }
 
+    public function actionAdd()
+    {
+        $newRoute = [
+            'name' => 'lang',
+            'match' => '(en|ua)',
+            'value' => '$1',
+            'nodes' => [
+                [
+                    'name' => 'module',
+                    'match' => 'site',
+                    'value' => 'site',
+                    'nodes' => [
+                        [
+                            'name' => 'controller',
+                            'match' => 'settings',
+                            'value' => 'settings',
+                            'nodes' => [
+                                [
+                                    'name' => 'action',
+                                    'match' => 'float',
+                                    'value' => 'float',
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        echo '<pre>';
+        var_dump( usf()->router->addRoute( $newRoute ) );
+        var_dump( usf()->db->connect() );
+        echo '</pre>';
+    }
+
     public function actionHeart()
     {
         ?>

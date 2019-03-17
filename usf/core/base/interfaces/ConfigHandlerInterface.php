@@ -40,4 +40,10 @@ interface ConfigHandlerInterface
      * @param mixed $value
      */
     function set( $name, $value );
+
+    /**
+     * Save configuration to file
+     * @return bool
+     */
+    function save();
 }

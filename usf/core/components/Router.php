@@ -3,14 +3,16 @@
 namespace Usf\Core\Components;
 
 use Usf\Core\Base\Component;
+use Usf\Core\Base\ConfigHandler;
+use Usf\Core\Base\Controller;
 use Usf\Core\Base\Exceptions\ControllerException;
 use Usf\Core\Base\Exceptions\ModuleException;
 use Usf\Core\Base\Exceptions\RequestException;
 use Usf\Core\Base\Exceptions\RouterException;
-use Usf\Core\Base\Controller;
+use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Base\Interfaces\ConfigurableInterface;
 use Usf\Core\Base\Module;
-use Usf\Core\Base\Factories\ConfigHandlerFactory;
+
 
 /**
  * Class Router
@@ -68,6 +70,12 @@ class Router extends Component implements ConfigurableInterface
     private $routes = [];
 
     /**
+     * Routes config handler
+     * @var ConfigHandler
+     */
+    protected $configHandler;
+
+    /**
      * @var Request
      */
     protected $request;
@@ -79,9 +87,9 @@ class Router extends Component implements ConfigurableInterface
 
     /**
      * Router constructor.
-     * @param array $config
+     * @param string $configFile
      */
-    public function __construct( array $config = [] )
+    public function __construct( $configFile )
     {
         /**
          * Setting request data
@@ -103,7 +111,7 @@ class Router extends Component implements ConfigurableInterface
         /**
          * Adding routes
          */
-        $this->setupConfig( $config );
+        $this->setupConfigFromFile( $configFile );
     }
 
     /**
@@ -111,8 +119,8 @@ class Router extends Component implements ConfigurableInterface
      */
     public function setupConfigFromFile( $file )
     {
-        $handler = ConfigHandlerFactory::create( $file );
-        $this->setupConfig( $handler->getFullConfig() );
+        $this->configHandler = ConfigHandlerFactory::create( $file );
+        $this->setupConfig( $this->configHandler->getFullConfig() );
     }
 
     /**
@@ -135,9 +143,73 @@ class Router extends Component implements ConfigurableInterface
         }
     }
 
-    protected function addRouteRecursive( &$currentRoute, &$newRoute, $rewrite = false )
+    /**
+     * Adding route
+     *
+     * @param $route
+     * @param bool $rewrite
+     * @return bool
+     */
+    public function addRoute( $route, $rewrite = false )
     {
+        $result =  $this->addRouteRecursive( $this->routes, $route, $rewrite );
+        var_dump( $this->routes );
+        return $result;
+    }
 
+    /**
+     * Recursive search and adding route
+     *
+     * @param array $routes
+     * @param array $newRoute
+     * @param bool $rewrite
+     * @return bool
+     */
+    protected function addRouteRecursive( &$routes, $newRoute, $rewrite = false )
+    {
+        $result = false;
+        if ( $this->validateRoute( $newRoute ) ) {
+            /**
+             * Find route
+             */
+            $found = false;
+            foreach ( $routes as &$oldRoute ) {
+                if ( $this->validateRoute( $oldRoute ) && empty( $this->compareRoutes( $oldRoute, $newRoute ) ) ) {
+                    $found = true;
+                    break;
+                }
+            }
+            if ( $found ) {
+                if ( array_key_exists( 'nodes', $newRoute ) ) {
+                    if ( array_key_exists( 'nodes', $oldRoute ) ) {
+                        $result = true;
+                        foreach ( $newRoute[ 'nodes' ] as $node ) {
+                            $result = $result && $this->addRouteRecursive( $oldRoute[ 'nodes' ], $node, $rewrite );
+                        }
+                    } else {
+                        $routes[ 'nodes' ] = $newRoute[ 'nodes' ];
+                        $result = true;
+                    }
+                }
+            } else {
+                $routes[] = $newRoute;
+                $result = true;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $oldRoute
+     * @param array $newRoute
+     * @return array
+     */
+    protected function compareRoutes( $oldRoute, $newRoute )
+    {
+        return array_diff(
+            array_filter( $oldRoute, function ( $var ) { return ! is_array( $var ); } ),
+            array_filter( $newRoute, function ( $var ) { return ! is_array( $var ); } )
+        );
     }
 
     /**
@@ -149,12 +221,9 @@ class Router extends Component implements ConfigurableInterface
      */
     public function addRoutes( array $routes, $overwrite = false )
     {
-        if ( $overwrite ) {
-            $this->routes += $routes;
-        } else {
-            $this->routes = $routes + $this->routes;
+        foreach ( $routes as $route ) {
+            $this->addRoute( $route, $overwrite );
         }
-
         return $this;
     }
 

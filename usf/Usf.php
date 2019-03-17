@@ -54,25 +54,11 @@ final class Usf
     private $autoloader;
 
     /**
-     * Router ConfigHandler
-     *
-     * @var ConfigHandler
-     */
-    private $routerConfigHandler;
-
-    /**
      * Router
      *
      * @var Router
      */
     private $router;
-
-    /**
-     * Database ConfigHandler
-     *
-     * @var ConfigHandler
-     */
-    private $dbConfigHandler;
 
     /**
      * Database
@@ -129,7 +115,12 @@ final class Usf
         /**
          * Create Router
          */
-        $this->router = new Router();
+        $this->router = new Router( DIR_USF . '/config/router.config.json' );
+
+        /**
+         * Create Database
+         */
+        $this->db = new Database( DIR_USF . '/config/db.config.json' );
     }
 
     public function __get($name)

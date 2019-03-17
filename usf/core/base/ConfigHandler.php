@@ -240,4 +240,17 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
         $this->set( $name, $value );
     }
 
+    /**
+     * Save configuration to file
+     * @return bool
+     */
+    public function save()
+    {
+        if ( $this->modified ) {
+            return $this->write();
+        } else {
+            return false;
+        }
+    }
+
 }

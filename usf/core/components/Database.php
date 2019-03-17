@@ -20,6 +20,8 @@ class Database implements ConfigurableInterface
     protected $collate;
     protected $prefix;
 
+    protected $connection = null;
+
     public function __construct(  $configFile  )
     {
         $this->setupConfigFromFile( $configFile );
@@ -59,10 +61,14 @@ class Database implements ConfigurableInterface
 
     public function connect()
     {
-        $result = false;
-        $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->name . '';
-        $connection = new \PDO( $dsn, $this->user, $this->pass );
-        $connection->exec( "set names utf8" );
+        try {
+            $result = true;
+            $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->name . '';
+            $this->connection = new \PDO( $dsn, $this->user, $this->pass );
+            $this->connection->exec( "set names utf8" );
+        } catch ( \PDOException $exception ) {
+            $result = false;
+        }
         return $result;
     }
 }
