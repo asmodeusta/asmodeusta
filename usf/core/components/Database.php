@@ -167,7 +167,7 @@ class Database extends PDO implements ConfigurableInterface
     public function query ($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = array())
     {
         $this->fillTablePrefixes( $statement );
-        parent::query( $statement, $mode, $arg3, $ctorargs );
+        return parent::query( $statement );
     }
 
 }

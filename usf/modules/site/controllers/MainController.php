@@ -40,7 +40,6 @@ class MainController extends Controller
         ];
         echo '<pre>';
         var_dump( usf()->router->addRoute( $newRoute ) );
-        var_dump( usf()->db->connect() );
         echo '</pre>';
     }
 
