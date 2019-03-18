@@ -88,12 +88,12 @@ abstract class Component
     }
 
     /**
-     * Clear errors
+     * Clean errors
      *
      * @param string $group
      * @return $this
      */
-    public function clearErrors( $group = 'main' )
+    public function cleanErrors( $group = 'main' )
     {
         if ( array_key_exists( $group, $this->errors ) ) {
             unset( $this->errors[ $group ] );

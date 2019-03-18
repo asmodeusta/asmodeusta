@@ -2,7 +2,6 @@
 
 namespace Usf;
 
-use Usf\Core\Base\ConfigHandler;
 use Usf\Core\Components\Database;
 use Usf\Core\Components\Router;
 use Usf\Core\Src\AutoloaderNamespaces;
@@ -30,7 +29,8 @@ final class Usf
     private $readableProperties = [
         'router',
         'db',
-        'usfStartTime'
+        'usfStartTime',
+        'lang'
     ];
 
     /**
@@ -109,18 +109,22 @@ final class Usf
         /**
          * Connect autoloader
          */
-        require_once DIR_CORE . '/src/AutoloaderNamespaces.php';
+        require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'AutoloaderNamespaces.php';
         $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
 
         /**
          * Create Router
          */
-        $this->router = new Router( DIR_USF . '/config/router.config.json' );
+        $this->router = new Router( DIR_USF . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'router.config.json' );
 
         /**
          * Create Database
          */
-        $this->db = new Database( DIR_USF . '/config/db.config.json' );
+        try {
+            $this->db = new Database( DIR_USF . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'db.config.json' );
+        } catch ( \PDOException $exception ) {
+            die('Cannot connect to database!');
+        }
     }
 
     public function __get($name)
@@ -137,15 +141,7 @@ final class Usf
      */
     public function init()
     {
-        /**
-         * Database
-         */
-        $this->db = new Database( DIR_USF . '/config/db.config.json' );
 
-        /**
-         * Router
-         */
-        $this->router->setupConfigFromFile( DIR_USF . '/config/router.config.json' );
     }
 
     /**

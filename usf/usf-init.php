@@ -21,12 +21,12 @@ defined( 'DIR_USF' ) or define( 'DIR_USF', dirname( __FILE__ ) );
 /**
  * Directory of framework core files
  */
-defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . '/core' );
+defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . DIRECTORY_SEPARATOR . 'core' );
 
 /**
  * Modules directory
  */
-defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_USF . '/modules' );
+defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_USF . DIRECTORY_SEPARATOR . 'modules' );
 
 /**
  * Including files in 'include' path
@@ -36,7 +36,7 @@ foreach ( scandir( $includeDir ) as $file ) {
     ob_start();
     // Check if this is php-file
     if ( preg_match( '~(\.php$)~', $file ) ) {
-        require_once $includeDir . '/' . $file;
+        require_once $includeDir . DIRECTORY_SEPARATOR . $file;
     }
     // Clean output stream
     ob_clean();

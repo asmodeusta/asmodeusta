@@ -48,8 +48,8 @@
               [
                 {
                   "name": "action",
-                  "match": "index",
-                  "value": "index"
+                  "match": "(index|check|lang)",
+                  "value": "$1"
                 }
               ]
             }

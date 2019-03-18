@@ -2,9 +2,10 @@
   "credentials":
   {
     "host": "localhost",
+    "port": 1433,
     "name": "usf",
     "user": "root",
-    "pass": ""
+    "pass": "<?ivanPremme7ce"
   },
   "settings":
   {

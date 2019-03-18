@@ -12,6 +12,15 @@ function usf()
 }
 
 /**
+ * Get Database object
+ * @return \Usf\Core\Components\Database
+ */
+function db()
+{
+    return usf()->db;
+}
+
+/**
  * If var is null returns default value
  * @param mixed $var
  * @param mixed $default

@@ -2,73 +2,172 @@
 
 namespace Usf\Core\Components;
 
+use PDO;
 use Usf\Core\Base\Interfaces\ConfigurableInterface;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
 
 /**
- * Class Database
+ * Class Database abstraction over PDO
  * @package Usf\Core\Components
  */
-class Database implements ConfigurableInterface
+class Database extends PDO implements ConfigurableInterface
 {
 
+    /**
+     * Host
+     * @var string
+     */
     protected $host;
+
+    /**
+     * Port
+     * @var int
+     */
+    protected $port;
+
+    /**
+     * Database name
+     * @var string
+     */
     protected $name;
+
+    /**
+     * Database user
+     * @var string
+     */
     protected $user;
+
+    /**
+     * Database password
+     * @var string
+     */
     protected $pass;
+
+    /**
+     * Charset
+     * @var string
+     */
     protected $charset;
+
+    /**
+     * Collate
+     * @var string
+     */
     protected $collate;
-    protected $prefix;
 
-    protected $connection = null;
+    /**
+     * Table prefix
+     * @var string
+     */
+    protected $prefix = "usf_";
 
-    public function __construct(  $configFile  )
+    /**
+     * Is connected
+     * @var bool
+     */
+    protected $connected = false;
+
+    /**
+     * Database constructor.
+     * @param string $configFile
+     */
+    public function __construct( $configFile )
     {
         $this->setupConfigFromFile( $configFile );
+        $dsn = sprintf( 'mysql:host=%s;port=%d;dbname=%s', $this->host, $this->port, $this->name );
+        parent::__construct( $dsn, $this->user, $this->pass );
     }
 
+    /**
+     * @param array $config
+     */
     public function setupConfig( array $config )
     {
-        /**
-         * Connection credentials
-         */
-        if ( array_key_exists( 'credentials', $config ) ) {
-            if ( is_array( $config[ 'credentials' ] ) ) {
-                $this->host = if_set( $config[ 'credentials' ][ 'host' ], '' );
-                $this->name = if_set( $config[ 'credentials' ][ 'name' ], '' );
-                $this->user = if_set( $config[ 'credentials' ][ 'user' ], '' );
-                $this->pass = if_set( $config[ 'credentials' ][ 'pass' ], '' );
-            }
-        }
+        if ( ! $this->connected ) {
 
-        /**
-         * Database settings
-         */
-        if ( array_key_exists( 'settings', $config ) ) {
-            if ( is_array( $config[ 'settings' ] ) ) {
-                $this->charset = if_set( $config[ 'settings' ][ 'charset' ], '' );
-                $this->collate = if_set( $config[ 'settings' ][ 'collate' ], '' );
-                $this->prefix = if_set( $config[ 'settings' ][ 'prefix' ], '' );
+            /**
+             * Connection credentials
+             */
+            if ( array_key_exists( 'credentials', $config ) ) {
+                if ( is_array( $config[ 'credentials' ] ) ) {
+                    $this->host = if_set( $config[ 'credentials' ][ 'host' ], '' );
+                    $this->port = if_set( $config[ 'credentials' ][ 'port' ], '' );
+                    $this->name = if_set( $config[ 'credentials' ][ 'name' ], '' );
+                    $this->user = if_set( $config[ 'credentials' ][ 'user' ], '' );
+                    $this->pass = if_set( $config[ 'credentials' ][ 'pass' ], '' );
+                }
+            }
+
+            /**
+             * Database settings
+             */
+            if ( array_key_exists( 'settings', $config ) ) {
+                if ( is_array( $config[ 'settings' ] ) ) {
+                    $this->charset = if_set( $config[ 'settings' ][ 'charset' ], '' );
+                    $this->collate = if_set( $config[ 'settings' ][ 'collate' ], '' );
+                    $this->prefix = if_set( $config[ 'settings' ][ 'prefix' ], '' );
+                }
             }
         }
     }
 
+    /**
+     * @param string $file
+     */
     public function setupConfigFromFile( $file )
     {
         $handler = ConfigHandlerFactory::create( $file );
         $this->setupConfig( $handler->getFullConfig() );
     }
 
-    public function connect()
+    /**
+     * @return string
+     */
+    public function getPrefix()
     {
-        try {
-            $result = true;
-            $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->name . '';
-            $this->connection = new \PDO( $dsn, $this->user, $this->pass );
-            $this->connection->exec( "set names utf8" );
-        } catch ( \PDOException $exception ) {
-            $result = false;
-        }
-        return $result;
+        return $this->prefix;
     }
+
+    /**
+     * @param string $statement
+     */
+    protected function fillTablePrefixes( &$statement )
+    {
+        $statement = str_replace( 'prefix__', $this->prefix, $statement );
+    }
+
+    /**
+     * @param string $statement
+     * @param null $driver_options
+     * @return bool|\PDOStatement|void
+     */
+    public function prepare ( $statement, $driver_options = null )
+    {
+        $this->fillTablePrefixes( $statement );
+        parent::prepare( $statement, [] );
+    }
+
+    /**
+     * @param string $statement
+     * @return int|void
+     */
+    public function exec ( $statement )
+    {
+        $this->fillTablePrefixes( $statement );
+        parent::exec( $statement );
+    }
+
+    /**
+     * @param string $statement
+     * @param int $mode
+     * @param null $arg3
+     * @param array $ctorargs
+     * @return false|\PDOStatement|void
+     */
+    public function query ($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = array())
+    {
+        $this->fillTablePrefixes( $statement );
+        parent::query( $statement, $mode, $arg3, $ctorargs );
+    }
+
 }
