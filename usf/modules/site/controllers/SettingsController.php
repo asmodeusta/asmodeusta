@@ -21,22 +21,9 @@ class SettingsController extends Controller
 
     public function actionCheck()
     {
-        $time = microtime( true );
-        for ( $i = 0; $i < 10000; $i++ ) {
-            $a = request()->data;
-        }
-        var_dump($a);
-        var_dump( microtime( true ) - $time );
-
-        $time = microtime( true );
-        for ( $i = 0; $i < 10000; $i++ ) {
-            $a = db();
-        }
-        var_dump($a);
-        var_dump( microtime( true ) - $time );
-
-
-        var_dump(db()->getAvailableDrivers());
+        echo '<pre>';
+        var_dump($_SERVER);
+        echo '</pre>';
     }
 
     public function actionLang()
