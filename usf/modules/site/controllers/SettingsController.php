@@ -1,5 +1,7 @@
 <?php
 
+namespace Usf\Site\Controllers;
+
 use Usf\Core\Base\Controller;
 
 class SettingsController extends Controller
@@ -8,12 +10,32 @@ class SettingsController extends Controller
     {
         echo '<pre>';
         var_dump( usf()->router );
-        echo microtime( true ) - usf()->usfStartTime;
+        echo microtime( true ) - usf()->startTime;
         echo '<pre>';
+    }
+
+    public function actionGuid()
+    {
+        echo uniqid( '', true );
     }
 
     public function actionCheck()
     {
+        $time = microtime( true );
+        for ( $i = 0; $i < 10000; $i++ ) {
+            $a = request()->data;
+        }
+        var_dump($a);
+        var_dump( microtime( true ) - $time );
+
+        $time = microtime( true );
+        for ( $i = 0; $i < 10000; $i++ ) {
+            $a = db();
+        }
+        var_dump($a);
+        var_dump( microtime( true ) - $time );
+
+
         var_dump(db()->getAvailableDrivers());
     }
 
@@ -24,7 +46,7 @@ class SettingsController extends Controller
         $langs = $handler->getFullConfig();
         $db = db();
         $tableName = $db->getPrefix() . 'languages';
-        $sql = "truncate table {$tableName}; insert into {$tableName}(`code2`, `name`, `native_name`, `is_active`) values";
+        $sql = "truncate table prefix__languages; insert into prefix__languages(`code2`, `name`, `native_name`, `is_active`) values";
         $values = [];
         foreach ( $langs as $code => $names ) {
             $values[] = '(' . implode(',', [ "'$code'", "'{$names[ 'name' ]}'", "'{$names[ 'nativeName' ]}'", in_array( $names[ 'name' ], ['Ukrainian', 'English'] ) ? 1 : 0 ] ) . ')';
@@ -34,7 +56,7 @@ class SettingsController extends Controller
         $result = $db->query($sql);
         var_dump($result);
         var_dump($db->lastInsertId($tableName));
-        echo microtime( true ) - usf()->usfStartTime;
+        echo microtime( true ) - usf()->startTime;
         echo '<pre>';
     }
 }

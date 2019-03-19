@@ -1,25 +1,5 @@
 <?php
 
-use Usf\Usf;
-
-/**
- * Get Usf single object
- * @return Usf
- */
-function usf()
-{
-    return Usf::start();
-}
-
-/**
- * Get Database object
- * @return \Usf\Core\Components\Database
- */
-function db()
-{
-    return usf()->db;
-}
-
 /**
  * If var is null returns default value
  * @param mixed $var
@@ -40,6 +20,16 @@ function if_null( $var, $default )
 function if_set( $var, $default  )
 {
     return isset( $var ) ? $var : $default;
+}
+
+/**
+ * Returns last declared class
+ * @return string
+ */
+function lastDeclaredClass()
+{
+    $classes = get_declared_classes();
+    return end( $classes );
 }
 
 /**

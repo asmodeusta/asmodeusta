@@ -31,12 +31,15 @@ abstract class Component
     /**
      * Get reflector
      * @return \ReflectionClass
-     * @throws \ReflectionException
      */
     protected function getReflector()
     {
         if ( is_null( $this->reflector ) ) {
-            $this->reflector = new \ReflectionClass( get_class( $this ) );
+            try {
+                $this->reflector = new \ReflectionClass( get_class( $this ) );
+            } catch ( \ReflectionException $exception ) {
+                $this->addErrorMessage( $exception->getMessage() );
+            }
         }
         return $this->reflector;
     }
@@ -44,7 +47,6 @@ abstract class Component
     /**
      * Get directory
      * @return string
-     * @throws \ReflectionException
      */
     protected function getDirectory()
     {

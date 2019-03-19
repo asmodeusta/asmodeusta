@@ -153,8 +153,23 @@ class Router extends Component implements ConfigurableInterface
     public function addRoute( $route, $rewrite = false )
     {
         $result =  $this->addRouteRecursive( $this->routes, $route, $rewrite );
-        var_dump( $this->routes );
         return $result;
+    }
+
+    /**
+     * Add lang to routes
+     * @param array $routes
+     * @return array
+     */
+    protected function addLangToRoutes( array &$routes )
+    {
+        $routes = [
+            "name" => "lang",
+            "match" => "([a-z]{2})",
+            "value" => "$1",
+            "nodes" => $routes
+        ];
+        return $routes;
     }
 
     /**
@@ -221,9 +236,23 @@ class Router extends Component implements ConfigurableInterface
      */
     public function addRoutes( array $routes, $overwrite = false )
     {
-        foreach ( $routes as $route ) {
+        foreach ( $this->addLangToRoutes( $routes ) as $route ) {
             $this->addRoute( $route, $overwrite );
         }
+        return $this;
+    }
+
+    /**
+     * Adding routes from config file
+     *
+     * @param $file
+     * @return $this
+     */
+    public function addRoutesFromFile( $file )
+    {
+        $configHandler = ConfigHandlerFactory::create( $file );
+        $routes = $configHandler->setSection( 'routes' )->getConfig();
+        $this->addRoutes( $routes );
         return $this;
     }
 
@@ -274,7 +303,8 @@ class Router extends Component implements ConfigurableInterface
                 $moduleFile = DIR_MODULES . '/' . $data[ 'module' ] . '/' . $moduleClassName . '.php';
                 if ( is_file( $moduleFile ) ) {
                     include_once $moduleFile;
-                    $module = new $moduleClassName();
+                    $moduleClass = lastDeclaredClass();
+                    $module = new $moduleClass();
                     $controller = $module->getController( $data[ 'controller' ] );
                     $callback = $controller->getAction( $data[ 'action' ] );
                     $segments[ 'callback' ] = $callback;

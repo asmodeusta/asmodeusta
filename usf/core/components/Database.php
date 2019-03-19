@@ -139,22 +139,22 @@ class Database extends PDO implements ConfigurableInterface
     /**
      * @param string $statement
      * @param null $driver_options
-     * @return bool|\PDOStatement|void
+     * @return bool|\PDOStatement
      */
     public function prepare ( $statement, $driver_options = null )
     {
         $this->fillTablePrefixes( $statement );
-        parent::prepare( $statement, [] );
+        return parent::prepare( $statement, [] );
     }
 
     /**
      * @param string $statement
-     * @return int|void
+     * @return int
      */
     public function exec ( $statement )
     {
         $this->fillTablePrefixes( $statement );
-        parent::exec( $statement );
+        return parent::exec( $statement );
     }
 
     /**
@@ -162,7 +162,7 @@ class Database extends PDO implements ConfigurableInterface
      * @param int $mode
      * @param null $arg3
      * @param array $ctorargs
-     * @return false|\PDOStatement|void
+     * @return false|\PDOStatement
      */
     public function query ($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = array())
     {

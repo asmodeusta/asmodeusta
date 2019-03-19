@@ -10,6 +10,28 @@ use Usf\Core\Base\Exceptions\ControllerException;
  */
 abstract class Controller extends Component
 {
+    /**
+     * Module
+     * @var Module
+     */
+    protected $module;
+
+    /**
+     * Ba
+     * @var string
+     */
+    protected $basename;
+
+    /**
+     * Controller constructor.
+     * @param Module $module
+     */
+    public function __construct( Module $module )
+    {
+        $this->module = $module;
+        $shortName = $this->getReflector()->getShortName();
+        $this->basename = lcfirst( substr( $shortName, 0, strpos( 'Controller', $shortName ) ) );
+    }
 
     /**
      * Get action
@@ -27,6 +49,11 @@ abstract class Controller extends Component
             throw new ControllerException( 'Action "' . $actionName . '" does not exist!' );
         }
         return $action;
+    }
+
+    public function getBaseName()
+    {
+        return $this->basename;
     }
 
     /**

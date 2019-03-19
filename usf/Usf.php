@@ -3,7 +3,9 @@
 namespace Usf;
 
 use Usf\Core\Components\Database;
+use Usf\Core\Components\Request;
 use Usf\Core\Components\Router;
+use Usf\Core\Components\Settings;
 use Usf\Core\Src\AutoloaderNamespaces;
 
 /**
@@ -27,10 +29,11 @@ final class Usf
      * @var array
      */
     private $readableProperties = [
+        'settings',
         'router',
+        'request',
         'db',
-        'usfStartTime',
-        'lang'
+        'startTime'
     ];
 
     /**
@@ -38,13 +41,18 @@ final class Usf
      *
      * @var float
      */
-    private $usfStartTime;
+    private $startTime;
 
     /**
-     * Language of the page
-     * @var string
+     * Usf configuration file
+     * @var array
      */
-    private $lang;
+    private $config;
+
+    /**
+     * @var Settings
+     */
+    private $settings;
 
     /**
      * Class autoloader by namespaces
@@ -59,6 +67,13 @@ final class Usf
      * @var Router
      */
     private $router;
+
+    /**
+     * Request
+     *
+     * @var Request
+     */
+    private $request;
 
     /**
      * Database
@@ -104,27 +119,21 @@ final class Usf
         /**
          * Start time
          */
-        $this->usfStartTime = microtime( true );
+        $this->startTime = microtime( true );
+
+        /**
+         * Configuration
+         */
+        if ( ! $this->validateConfig() ) {
+            die( 'Config error!' );
+        }
 
         /**
          * Connect autoloader
          */
-        require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'AutoloaderNamespaces.php';
+        require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DS . 'AutoloaderNamespaces.php';
         $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
 
-        /**
-         * Create Router
-         */
-        $this->router = new Router( DIR_USF . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'router.config.json' );
-
-        /**
-         * Create Database
-         */
-        try {
-            $this->db = new Database( DIR_USF . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'db.config.json' );
-        } catch ( \PDOException $exception ) {
-            die('Cannot connect to database!');
-        }
     }
 
     public function __get($name)
@@ -136,12 +145,48 @@ final class Usf
         return $result;
     }
 
+    private function validateConfig()
+    {
+        $configFile = DIR_USF . DS . 'config' . DS . 'config.php';
+        if ( is_file( $configFile ) ) {
+            $this->config = include $configFile;
+            return array_key_exists( 'settings', $this->config )
+                && array_key_exists( 'router', $this->config )
+                && array_key_exists( 'database', $this->config )
+                && is_file( $this->config[ 'settings' ] )
+                && is_file( $this->config[ 'router' ] )
+                && is_file( $this->config[ 'database' ] );
+        }
+        return false;
+    }
+
     /**
      * Initialize
      */
     public function init()
     {
+        /**
+         * Settings
+         */
+        $this->settings = new Settings( $this->config[ 'settings' ] );
 
+        /**
+         * Create Router
+         */
+        $this->router = new Router( $this->config[ 'router' ] );
+        global $ROUTER;
+        $ROUTER = $this->router;
+
+        /**
+         * Create Database
+         */
+        try {
+            $this->db = new Database( $this->config[ 'database' ] );
+            global $DB;
+            $DB = $this->db;
+        } catch ( \PDOException $exception ) {
+            die('Cannot connect to database!');
+        }
     }
 
     /**
@@ -151,11 +196,10 @@ final class Usf
     {
         $this->router->parseRequest();
         if ( ! $errors = $this->router->getErrors() ) {
-            $request = $this->router->getRequest();
-            if ( $lang = $request->takeDataValue( 'lang' ) ) {
-                $this->lang = $lang;
-            }
-            $request->call();
+            $this->request = $this->router->getRequest();
+            global $REQUEST;
+            $REQUEST = $this->request;
+            $this->request->call();
         } else {
             echo '<pre>';
             var_dump($errors);

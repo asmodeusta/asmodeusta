@@ -11,16 +11,58 @@ use Usf\Core\Base\Exceptions\RequestException;
 class Request
 {
 
+    /**
+     * Url
+     * @var string
+     */
     protected $url;
 
+    /**
+     * Callback function
+     * @var callable
+     */
     protected $callback;
 
+    /**
+     * Request method
+     * @var string
+     */
+    protected $method;
+
+    /**
+     * Content type
+     * @var string
+     */
+    protected $contentType;
+
+    /**
+     * Current Module
+     * @var string
+     */
     protected $module;
 
+    /**
+     * Current Controller
+     * @var string
+     */
     protected $controller;
 
+    /**
+     * Current Action
+     * @var string
+     */
     protected $action;
 
+    /**
+     * Current language code
+     * @var string
+     */
+    protected $lang;
+
+    /**
+     * Request data
+     * @var array
+     */
     protected $data = [];
 
     /**
@@ -62,6 +104,25 @@ class Request
         if ( is_null( $this->action = $this->takeDataValue( 'action' ) ) ) {
             throw new RequestException( 'Action not found!' );
         }
+
+        if ( is_null( $this->lang = $this->takeDataValue( 'lang' ) ) ) {
+            throw new RequestException( 'Lang not found!' );
+        }
+
+        $this->method = if_null( $this->takeDataValue( 'method' ), strtolower( $_SERVER[ 'REQUEST_METHOD' ] ) );
+
+        $this->contentType = if_null( $this->takeDataValue( 'type' ), 'html' );
+    }
+
+    /**
+     * Getter
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return if_set( $this->$name, null );
     }
 
     /**
@@ -78,6 +139,22 @@ class Request
         return $result;
     }
 
+    /**
+     * @param string $key
+     * @return mixed|null
+     */
+    public function getDataValue( $key )
+    {
+        $result = null;
+        if ( array_key_exists( $key, $this->data ) ) {
+            $result = $this->data[ $key ];
+        }
+        return $result;
+    }
+
+    /**
+     * Call callback
+     */
     public function call()
     {
         call_user_func_array( $this->callback, $this->data );

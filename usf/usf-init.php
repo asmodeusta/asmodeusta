@@ -4,6 +4,11 @@ use Usf\Usf;
 require_once 'Usf.php';
 
 /**
+ * Directory separator
+ */
+defined( 'DS' ) or define( 'DS', DIRECTORY_SEPARATOR );
+
+/**
  * Dir constants:
  * - consists of "DIR_"-prefix and name of important part of te application
  */
@@ -21,12 +26,12 @@ defined( 'DIR_USF' ) or define( 'DIR_USF', dirname( __FILE__ ) );
 /**
  * Directory of framework core files
  */
-defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . DIRECTORY_SEPARATOR . 'core' );
+defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . DS . 'core' );
 
 /**
  * Modules directory
  */
-defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_USF . DIRECTORY_SEPARATOR . 'modules' );
+defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_USF . DS . 'modules' );
 
 /**
  * Including files in 'include' path
@@ -36,30 +41,30 @@ foreach ( scandir( $includeDir ) as $file ) {
     ob_start();
     // Check if this is php-file
     if ( preg_match( '~(\.php$)~', $file ) ) {
-        require_once $includeDir . DIRECTORY_SEPARATOR . $file;
+        require_once $includeDir . DS . $file;
     }
     // Clean output stream
     ob_clean();
 }
 /** */
 
-
 /**
  * Start
+ * Set global variable $USF
  */
-$usf = Usf::start();
+$USF = Usf::start();
 
 /**
  * Init
  */
-$usf->init();
+$USF->init();
 
 /**
  * Run
  */
-$usf->run();
+$USF->run();
 
 /**
  * End
  */
-Usf::end();
+$USF::end();

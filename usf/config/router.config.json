@@ -3,7 +3,7 @@
   [
     {
       "name": "lang",
-      "match": "(en|ua)",
+      "match": "([a-z]{2})",
       "value": "$1",
       "nodes":
       [
@@ -48,7 +48,7 @@
               [
                 {
                   "name": "action",
-                  "match": "(index|check|lang)",
+                  "match": "(index|guid|check|lang)",
                   "value": "$1"
                 }
               ]

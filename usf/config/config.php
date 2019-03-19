@@ -1,6 +1,7 @@
 <?php
 
 return [
-    'database' => dirname( __FILE__ ) . 'db.config.json',
-    'router' => dirname( __FILE__ ) . 'router.config.json'
+    'settings' => dirname( __FILE__ ) . DS . 'settings.config.json',
+    'database' => dirname( __FILE__ ) . DS . 'db.config.json',
+    'router' => dirname( __FILE__ ) . DS . 'router.config.json'
 ];
