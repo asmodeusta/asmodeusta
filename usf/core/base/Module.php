@@ -38,10 +38,18 @@ abstract class Module extends Component implements ModuleInterface
     }
 
     /**
+     * Checking access to module
+     * @return bool
+     */
+    public function checkAccess()
+    {
+        return true;
+    }
+
+    /**
      * @param string $controllerClassName
      * @return string
      * @throws ModuleException
-     * @throws \ReflectionException
      */
     public function getControllerFile( $controllerClassName )
     {
@@ -56,7 +64,6 @@ abstract class Module extends Component implements ModuleInterface
      * @param $viewClassName
      * @return string
      * @throws ModuleException
-     * @throws \ReflectionException
      */
     public function getViewFile( $viewClassName )
     {
@@ -94,7 +101,7 @@ abstract class Module extends Component implements ModuleInterface
             $this->controller = new $controllerClass( $this );
         } catch ( ModuleException $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
-        } catch ( \ReflectionException $exception ) {
+        } catch ( \Exception $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
         }
         return $this->controller;
@@ -118,8 +125,6 @@ abstract class Module extends Component implements ModuleInterface
             return new $viewClass( $this, $data );
         } catch ( ModuleException $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
-        } catch ( \ReflectionException $exception ) {
-            $this->addErrorMessage( $exception->getMessage() );
         } catch ( \Exception $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
         }
@@ -138,7 +143,7 @@ abstract class Module extends Component implements ModuleInterface
         $filename = $this->basename . DS . $name . '.php';
 
         // Check if file exists in selected theme
-        $themeFile = DIR_USF . DS . 'themes' . DS . usf()->settings->getTheme() . DS . $filename;
+        $themeFile = DIR_USF . DS . 'themes' . DS . usf()->getSettings()->getTheme() . DS . $filename;
         if ( is_file( $themeFile ) ) {
             return $themeFile;
         }

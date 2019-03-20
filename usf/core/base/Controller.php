@@ -34,6 +34,15 @@ abstract class Controller extends Component
     }
 
     /**
+     * @param string|null $actionName
+     * @return bool
+     */
+    public function checkAccess( $actionName = null )
+    {
+        return $this->module->checkAccess();
+    }
+
+    /**
      * Get action
      * @param $actionName
      * @return array
@@ -43,7 +52,7 @@ abstract class Controller extends Component
     {
         //$action = [ $this, 'actionDefaultError' ];
         $actionMethodName = 'action' . ucfirst( $actionName );
-        if ( method_exists( $this, $actionMethodName ) ) {
+        if ( $this->checkAccess( $actionName ) && method_exists( $this, $actionMethodName ) ) {
             $action = [ $this, $actionMethodName ];
         } else {
             throw new ControllerException( 'Action "' . $actionName . '" does not exist!' );

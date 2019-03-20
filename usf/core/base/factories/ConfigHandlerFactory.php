@@ -14,20 +14,22 @@ class ConfigHandlerFactory implements FactoryInterface
 {
 
     /**
-     * @param $file
+     * @param string $file - path to config file
+     * @param string $section - main config section
      * @return ConfigHandler
      */
-    public static function create( $file )
+    public static function create( $file, $section = null )
     {
         $matches = [];
-        if ( is_file( $file ) && preg_match( '~\.([\w]+)$~', $file, $matches ) ) {
-            $file = realpath( $file );
+        if ( preg_match( '~\.([\w]+)$~', $file, $matches ) ) {
+            if ( is_file( $file ) ) {
+                $file = realpath( $file );
+            }
             $ext = $matches[ 1 ];
             $configHandlerClassname = ucfirst( $ext ) . 'ConfigHandler';
-            $configHandlerNamespace = 'Usf\Core\Components\\' . $configHandlerClassname;
+            $configHandlerNamespace = 'Usf\Core\Components\ConfigHandlers\\' . $configHandlerClassname;
             if ( class_exists( $configHandlerNamespace ) ) {
-                $configHandler = new $configHandlerNamespace( $file );
-                return $configHandler;
+                return new $configHandlerNamespace( $file );
             }
         }
         return new EmptyConfigHandler( $file );

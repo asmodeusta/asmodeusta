@@ -2,12 +2,12 @@
 
 /**
  * Get Usf single object
- * @return Usf
+ * @return Usf\Usf
  */
 function usf()
 {
-    global $USF;
-    return $USF;
+    global $_USF;
+    return $_USF;
 }
 
 /**
@@ -16,8 +16,8 @@ function usf()
  */
 function db()
 {
-    global $DB;
-    return $DB;
+    global $_USF_DB;
+    return $_USF_DB;
 }
 
 /**
@@ -26,8 +26,8 @@ function db()
  */
 function router()
 {
-    global $ROUTER;
-    return $ROUTER;
+    global $_USF_ROUTER;
+    return $_USF_ROUTER;
 }
 
 /**
@@ -36,6 +36,6 @@ function router()
  */
 function request()
 {
-    global $REQUEST;
-    return $REQUEST;
+    global $_USF_REQUEST;
+    return $_USF_REQUEST;
 }

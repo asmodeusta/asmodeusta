@@ -189,6 +189,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
     /**
      * Set configuration
      * @param array $config
+     * @return $this
      */
     public function setFullConfig( array $config )
     {
@@ -196,6 +197,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
             $this->configuration = $config;
             $this->modified = true;
         }
+        return $this;
     }
 
     /**

@@ -2,42 +2,29 @@
 
 namespace Usf\Core\Components;
 
-use Usf\Core\Base\Component;
-use Usf\Core\Base\Factories\ConfigHandlerFactory;
+use Usf\Core\Base\Configuration;
 
-class Settings extends Component
+/**
+ * Class Settings
+ * @package Usf\Core\Components
+ */
+class Settings extends Configuration
 {
 
-    protected $configHandler;
-
-    protected $theme;
-
-    protected $modified;
-
-    public function __construct( $configFile )
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return bool
+     */
+    public function validate($name, &$value): bool
     {
-        $this->configHandler = ConfigHandlerFactory::create( $configFile );
-        $this->parseConfig();
-    }
-
-    protected function parseConfig()
-    {
-        $config = $this->configHandler->getFullConfig();
-
-        /**
-         * Theme
-         */
-        $this->theme = if_set( $config[ 'theme' ], null );
-    }
-
-    public function saveConfig()
-    {
-        if ( $this->modified ) {
-            $this->configHandler->setFullConfig( [
-                'theme' => $this->theme
-            ] );
-            $this->configHandler->save();
+        $result = false;
+        switch ( $name ) {
+            case 'theme':
+                $result = $this->validateTheme( $value );
+                break;
         }
+        return $result;
     }
 
     /**
@@ -45,7 +32,7 @@ class Settings extends Component
      */
     public function getTheme()
     {
-        return $this->theme;
+        return $this->get( 'theme' );
     }
 
     /**
@@ -53,11 +40,24 @@ class Settings extends Component
      */
     public function setTheme( $theme ): void
     {
+        $this->set( 'theme', $theme );
+    }
+
+    /**
+     * @param string $theme
+     * @return bool
+     */
+    protected function validateTheme( &$theme )
+    {
         $themesDirs = scandir( DIR_USF . DS. 'themes' );
-        if ( in_array( $theme, $themesDirs ) && $this->theme !== $theme ) {
-            $this->theme = $theme;
-            $this->modified = true;
+        if ( in_array( $theme, $themesDirs ) && $this->config[ 'theme' ] !== $theme ) {
+            return true;
+        } else {
+            if ( in_array( 'default', $themesDirs ) ) {
+
+            }
         }
+        return false;
     }
 
 

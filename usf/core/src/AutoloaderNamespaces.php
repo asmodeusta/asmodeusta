@@ -81,11 +81,11 @@ class AutoloaderNamespaces
             if ( $lastSepPos = ( strripos($class, $this->separator ) + 1 ) ) {
                 $namespace = strtolower( substr( $class, $afterNamespacePos, $lastSepPos-$afterNamespacePos ) );
                 $class = substr( $class, $lastSepPos );
-                $fileName = str_replace( $this->separator, DIRECTORY_SEPARATOR, $namespace ) . ( $namespace === '' ? '' : DIRECTORY_SEPARATOR );
+                $fileName = str_replace( $this->separator, DS, $namespace );
             }
             // Creating full path to file
-            $fileName .= str_replace( $this->separator, DIRECTORY_SEPARATOR, $class ) . $this->extension;
-            $fileName = $this->directory . DIRECTORY_SEPARATOR . $fileName;
+            $fileName .= str_replace( $this->separator, DS, $class ) . $this->extension;
+            $fileName = $this->directory . DS . $fileName;
             // If file exists - including it
             if ( is_file( $fileName ) ) {
                 require_once $fileName;

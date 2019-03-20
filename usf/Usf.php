@@ -2,6 +2,7 @@
 
 namespace Usf;
 
+use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Components\Database;
 use Usf\Core\Components\Request;
 use Usf\Core\Components\Router;
@@ -17,24 +18,16 @@ use Usf\Core\Src\AutoloaderNamespaces;
 final class Usf
 {
 
+    private const DEFAULT_SETTINGS_CONFIG_FILE = DIR_USF . DS. 'config' . DS . 'settings.config.json';
+    private const DEFAULT_DATABASE_CONFIG_FILE = DIR_USF . DS. 'config' . DS . 'db.config.json';
+    private const DEFAULT_ROUTER_CONFIG_FILE = DIR_USF . DS. 'config' . DS . 'router.config.json';
+
     /**
      * Single instance of the class
      *
      * @var Usf
      */
     private static $usf = null;
-
-    /**
-     * Array of protected properties for reading
-     * @var array
-     */
-    private $readableProperties = [
-        'settings',
-        'router',
-        'request',
-        'db',
-        'startTime'
-    ];
 
     /**
      * Usf start time
@@ -83,8 +76,6 @@ final class Usf
     private $db;
 
 
-    /*********** + Static methods + ***********/
-
     /**
      * Starts the app
      *
@@ -116,91 +107,74 @@ final class Usf
      */
     private function __construct()
     {
-        /**
-         * Start time
-         */
+        // Start time
         $this->startTime = microtime( true );
 
-        /**
-         * Configuration
-         */
-        if ( ! $this->validateConfig() ) {
-            die( 'Config error!' );
-        }
+        // Register global var
+        global $_USF;
+        $_USF = $this;
 
-        /**
-         * Connect autoloader
-         */
+        // Connect autoloader
         require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DS . 'AutoloaderNamespaces.php';
         $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
 
-    }
-
-    public function __get($name)
-    {
-        $result = null;
-        if ( in_array( $name, $this->readableProperties ) ) {
-            $result = $this->$name;
+        // Configuration
+        if ( ! $this->validateConfig() ) {
+            // TODO: redirect to setup app
+            die( 'Config error!' );
         }
-        return $result;
-    }
 
-    private function validateConfig()
-    {
-        $configFile = DIR_USF . DS . 'config' . DS . 'config.php';
-        if ( is_file( $configFile ) ) {
-            $this->config = include $configFile;
-            return array_key_exists( 'settings', $this->config )
-                && array_key_exists( 'router', $this->config )
-                && array_key_exists( 'database', $this->config )
-                && is_file( $this->config[ 'settings' ] )
-                && is_file( $this->config[ 'router' ] )
-                && is_file( $this->config[ 'database' ] );
-        }
-        return false;
+        // Initialize USF
+        $this->init();
     }
 
     /**
      * Initialize
      */
-    public function init()
+    private function init()
     {
-        /**
-         * Settings
-         */
+        // Settings
         $this->settings = new Settings( $this->config[ 'settings' ] );
 
-        /**
-         * Create Router
-         */
-        $this->router = new Router( $this->config[ 'router' ] );
-        global $ROUTER;
-        $ROUTER = $this->router;
-
-        /**
-         * Create Database
-         */
+        // Create Database
         try {
             $this->db = new Database( $this->config[ 'database' ] );
-            global $DB;
-            $DB = $this->db;
+            global $_USF_DB;
+            $_USF_DB = $this->db;
         } catch ( \PDOException $exception ) {
             die('Cannot connect to database!');
         }
+
+        // TODO: Create session
+
+        // Create Router
+        $this->router = new Router( $this->config[ 'router' ] );
+        global $_USF_ROUTER;
+        $_USF_ROUTER = $this->router;
+
+        // Run USF
+        $this->run();
     }
 
     /**
      * Run
      */
-    public function run()
+    private function run()
     {
+        // Parse request
         $this->router->parseRequest();
-        if ( ! $errors = $this->router->getErrors() ) {
+
+        // Check errors
+        if ( is_null( $errors = $this->router->getErrors() ) ) {
+            // Set request
             $this->request = $this->router->getRequest();
-            global $REQUEST;
-            $REQUEST = $this->request;
+            global $_USF_REQUEST;
+            $_USF_REQUEST = $this->request;
+
+            // Call action
             $this->request->call();
         } else {
+            // TODO: show error page
             echo '<pre>';
             var_dump($errors);
             echo '</pre>';
@@ -212,7 +186,55 @@ final class Usf
      */
     public function __destruct()
     {
-        //echo '<pre>', 'Usf time: ', microtime( true ) - $this->usfStartTime, ' seconds', '</pre>';
+        echo '<pre>', 'Usf execution time: ', microtime( true ) - $this->startTime, ' seconds', '</pre>';
+    }
+
+    /**
+     * Validating configuration
+     * @return bool
+     */
+    private function validateConfig()
+    {
+        $configFile = DIR_USF . DS . 'config' . DS . 'config.php';
+        $this->config = ConfigHandlerFactory::create( $configFile )->getFullConfig();
+        return (
+            array_key_exists( 'settings', $this->config )
+            && array_key_exists( 'database', $this->config )
+            && array_key_exists( 'router', $this->config )
+            && is_file( $this->config[ 'settings' ] )
+            && is_file( $this->config[ 'database' ] )
+            && is_file( $this->config[ 'router' ] )
+        );
+    }
+
+    public function getDb()
+    {
+        return $this->db;
+    }
+
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
+    public function getSession()
+    {
+        return $this->session;
+    }
+
+    public function getRouter()
+    {
+        return $this->router;
+    }
+
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    public function getStartTime()
+    {
+        return $this->startTime;
     }
 
     /*********** - Object methods - ***********/

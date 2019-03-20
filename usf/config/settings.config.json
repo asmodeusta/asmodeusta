@@ -1,3 +1,23 @@
 {
+  "session":
+  {
+    "secret": "eUM0V3QfVNVoEPhaevsui2r6V06ole6I7wWMu4/pbrK25OILHjQk7xc3YTHF+34=",
+    "duration": 86400,
+    "use":
+    {
+      "ip": false,
+      "useragent": false
+    },
+    "entropy": 1
+  },
+  "modules":
+  [
+    "admin",
+    "site"
+  ],
+  "plugins":
+  [
+
+  ],
   "theme": "default"
 }

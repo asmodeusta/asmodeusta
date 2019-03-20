@@ -1,6 +1,6 @@
 <?php
 
-namespace Usf\Core\Components;
+namespace Usf\Core\Components\ConfigHandlers;
 
 use Usf\Core\Base\ConfigHandler;
 

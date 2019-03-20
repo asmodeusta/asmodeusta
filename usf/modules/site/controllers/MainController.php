@@ -10,9 +10,9 @@ class MainController extends Controller
 
     public function actionIndex( $page = 1 )
     {
-        echo 'Lang: ', usf()->request->lang, '<br/>Page: ', $page, '<br/>';
+        echo 'Lang: ', request()->lang, '<br/>Page: ', $page, '<br/>';
         $time = microtime( true );
-        echo 'Time: ', $time - usf()->startTime, '<br/>';
+        echo 'Time: ', $time - usf()->getStartTime(), '<br/>';
     }
 
     public function actionUpdate()
@@ -49,7 +49,7 @@ class MainController extends Controller
             ]
         ];
         echo '<pre>';
-        var_dump( usf()->router->addRoute( $newRoute ) );
+        var_dump( router()->addRoute( $newRoute ) );
         echo '</pre>';
     }
 
