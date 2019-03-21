@@ -22,7 +22,6 @@ class SettingsController extends Controller
                 }
             }
         }
-        var_dump( base64_encode( random_bytes ( 32 ) ) );
         echo microtime( true ) - usf()->getStartTime();
 
         echo '<pre>';
@@ -30,7 +29,15 @@ class SettingsController extends Controller
 
     public function actionGuid()
     {
-        echo uniqid( '', true );
+        $code = random_bytes ( 32 );
+        $code64 = base64_encode( $code );
+        $code16 = bin2hex( $code );
+        echo $code, ' :(', mb_strlen( $code ), ')<br/>';
+        echo $code64, ' :(', mb_strlen( $code64 ), ')<br/>';
+        echo $code16, ' :(', mb_strlen( $code16 ), ')<br/>';
+
+        var_dump( $_SERVER[ 'SERVER_NAME' ] );
+        var_dump( $_SERVER[ 'HTTP_HOST' ] );
     }
 
     public function actionCheck()

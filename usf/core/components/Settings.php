@@ -54,7 +54,8 @@ class Settings extends Configuration
             return true;
         } else {
             if ( in_array( 'default', $themesDirs ) ) {
-
+                $theme = 'default';
+                return true;
             }
         }
         return false;

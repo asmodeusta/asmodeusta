@@ -39,3 +39,18 @@ function request()
     global $_USF_REQUEST;
     return $_USF_REQUEST;
 }
+
+/**
+ * Get Settings
+ * @param string $name
+ * @return \Usf\Core\Components\Settings|mixed
+ */
+function settings( $name = '' )
+{
+    global $_USF_SETTINGS;
+    if ( $name === '' ) {
+        return $_USF_SETTINGS;
+    } else {
+        return $_USF_SETTINGS->$name;
+    }
+}

@@ -133,7 +133,7 @@ class Database extends PDO implements ConfigurableInterface
      */
     protected function fillTablePrefixes( &$statement )
     {
-        $statement = str_replace( 'prefix__', $this->prefix, $statement );
+        $statement = str_replace( 'usf_', $this->prefix, $statement );
     }
 
     /**

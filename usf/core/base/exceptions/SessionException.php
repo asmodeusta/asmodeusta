@@ -2,8 +2,7 @@
 
 namespace Usf\Core\Base\Exceptions;
 
-
-class RouterException extends \Exception
+class SessionException extends \Exception
 {
 
 }

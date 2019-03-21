@@ -6,6 +6,7 @@ use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Components\Database;
 use Usf\Core\Components\Request;
 use Usf\Core\Components\Router;
+use Usf\Core\Components\Session;
 use Usf\Core\Components\Settings;
 use Usf\Core\Src\AutoloaderNamespaces;
 
@@ -37,43 +38,48 @@ final class Usf
     private $startTime;
 
     /**
+     * Class autoloader by namespaces
+     * @var AutoloaderNamespaces
+     */
+    private $autoloader;
+
+    /**
      * Usf configuration file
      * @var array
      */
     private $config;
 
     /**
+     * Settings
      * @var Settings
      */
     private $settings;
 
     /**
-     * Class autoloader by namespaces
-     *
-     * @var AutoloaderNamespaces
+     * Session
+     * @var Session
      */
-    private $autoloader;
+    private $session;
+
+    /**
+     * Database
+     * @var Database
+     */
+    private $db;
 
     /**
      * Router
-     *
      * @var Router
      */
     private $router;
 
     /**
      * Request
-     *
      * @var Request
      */
     private $request;
 
-    /**
-     * Database
-     *
-     * @var Database
-     */
-    private $db;
+
 
 
     /**
@@ -135,6 +141,8 @@ final class Usf
     {
         // Settings
         $this->settings = new Settings( $this->config[ 'settings' ] );
+        global $_USF_SETTINGS;
+        $_USF_SETTINGS = $this->settings;
 
         // Create Database
         try {
@@ -145,7 +153,8 @@ final class Usf
             die('Cannot connect to database!');
         }
 
-        // TODO: Create session
+        // Session
+        $this->session = new Session( $this->settings->session );
 
         // Create Router
         $this->router = new Router( $this->config[ 'router' ] );
