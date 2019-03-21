@@ -1,7 +1,9 @@
 {
+  "host": "localhost",
+  "secure": false,
   "session":
   {
-    "secret": "eUM0V3QfVNVoEPhaevsui2r6V06ole6I7wWMu4/pbrK25OILHjQk7xc3YTHF+34=",
+    "secret": "this_is_standard_session_salt",
     "duration": 86400,
     "use":
     {
