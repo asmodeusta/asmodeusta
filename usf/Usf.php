@@ -19,9 +19,9 @@ use Usf\Core\Src\AutoloaderNamespaces;
 final class Usf
 {
 
-    private const DEFAULT_SETTINGS_CONFIG_FILE = DIR_USF . DS. 'config' . DS . 'settings.config.json';
-    private const DEFAULT_DATABASE_CONFIG_FILE = DIR_USF . DS. 'config' . DS . 'db.config.json';
-    private const DEFAULT_ROUTER_CONFIG_FILE = DIR_USF . DS. 'config' . DS . 'router.config.json';
+    private const DEFAULT_SETTINGS_CONFIG_FILE = DIR_CONFIG . DS . 'settings.config.json';
+    private const DEFAULT_DATABASE_CONFIG_FILE = DIR_CONFIG . DS . 'db.config.json';
+    private const DEFAULT_ROUTER_CONFIG_FILE = DIR_CONFIG . DS . 'router.config.json';
 
     /**
      * Single instance of the class
@@ -195,7 +195,7 @@ final class Usf
      */
     public function __destruct()
     {
-        echo '<pre>', 'Usf execution time: ', microtime( true ) - $this->startTime, ' seconds', '</pre>';
+        //echo '<pre>', 'Usf execution time: ', microtime( true ) - $this->startTime, ' seconds', '</pre>';
     }
 
     /**
@@ -204,7 +204,7 @@ final class Usf
      */
     private function validateConfig()
     {
-        $configFile = DIR_USF . DS . 'config' . DS . 'config.php';
+        $configFile = DIR_CONFIG . DS . 'config.php';
         $this->config = ConfigHandlerFactory::create( $configFile )->getFullConfig();
         return (
             array_key_exists( 'settings', $this->config )

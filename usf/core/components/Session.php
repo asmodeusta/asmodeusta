@@ -15,6 +15,7 @@ class Session extends DbComponent
     protected $secret = 'this_is_standard_session_salt';
     protected $duration = 60 * 60 * 24 * 5;
     protected $entropy = 1;
+    protected $extend = true;
 
     protected $use = [];
 
@@ -40,10 +41,11 @@ class Session extends DbComponent
     {
         parent::__construct();
         // Settings
-        if ( ! $settings === [] ) {
+        if ( $settings !== [] ) {
             array_key_exists( 'secret', $settings ) ? $this->secret = $settings[ 'secret' ] : null;
             array_key_exists( 'duration', $settings ) ? $this->duration = $settings[ 'duration' ] : null;
             array_key_exists( 'entropy', $settings ) ? $this->entropy = $settings[ 'entropy' ] : null;
+            array_key_exists( 'extend', $settings ) ? $this->extend = $settings[ 'extend' ] : null;
             if ( array_key_exists( 'use', $settings ) && is_array( $settings[ 'use' ] ) ) {
                 $this->use = $settings[ 'use' ];
             }
@@ -58,10 +60,25 @@ class Session extends DbComponent
                 // Useragent verification
                 if ( array_key_exists( 'useragent', $this->use ) && $this->use[ 'useragent' ] ) {
                     $result = $this->useragent === $_SERVER[ 'HTTP_USER_AGENT' ];
+                } else {
+                    if ( $this->useragent !== $_SERVER[ 'HTTP_USER_AGENT' ] ) {
+                        $this->useragent = $_SERVER[ 'HTTP_USER_AGENT' ];
+                        $this->modified = true;
+                    }
                 }
                 // IP verification
                 if ( $result && array_key_exists( 'ip', $this->use ) && $this->use[ 'ip' ] ) {
                     $result = $this->ip === $_SERVER['REMOTE_ADDR'];
+                } else {
+                    if ( $this->ip !== $_SERVER[ 'REMOTE_ADDR' ] ) {
+                        $this->ip = $_SERVER[ 'REMOTE_ADDR' ];
+                        $this->modified = true;
+                    }
+                }
+                // Extend session duration
+                if ( $this->extend ) {
+                    $this->endTime = time() + $this->duration;
+                    $this->modified = true;
                 }
                 // If all verifications complete return
                 if ( $result ) {
@@ -77,7 +94,8 @@ class Session extends DbComponent
     }
 
     /**
-     * @param $name
+     * Get data var
+     * @param string $name
      * @return mixed
      */
     public function __get( $name )
@@ -85,21 +103,40 @@ class Session extends DbComponent
         return $this->get( $name );
     }
 
+    /**
+     * Set data var
+     * @param string $name
+     * @param mixed $value
+     */
     public function __set( $name, $value )
     {
         $this->set( $name, $value );
     }
 
+    /**
+     * Unset data var
+     * @param string $name
+     */
     public function __unset( $name )
     {
         $this->unset( $name );
     }
 
+    /**
+     * Get data var
+     * @param string $name
+     * @return mixed
+     */
     public function get( $name )
     {
         return if_set( $this->data[ $name ], null );
     }
 
+    /**
+     * Set data var
+     * @param string $name
+     * @param mixed $value
+     */
     public function set( $name, $value )
     {
         if ( array_key_exists( $name, $this->data ) && $this->data[ $name ] !== $value ) {
@@ -108,6 +145,10 @@ class Session extends DbComponent
         }
     }
 
+    /**
+     * Unset data var
+     * @param string $name
+     */
     public function unset( $name )
     {
         if ( array_key_exists( $name, $this->data ) ) {
@@ -213,9 +254,17 @@ class Session extends DbComponent
     protected function saveData()
     {
         $result = false;
-        $sql = 'update usf_sessions set data = :data where id = :id';
+        $sql = 'update usf_sessions 
+                set data = :data,
+                useragent = :useragent,
+                ip = :ip,
+                end_time = from_unixtime(:endTime)
+                where id = :id';
         if ( $st = $this->db->prepare( $sql ) ) {
-            $st->bindValue( ":data", json_encode($this->data), Database::PARAM_STR );
+            $st->bindValue( ":data", serialize($this->data), Database::PARAM_STR );
+            $st->bindValue( ":useragent", $this->useragent, Database::PARAM_STR );
+            $st->bindValue( ":ip", $this->ip, Database::PARAM_STR );
+            $st->bindValue( ":endTime", $this->endTime, Database::PARAM_INT );
             $st->bindValue( ":id", $this->id, Database::PARAM_INT );
             $result = $st->execute();
         }
@@ -263,8 +312,8 @@ class Session extends DbComponent
         $sql = 'select count(id) id from usf_sessions where token = :token;';
         if ( $st = $this->db->prepare( $sql ) ) {
             $st->bindValue( ':token', $token, Database::PARAM_STR );
-            if ( $res = $st->fetch( Database::FETCH_ASSOC ) ) {
-                $result = $res[ 'id' ] > 0;
+            if ( $st->execute() && $queryResult = $st->fetch( Database::FETCH_ASSOC ) ) {
+                $result = $queryResult[ 'id' ] > 0;
             }
         }
         return $result;

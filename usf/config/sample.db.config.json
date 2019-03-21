@@ -1,0 +1,16 @@
+{
+  "credentials":
+  {
+    "host": "localhost",
+    "port": 1433,
+    "name": "usf",
+    "user": "root",
+    "pass": ""
+  },
+  "settings":
+  {
+    "charset": "utf8_general_ci",
+    "collate": "",
+    "prefix": "usf_"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "host": "localhost",
+  "secure": false,
+  "session":
+  {
+    "secret": "this_is_standard_session_salt",
+    "duration": 86400,
+    "use":
+    {
+      "ip": false,
+      "useragent": false
+    },
+    "entropy": 1,
+    "extend": true
+  },
+  "modules":
+  [
+    "admin",
+    "site"
+  ],
+  "plugins":
+  [
+
+  ],
+  "theme": "default"
+}

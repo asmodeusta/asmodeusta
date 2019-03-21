@@ -44,7 +44,7 @@ require_once APP . '/App.php';
 /**
  * New site
  */
-
+/*
 defined( 'ROOT' ) or define( 'ROOT', __DIR__ );
 defined( 'ASM' ) or define( 'ASM', ROOT . '/asm' );
 defined( 'CORE' ) or define( 'CORE', ASM . '/core' );
@@ -53,6 +53,9 @@ defined( 'MODULES' ) or define( 'MODULES', ASM . '/modules');
 require_once ROOT . '/asm/core/Asm.php';
 
 \Core\Asm();
+*/
+
+defined( 'DIR_ROOT' ) or define( 'DIR_ROOT', dirname( __FILE__ ) );
 
 require_once 'usf/usf-init.php';
 
