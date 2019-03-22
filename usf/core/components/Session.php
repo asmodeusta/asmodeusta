@@ -3,6 +3,7 @@
 namespace Usf\Core\Components;
 
 use Usf\Core\Base\DbComponent;
+use Usf\Core\Base\Exceptions\SessionException;
 
 /**
  * Class Session
@@ -36,6 +37,7 @@ class Session extends DbComponent
     /**
      * Session constructor.
      * @param array $settings
+     * @throws SessionException
      */
     public function __construct( array $settings = [] )
     {
@@ -89,7 +91,7 @@ class Session extends DbComponent
         // If session not verified
         // Create new session
         if ( ! $this->new() ) {
-            die( 'Cannot start session' );
+            throw new SessionException( 'Cannot start session' );
         }
     }
 

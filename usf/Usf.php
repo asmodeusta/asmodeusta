@@ -2,6 +2,7 @@
 
 namespace Usf;
 
+use Usf\Core\Base\Exceptions\SessionException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Components\Database;
 use Usf\Core\Components\Request;
@@ -154,7 +155,14 @@ final class Usf
         }
 
         // Session
-        $this->session = new Session( $this->settings->session );
+        try {
+            $this->session = new Session( $this->settings->session );
+            global $_USF_SESSION;
+            $_USF_SESSION = $this->session;
+        } catch ( SessionException $exception ) {
+            die( '<h1>' . $exception->getMessage() . '</h1>' );
+        }
+
 
         // Create Router
         $this->router = new Router( $this->config[ 'router' ] );
@@ -171,10 +179,7 @@ final class Usf
     private function run()
     {
         // Parse request
-        $this->router->parseRequest();
-
-        // Check errors
-        if ( is_null( $errors = $this->router->getErrors() ) ) {
+        if ( $this->router->parseRequest() ) {
             // Set request
             $this->request = $this->router->getRequest();
             global $_USF_REQUEST;
@@ -185,7 +190,7 @@ final class Usf
         } else {
             // TODO: show error page
             echo '<pre>';
-            var_dump($errors);
+            var_dump( $this->router->getErrors() );
             echo '</pre>';
         }
     }

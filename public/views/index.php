@@ -1,8 +1,3 @@
-<?php
-
-$session = Session::start();
-
-?>
 <!DOCTYPE html>
 <html>
 <head>
