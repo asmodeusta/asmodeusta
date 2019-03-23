@@ -52,3 +52,85 @@ table {
 
 /*************************/
 
+html, body {
+    height: 100%;
+}
+
+.wrapper {
+    min-height: 100%;
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
+}
+
+.header-admin-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-width: 600px;
+    height: 36px;
+    line-height: 36px;
+    background-color: #272727;
+    color: #ccc;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    z-index: 99999;
+}
+
+.header-admin-bar ul {
+    background-color: #272727;
+    color: #ccc;
+}
+.header-admin-bar a {
+    display: block;
+    padding: 0 5px;
+}
+.header-admin-bar a:hover {
+    background-color: #343434;
+    color: #eee;
+}
+.header-admin-bar a {
+    text-decoration: none;
+    color: #ccc;
+}
+
+.header-admin-bar>ul>li {
+    display: inline-block;
+    float: left;
+}
+
+.header-admin-bar>ul>li ul>li {
+    display: none;
+}
+
+.header-admin-bar li:hover>ul>li {
+    padding-left: 5px;
+}
+
+.header-admin-bar li:hover>ul>li,
+.header-admin-bar li>ul:hover>li
+{
+    display: block;
+}
+
+.header-admin-menu>li {
+    display: block;
+}
+
+.admin-site-logo {
+    display: block;
+    width: 36px;
+    height: inherit;
+    font-size: 16px;
+    font-weight: 900;
+    text-decoration: none;
+    text-align: center;
+    color: #ccc;
+}
