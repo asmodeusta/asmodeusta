@@ -11,44 +11,26 @@
 <body>
 <div class="wrapper">
     <div class="header-admin-bar">
-        <ul class="header-admin-menu left">
-            <li>
-                <a href="#" class="admin-site-logo">USF</a>
-                <ul class="">
-                    <li><a href="/">Go on site</a></li>
-                    <li>
-                        <a href="#">Edit configuration</a>
-                        <ul>
-                            <li><a href="#">Main</a></li>
-                            <li><a href="#">Router</a></li>
-                            <li><a href="#">Database</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Edit configuration</a>
-                        <ul>
-                            <li><a href="#">Main</a></li>
-                            <li><a href="#">Router</a></li>
-                            <li><a href="#">Database</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">Main controller</a>
-                <ul>
-                    <li><a href="/">Index</a></li>
-                    <li><a href="/heart">Heart</a></li>
-                </ul>
-            </li>
-            <li>
-                <a href="#">Settings controller</a>
-                <ul>
-                    <li><a href="/">Index</a></li>
-                    <li><a href="/heart">Heart</a></li>
-                </ul>
-            </li>
-        </ul>
+        <nav>
+            <ul class="topmenu">
+                <li><a href="" class="active">Главная<span class="fa fa-angle-down"></span></a>
+                    <ul class="submenu">
+                        <li><a href="">меню второго уровня</a></li>
+                        <li><a href="">меню второго уровня<span class="fa fa-angle-down"></span></a>
+                            <ul class="submenu">
+                                <li><a href="">меню третьего уровня</a></li>
+                                <li><a href="">меню третьего уровня</a></li>
+                                <li><a href="">меню третьего уровня</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="">меню второго уровня</a></li>
+                    </ul>
+                </li>
+                <li><a href="">Компания</a></li>
+                <li><a href="">Блог</a></li>
+                <li><a href="">Контакты</a></li>
+            </ul>
+        </nav>
     </div>
 </div>
 </body>

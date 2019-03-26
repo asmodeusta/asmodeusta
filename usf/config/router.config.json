@@ -52,6 +52,19 @@
                   "value": "$1"
                 }
               ]
+            },
+            {
+              "name": "controller",
+              "match": "(test)",
+              "value": "$1",
+              "nodes":
+              [
+                {
+                  "name": "action",
+                  "match": "(index)",
+                  "value": "$1"
+                }
+              ]
             }
           ]
         }
