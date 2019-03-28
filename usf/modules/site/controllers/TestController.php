@@ -19,7 +19,9 @@ class TestController extends Controller
 
     public function actionIndex()
     {
-        $path = '';
+        $pathArr = [
+            'premmerce/plugins/exchange'
+        ];
         $routes = [
             [
                 "name" => "lang",
@@ -47,6 +49,43 @@ class TestController extends Controller
                                                 "value" => "$1"
                                             ]
                                         ]
+                                    ],
+                                    [
+                                        "name" => "action",
+                                        "match" => "(tester)",
+                                        "value" => "$1",
+                                    ],
+                                    [
+                                        "name" => "action",
+                                        "match" => "def/tone",
+                                        "value" => "def",
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        "name" => "module",
+                        "match" => "premmerce/plugins/exchange",
+                        "value" => "premmerce",
+                        "nodes" => [
+                            [
+                                "name" => "controller",
+                                "match" => 0,
+                                "value" => "plugins",
+                                "nodes" => [
+                                    [
+                                        "name" => "action",
+                                        "match" => 0,
+                                        "value" => "index",
+                                        "nodes" => [
+                                            [
+                                                "name" => "param",
+                                                "match" => "param([0-9]{1,11})",
+                                                "value" => "$1",
+                                                "default" => "param1"
+                                            ]
+                                        ]
                                     ]
                                 ]
                             ]
@@ -55,8 +94,14 @@ class TestController extends Controller
                 ]
             ]
         ];
-        $segments = $this->parseRequestPath( $path, $routes );
-        var_dump($segments);
+        foreach ( $pathArr as $path ) {
+            var_dump($path);
+            $segments = $this->parseRequestPath( $path, $routes );
+            var_dump($segments);
+            var_dump( $this->generateUrl($segments, $routes ) );
+            echo '<hr/>';
+        }
+
     }
 
     private function parseRequestPath( &$path, $routes, &$segments = [] )
@@ -88,20 +133,26 @@ class TestController extends Controller
                     $segments[ 'type' ] = $this->contentType;
                 }
             }
-            if ( array_key_exists( 'default', $route ) ) {
-                $defaultValue = $route[ 'default' ];
-            } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
-                $defaultValue = $this->defaults[ $route[ 'name' ] ];
+
+            // Check match
+            if ( $route[ 'match' ] === 0 ) {
+                $segments[ $route[ 'name' ] ] = $route[ 'value' ];
             } else {
-                $defaultValue = null;
-            }
-            if ( ! $this->matchRouteNew(
-                $route,
-                $segments,
-                $path,
-                $defaultValue
-            ) ) {
-                continue;
+                if ( array_key_exists( 'default', $route ) ) {
+                    $defaultValue = $route[ 'default' ];
+                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                    $defaultValue = $this->defaults[ $route[ 'name' ] ];
+                } else {
+                    $defaultValue = null;
+                }
+                if ( ! $this->matchRoute(
+                    $route,
+                    $segments,
+                    $path,
+                    $defaultValue
+                ) ) {
+                    continue;
+                }
             }
 
             // Check nodes
@@ -126,17 +177,19 @@ class TestController extends Controller
         return $segments;
     }
 
-    private function matchRouteNew( $route, &$segments, &$path, $defaultValue = null )
+    private function matchRoute( $route, &$segments, &$path, $defaultValue = null )
     {
         $result = true;
-        $withNodes = array_key_exists( 'nodes', $route );
-        $pattern = '~^' . $route[ 'match' ] . ( $withNodes ? '(.*)' : '' ) .'$~';
+        $checkedPath = $path . '/';
 
-        if ( preg_match( $pattern, $path, $matches ) ) {
-            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $path );
+        $withNodes = array_key_exists( 'nodes', $route );
+        $pattern = '~^' . $route[ 'match' ] . '/' . ( $withNodes ? '(.*)' : '' ) .'$~';
+
+        if ( preg_match( $pattern, $checkedPath, $matches ) ) {
+            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $checkedPath );
             $path = $withNodes ? end($matches) : '';
-        } elseif ( ! is_null( $defaultValue ) && preg_match( $pattern, $defaultValue ) ) {
-            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue );
+        } elseif ( ! is_null( $defaultValue ) && preg_match( $pattern, $defaultValue . '/' ) ) {
+            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue . '/' );
         } else {
             $result = false;
         }
@@ -154,6 +207,113 @@ class TestController extends Controller
         return array_key_exists( 'name', $route )
             && array_key_exists( 'match', $route )
             && array_key_exists( 'value', $route );
+    }
+
+    public function generateUrl( array &$segments, array $routes )
+    {
+        $path = "";
+
+        foreach ( $routes as $route ) {
+
+            if ( ! $this->validateRoute( $route ) ) {
+                continue;
+            }
+
+            // Check method
+            if ( array_key_exists( 'method', $route ) && array_key_exists( 'method', $segments ) ) {
+                if ( strpos( $route[ 'method' ], $segments[ 'method' ] ) === false ) {
+                    continue;
+                }
+            }
+
+            // Check content type
+            if ( array_key_exists( 'type', $route ) && array_key_exists( 'type', $segments ) ) {
+                if ( strpos( $route[ 'type' ], $segments[ 'type' ] ) === false ) {
+                    continue;
+                }
+            }
+
+            // Check match
+            if ( array_key_exists( $route[ 'name' ], $segments ) ) {
+
+                if ( $route[ 'match' ] === 0 ) {
+                    //
+                } else {
+                    if ( array_key_exists( 'default', $route ) ) {
+                        $defaultValue = $route[ 'default' ];
+                    } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                        $defaultValue = $this->defaults[ $route[ 'name' ] ];
+                    } else {
+                        $defaultValue = null;
+                    }
+                    if ( ! $this->matchRouteForCreate(
+                        $route[ 'name' ],
+                        $route[ 'match' ],
+                        $route[ 'value' ],
+                        $segments,
+                        $path,
+                        $defaultValue
+                    ) ) {
+                        continue;
+                    }
+                }
+
+                if ( array_key_exists( 'nodes', $route ) ) {
+                    $path .= '/' . $this->generateUrl( $segments, $route[ 'nodes' ] );
+                }
+            }
+        }
+
+        return trim( $path, '/' );
+    }
+
+    /**
+     *
+     *
+     * @param string $name
+     * @param string $match
+     * @param string $value
+     * @param array $segments
+     * @param string $path
+     * @param null|string $defaultValue
+     * @return bool
+     */
+    private function matchRouteForCreate( $name, $match, $value, $segments, &$path, $defaultValue = null )
+    {
+        $result = true;
+        $section = $segments[ $name ];
+        $this->remakePattern( $match, $value );
+
+        $pattern = "~^" . $value . "$~";
+        if ( preg_match( $pattern, $section ) ) {
+            $newValue = preg_replace( $pattern, $match, $section);
+            if ( $newValue !== $defaultValue ) {
+                $path .= "/" . $newValue;
+            }
+        } else {
+            $result = false;
+        }
+        return $result;
+    }
+
+    /**
+     * Remakes pattern and value for matching to create url
+     *
+     * @param string $match
+     * @param string $value
+     */
+    private function remakePattern( &$match, &$value ) {
+        $oldMatch = $match;
+        $pattern = "~([\(](.*)[\)])~U";
+        $valueArr= [];
+        while ( preg_match( $pattern, $oldMatch, $matches ) ) {
+            $valueArr[] = $matches[ 2 ];
+            $oldMatch = preg_replace( $pattern, "$2", $oldMatch, 1 );
+        }
+        for ( $count = 0; $count < count( $valueArr ); $count++ ) {
+            $match = str_replace( "(" . $valueArr[ $count ] . ")", "$" . ( $count + 1 ), $match );
+            $value = str_replace( "$" . ( $count + 1 ), "(" . $valueArr[ $count ] . ")", $value );
+        }
     }
 
 }

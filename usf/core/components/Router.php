@@ -371,17 +371,9 @@ class Router extends Component implements ConfigurableInterface
      */
     private function parseRequestPath( &$path, $routes, &$segments = [] )
     {
+        $path = trim( $path, '/' );
         $oldPath = $path;
         $oldSegments = $segments;
-
-        $needlePos = strpos( $path, '/' );
-        if( $needlePos === false ) {
-            $needlePos = strlen( $path );
-            $section = $path;
-        } else {
-            $section = substr( $path, 0, $needlePos );
-            $needlePos++;
-        }
 
         foreach ( $routes as $route ) {
 
@@ -419,13 +411,9 @@ class Router extends Component implements ConfigurableInterface
                     $defaultValue = null;
                 }
                 if ( ! $this->matchRoute(
-                    $route[ 'name' ],
-                    $route[ 'match' ],
-                    $route[ 'value' ],
+                    $route,
                     $segments,
                     $path,
-                    $section,
-                    $needlePos,
                     $defaultValue
                 ) ) {
                     continue;
@@ -455,17 +443,28 @@ class Router extends Component implements ConfigurableInterface
         return $segments;
     }
 
-    private function matchRoute( $name, $match, $value, &$segments, &$path, $section, $needlePos, $defaultValue = null )
+    /**
+     * Matching routes with request path
+     *
+     * @param $route
+     * @param $segments
+     * @param $path
+     * @param null $defaultValue
+     * @return bool
+     */
+    private function matchRoute( $route, &$segments, &$path, $defaultValue = null )
     {
         $result = true;
-        $pattern = "~^" . $match . "$~";
-        if ( preg_match( $pattern, $section ) ) {
-            if ( $name !== 0 ) {
-                $segments[ $name ] = preg_replace( $pattern, $value, $section );
-            }
-            $path = substr( $path, $needlePos );
-        } elseif ( ! is_null( $defaultValue ) && preg_match( $pattern, $defaultValue ) ) {
-            $segments[ $name ] = preg_replace( $pattern, $value, $defaultValue );
+        $checkedPath = $path . '/';
+
+        $withNodes = array_key_exists( 'nodes', $route );
+        $pattern = '~^' . $route[ 'match' ] . '/' . ( $withNodes ? '(.*)' : '' ) .'$~';
+
+        if ( preg_match( $pattern, $checkedPath, $matches ) ) {
+            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $checkedPath );
+            $path = $withNodes ? end($matches) : '';
+        } elseif ( ! is_null( $defaultValue ) && preg_match( $pattern, $defaultValue . '/' ) ) {
+            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue . '/' );
         } else {
             $result = false;
         }
@@ -524,59 +523,27 @@ class Router extends Component implements ConfigurableInterface
             // Check match
             if ( array_key_exists( $route[ 'name' ], $segments ) ) {
 
-                if ( array_key_exists( 'default', $route ) ) {
-                    $defaultValue = $route[ 'default' ];
-                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
-                    $defaultValue = $this->defaults[ $route[ 'name' ] ];
-                } else {
-                    $defaultValue = null;
-                }
-                if ( ! $this->matchRouteForCreate(
-                    $route[ 'name' ],
-                    $route[ 'match' ],
-                    $route[ 'value' ],
-                    $segments,
-                    $path,
-                    $defaultValue
-                ) ) {
-                    continue;
-                }
-
-                /*
                 if ( $route[ 'match' ] === 0 ) {
-                    // noop
-                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
-                    $defaultValue = $this->defaults[ $route[ 'name' ] ];
-                    $section = $segments[ $route[ 'name' ] ];
-                    $match = $route[ 'match' ];
-                    $value = $route[ 'value' ];
-                    $this->remakePattern( $match, $value );
-
-                    $pattern = "~^" . $value . "$~";
-                    if ( preg_match( $pattern, $section ) ) {
-                        $newValue = preg_replace( $pattern, $route[ 'value' ], $section );
-                        if ( $newValue !== $defaultValue ) {
-                            $path .= "/" . $newValue;
-                        }
-                    } else {
-                        continue;
-                    }
+                    //
                 } else {
-                    $section = $segments[ $route[ 'name' ] ];
-
-                    $match = $route[ 'match' ];
-                    $value = $route[ 'value' ];
-                    $this->remakePattern( $match, $value );
-
-                    $pattern = "~^" . $value . "$~";
-
-                    if ( preg_match( $pattern, $section ) ) {
-                        $path .= "/" . preg_replace( $pattern, $match, $section);
+                    if ( array_key_exists( 'default', $route ) ) {
+                        $defaultValue = $route[ 'default' ];
+                    } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                        $defaultValue = $this->defaults[ $route[ 'name' ] ];
                     } else {
+                        $defaultValue = null;
+                    }
+                    if ( ! $this->matchRouteForCreate(
+                        $route[ 'name' ],
+                        $route[ 'match' ],
+                        $route[ 'value' ],
+                        $segments,
+                        $path,
+                        $defaultValue
+                    ) ) {
                         continue;
                     }
                 }
-                */
 
                 if ( array_key_exists( 'nodes', $route ) ) {
                     $path .= '/' . $this->generateUrl( $segments, $route[ 'nodes' ] );
@@ -624,11 +591,11 @@ class Router extends Component implements ConfigurableInterface
      */
     private function remakePattern( &$match, &$value ) {
         $oldMatch = $match;
-        $pattern = "~^([^/(]*)\((.+)\)([^/)]*)$~U";
+        $pattern = "~([\(](.*)[\)])~U";
         $valueArr= [];
         while ( preg_match( $pattern, $oldMatch, $matches ) ) {
             $valueArr[] = $matches[ 2 ];
-            $oldMatch = preg_replace( $pattern, "$3", $oldMatch );
+            $oldMatch = preg_replace( $pattern, "$2", $oldMatch, 1 );
         }
         for ( $count = 0; $count < count( $valueArr ); $count++ ) {
             $match = str_replace( "(" . $valueArr[ $count ] . ")", "$" . ( $count + 1 ), $match );
