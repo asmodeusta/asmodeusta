@@ -3,6 +3,7 @@
 namespace Usf\Core\Components;
 
 use PDO;
+use PDOStatement;
 use Usf\Core\Base\Interfaces\ConfigurableInterface;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
 
@@ -139,7 +140,7 @@ class Database extends PDO implements ConfigurableInterface
     /**
      * @param string $statement
      * @param null $driver_options
-     * @return bool|\PDOStatement
+     * @return bool|PDOStatement
      */
     public function prepare ( $statement, $driver_options = null )
     {
@@ -162,7 +163,7 @@ class Database extends PDO implements ConfigurableInterface
      * @param int $mode
      * @param null $arg3
      * @param array $ctorargs
-     * @return false|\PDOStatement
+     * @return false|PDOStatement
      */
     public function query ($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = array())
     {

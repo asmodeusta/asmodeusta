@@ -4,10 +4,6 @@ namespace Usf\Core\Components;
 
 use Usf\Core\Base\Component;
 use Usf\Core\Base\ConfigHandler;
-use Usf\Core\Base\Controller;
-use Usf\Core\Base\Exceptions\ControllerException;
-use Usf\Core\Base\Exceptions\ModuleException;
-use Usf\Core\Base\Exceptions\RequestException;
 use Usf\Core\Base\Exceptions\RouterException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Base\Interfaces\ConfigurableInterface;
@@ -152,7 +148,12 @@ class Router extends Component implements ConfigurableInterface
      */
     public function addRoute( $route, $rewrite = false )
     {
-        $result =  $this->addRouteRecursive( $this->routes, $route, $rewrite );
+        $result = false;
+        if ( $this->validateRoute( $route ) ) {
+            $routes = [ $route ];
+            $routes = $this->addLangToRoutes( $routes );
+            $result =  $this->addRouteRecursive( $this->routes, $routes, $rewrite );
+        }
         return $result;
     }
 
@@ -186,6 +187,7 @@ class Router extends Component implements ConfigurableInterface
         if ( $this->validateRoute( $newRoute ) ) {
             //Find route
             $found = false;
+            $oldRoute = [];
             foreach ( $routes as &$oldRoute ) {
                 if ( $this->validateRoute( $oldRoute ) && empty( $this->compareRoutes( $oldRoute, $newRoute ) ) ) {
                     $found = true;
@@ -307,28 +309,13 @@ class Router extends Component implements ConfigurableInterface
                 if ( is_file( $moduleFile ) ) {
                     include_once $moduleFile;
                     $moduleClass = lastDeclaredClass();
-                    $module = new $moduleClass();
-                    $controller = $module->getController( $data[ 'controller' ] );
-                    if ( $controller->checkAccess() ) {
-                        $callback = $controller->getAction( $data[ 'action' ] );
-                        $segments[ 'callback' ] = $callback;
-                        // Generating request object based on request params
-                        $this->request = new Request( $segments );
-                        $result = true;
-                    } else {
-                        throw new RouterException( 'Access denied!' );
-                    }
+                    $segments['callback'] = ( new $moduleClass( $data['controller'], $data['action'] ) )->getCallback();
+                    // Generating request object based on request params
+                    $this->request = new Request( $segments );
+                    $result = true;
                 } else {
                     throw new RouterException( 'Module "' . $data[ 'module' ] . '" not found!' );
                 }
-            /*} catch ( RouterException $exception ) {
-                $this->addErrorMessage( $exception->getMessage() );
-            } catch ( ModuleException $exception ) {
-                $this->addErrorMessage( $exception->getMessage() );
-            } catch ( ControllerException $exception ) {
-                $this->addErrorMessage( $exception->getMessage() );
-            } catch ( RequestException $exception ) {
-                $this->addErrorMessage( $exception->getMessage() );*/
             } catch ( \Exception $exception) {
                 $this->addErrorMessage( $exception->getMessage() );
             }
@@ -484,6 +471,12 @@ class Router extends Component implements ConfigurableInterface
             && array_key_exists( 'value', $route );
     }
 
+    /**
+     * Create Url
+     *
+     * @param array $segments
+     * @return string
+     */
     public function createUrl( array $segments )
     {
         return $this->generateUrl( $segments, $this->routes );
@@ -555,7 +548,7 @@ class Router extends Component implements ConfigurableInterface
     }
 
     /**
-     *
+     * Matching routes to create url
      *
      * @param string $name
      * @param string $match

@@ -2,6 +2,7 @@
 
 namespace Usf\Core\Base;
 
+use Exception;
 use Usf\Core\Base\Exceptions\ModuleException;
 use Usf\Core\Base\Interfaces\ModuleInterface;
 
@@ -17,6 +18,9 @@ abstract class Module extends Component implements ModuleInterface
      */
     protected $basename;
 
+    protected $controllerName;
+    protected $actionName;
+
     /**
      * Controller
      * @var Controller|null
@@ -31,10 +35,47 @@ abstract class Module extends Component implements ModuleInterface
 
     /**
      * Module constructor.
+     * @param $controller
+     * @param $action
+     * @throws ModuleException
      */
-    public function __construct()
+    public function __construct( $controller, $action )
     {
-        $this->basename = basename( dirname( $this->getReflector()->getFileName() ) );
+        $this->basename = $this->baseName();
+
+        if ( $this->checkAccess() ) {
+            if ( $this->generateController( $controller ) ) {
+                if ( $this->controller->checkAccess() ) {
+                    $this->actionName = $action;
+                } else {
+                    throw new ModuleException( 'Access denied' );
+                }
+            } else {
+                throw new ModuleException( 'Controller "' . $controller . '" not found!' );
+            }
+        } else {
+            throw new ModuleException( 'Access denied' );
+        }
+    }
+
+    /**
+     * Returns base name of module file
+     * Can be overwritten to increase executing speed
+     * @return string
+     */
+    protected function baseName()
+    {
+        return basename( dirname( $this->getReflector()->getFileName() ) );
+    }
+
+    /**
+     * Returns action callback
+     * @return callable
+     * @throws Exceptions\ControllerException
+     */
+    public function getCallback()
+    {
+        return $this->controller->getAction( $this->actionName );
     }
 
     /**
@@ -75,36 +116,26 @@ abstract class Module extends Component implements ModuleInterface
     }
 
     /**
-     * @param string $name
-     * @return Controller|null
-     */
-    public function getController( $name = '' )
-    {
-        if ( $name === '' ) {
-            return $this->controller;
-        } else {
-            return $this->generateController( $name );
-        }
-    }
-
-    /**
      * @param $name
-     * @return Controller|null
+     * @return bool
      */
     protected function generateController( $name )
     {
+        $result = false;
         $controllerClassName = ucfirst( $name ) . 'Controller';
         try {
             $controllerFile = $this->getControllerFile( $controllerClassName );
             require_once $controllerFile;
             $controllerClass = lastDeclaredClass();
             $this->controller = new $controllerClass( $this );
+            $this->controllerName = $name;
+            $result = true;
         } catch ( ModuleException $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
-        } catch ( \Exception $exception ) {
+        } catch ( Exception $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
         }
-        return $this->controller;
+        return $result;
     }
 
     /**
@@ -125,7 +156,7 @@ abstract class Module extends Component implements ModuleInterface
             return new $viewClass( $this, $data );
         } catch ( ModuleException $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
-        } catch ( \Exception $exception ) {
+        } catch ( Exception $exception ) {
             $this->addErrorMessage( $exception->getMessage() );
         }
         return false;

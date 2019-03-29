@@ -17,6 +17,22 @@ class TestController extends Controller
         'page' => '1',
     ];
 
+    public function actionTest()
+    {
+        $arr = [
+            'a' => '1',
+            'b' => '2',
+            'c' => '3',
+            'v' => '19',
+        ];
+        echo '<pre>';
+        foreach ( $arr as $element ) {
+            echo key($arr) . ' ' . $element . PHP_EOL;
+            next($arr);
+        }
+        echo '</pre>';
+    }
+
     public function actionIndex()
     {
         $pathArr = [
@@ -57,8 +73,8 @@ class TestController extends Controller
                                     ],
                                     [
                                         "name" => "action",
-                                        "match" => "def/tone",
-                                        "value" => "def",
+                                        "match" => "(def)/tone",
+                                        "value" => "$1",
                                     ]
                                 ]
                             ]
@@ -66,13 +82,13 @@ class TestController extends Controller
                     ],
                     [
                         "name" => "module",
-                        "match" => "premmerce/plugins/exchange",
-                        "value" => "premmerce",
+                        "match" => "(premmerce)/(plugins)/exchange",
+                        "value" => "$1_$2",
                         "nodes" => [
                             [
                                 "name" => "controller",
                                 "match" => 0,
-                                "value" => "plugins",
+                                "value" => "main",
                                 "nodes" => [
                                     [
                                         "name" => "action",
@@ -268,7 +284,7 @@ class TestController extends Controller
     }
 
     /**
-     *
+     * Matching routes to create url
      *
      * @param string $name
      * @param string $match

@@ -34,14 +34,12 @@ abstract class Component
      */
     protected function getReflector()
     {
-        if ( is_null( $this->reflector ) ) {
-            try {
-                $this->reflector = new \ReflectionClass( get_class( $this ) );
-            } catch ( \ReflectionException $exception ) {
-                $this->addErrorMessage( $exception->getMessage() );
-            }
+        try {
+            return $this->reflector ?? new \ReflectionClass( get_class( $this ) );
+        } catch ( \ReflectionException $exception ) {
+            $this->addErrorMessage( $exception->getMessage() );
         }
-        return $this->reflector;
+        return null;
     }
 
     /**
@@ -50,10 +48,7 @@ abstract class Component
      */
     protected function getDirectory()
     {
-        if ( is_null( $this->directory ) ) {
-            $this->directory = dirname( $this->getReflector()->getFileName() );
-        }
-        return $this->directory;
+        return $this->directory ?? dirname( $this->getReflector()->getFileName() );
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace Usf\Site\Controllers;
 
 use Usf\Core\Base\Controller;
-use Usf\Core\Base\Factories\ConfigHandlerFactory;
 
 class SettingsController extends Controller
 {

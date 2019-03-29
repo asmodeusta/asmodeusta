@@ -2,6 +2,7 @@
 
 namespace Usf\Core\Components;
 
+use Exception;
 use Usf\Core\Base\DbComponent;
 use Usf\Core\Base\Exceptions\SessionException;
 
@@ -295,8 +296,8 @@ class Session extends DbComponent
         $result = $this->secret;
         do {
             try {
-                $result = md5( $result . random_bytes( 32 ) );
-            } catch ( \Exception $e ) {
+                $result = md5( $result . random_bytes( 32 ) . $this->secret );
+            } catch ( Exception $e ) {
                 $result = md5( $result . microtime( true ) . $this->secret );
             }
         } while ( --$count );
