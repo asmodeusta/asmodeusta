@@ -1,5 +1,0 @@
-<?php
-
-
-
-( new NClass() )->declareFuncs();
