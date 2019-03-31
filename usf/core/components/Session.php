@@ -304,6 +304,16 @@ class Session extends DbComponent
         return $result;
     }
 
+    public function encodeToken( $token )
+    {
+        return md5( $token . $this->secret );
+    }
+
+    public function validateToken( $token, $dbToken )
+    {
+
+    }
+
     /**
      * Checking if session token already exists
      * @param string $token
