@@ -90,10 +90,7 @@ final class Usf
      */
     public static function start()
     {
-        if ( is_null( self::$usf ) ) {
-            self::$usf= new self();
-        }
-        return self::$usf;
+        return self::$usf ?? self::$usf = new self();
     }
 
     /**

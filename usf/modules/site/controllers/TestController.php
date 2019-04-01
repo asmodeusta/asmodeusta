@@ -3,6 +3,7 @@
 namespace Usf\Admin\Controllers;
 
 use Usf\Core\Base\Controller;
+use Usf\Core\Base\DataStorage;
 
 class TestController extends Controller
 {
@@ -19,17 +20,25 @@ class TestController extends Controller
 
     public function actionTest()
     {
-        $arr = [
-            'a' => '1',
-            'b' => '2',
-            'c' => '3',
-            'v' => '19',
-        ];
-        echo '<pre>';
-        foreach ( $arr as $element ) {
-            echo key($arr) . ' ' . $element . PHP_EOL;
-            next($arr);
+        $iterations = 1000000;
+
+        $arrayStartTime = microtime(true);
+        $arr = [];
+        for ($i = 0; $i < $iterations; $i++) {
+            $arr[$i] = $i;
         }
+        $arrayEndTime = microtime(true);
+
+        $objectStartTime = microtime(true);
+        $obj = new DataStorage([]);
+        for ($i = 0; $i < $iterations; $i++) {
+            $obj->$i = $i;
+        }
+        $objectEndTime = microtime(true);
+
+        echo '<pre>';
+        echo 'Arrays time on '.$iterations.' iterations: '.($arrayEndTime - $arrayStartTime).PHP_EOL;
+        echo 'Object time on '.$iterations.' iterations: '.($objectEndTime - $objectStartTime).PHP_EOL;
         echo '</pre>';
     }
 
