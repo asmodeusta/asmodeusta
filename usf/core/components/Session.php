@@ -82,6 +82,15 @@ class Session extends DbComponent
                 if ( $this->extend ) {
                     $this->endTime = time() + $this->duration;
                     $this->modified = true;
+                    setcookie(
+                        self::COOKIE_NAME,
+                        $this->token,
+                        $this->endTime,
+                        '/',
+                        settings( 'host' ),
+                        settings( 'secure' ),
+                        true
+                    );
                 }
                 // If all verifications complete return
                 if ( $result ) {
