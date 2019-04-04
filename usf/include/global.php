@@ -12,8 +12,7 @@ use Usf\Usf;
  */
 function usf()
 {
-    global $_USF;
-    return $_USF;
+    return $GLOBALS['_USF'];
 }
 
 /**

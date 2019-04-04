@@ -4,6 +4,7 @@ namespace Usf\Admin\Controllers;
 
 use Usf\Core\Base\Controller;
 use Usf\Core\Base\DataStorage;
+use function Usf\__usf;
 
 class TestController extends Controller
 {
@@ -44,7 +45,17 @@ class TestController extends Controller
 
     public function actionIndex()
     {
-        echo 'NOOP';
+        $iterations = 1000000;
+
+        $globalStartTime = microtime(true);
+        for ($i = 0; $i < $iterations; $i++) {
+            $r = usf();
+        }
+        $globalEndTime = microtime(true);
+
+        echo '<pre>';
+        echo 'Global time on '.$iterations.' iterations: '.($globalEndTime - $globalStartTime).PHP_EOL;
+        echo '</pre>';
     }
 
 }

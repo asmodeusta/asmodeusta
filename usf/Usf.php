@@ -90,7 +90,15 @@ final class Usf
      */
     public static function start()
     {
-        return self::$usf ?? self::$usf = new self();
+        return self::$usf ?? new self();
+    }
+
+    /**
+     * @return Usf
+     */
+    public static function go()
+    {
+        return self::$usf;
     }
 
     /**
@@ -115,8 +123,7 @@ final class Usf
         $this->startTime = microtime( true );
 
         // Register global var
-        global $_USF;
-        $_USF = $this;
+        $GLOBALS['_USF'] = $this;
 
         // Connect autoloader
         require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DS . 'AutoloaderNamespaces.php';
@@ -135,7 +142,7 @@ final class Usf
     /**
      * Initialize
      */
-    private function init()
+    public function init()
     {
         // Settings
         $this->settings = new Settings( $this->config[ 'settings' ] );
@@ -167,13 +174,13 @@ final class Usf
         $_USF_ROUTER = $this->router;
 
         // Run USF
-        $this->run();
+        return $this;
     }
 
     /**
      * Run
      */
-    private function run()
+    public function run()
     {
         // Parse request
         if ( $this->router->parseRequest() ) {
@@ -190,6 +197,8 @@ final class Usf
             var_dump( $this->router->getErrors() );
             echo '</pre>';
         }
+
+        return $this;
     }
 
     /**
