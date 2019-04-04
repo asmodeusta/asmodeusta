@@ -134,9 +134,6 @@ final class Usf
             // TODO: redirect to setup app
             die( 'Config error!' );
         }
-
-        // Initialize USF
-        $this->init();
     }
 
     /**
