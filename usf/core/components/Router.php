@@ -6,16 +6,19 @@ use Usf\Core\Base\Component;
 use Usf\Core\Base\ConfigHandler;
 use Usf\Core\Base\Exceptions\RouterException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
-use Usf\Core\Base\Interfaces\ConfigurableInterface;
 use Usf\Core\Base\Module;
+use Usf\Core\Base\Traits\Configurable;
 
 
 /**
  * Class Router
  * @package Core\Components
  */
-class Router extends Component implements ConfigurableInterface
+class Router extends Component
 {
+
+    use Configurable;
+
     /**
      * Request URL
      * @var string
@@ -107,16 +110,12 @@ class Router extends Component implements ConfigurableInterface
         /**
          * Adding routes
          */
-        $this->setupConfigFromFile( $configFile );
+        $this->setConfigFile( $configFile )->configure();
     }
 
-    /**
-     * @param string $file
-     */
-    public function setupConfigFromFile( $file )
+    protected function setup()
     {
-        $this->configHandler = ConfigHandlerFactory::create( $file );
-        $this->setupConfig( $this->configHandler->getFullConfig() );
+        $this->setupConfig($this->configuration);
     }
 
     /**
