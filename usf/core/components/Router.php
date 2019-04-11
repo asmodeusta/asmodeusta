@@ -18,7 +18,14 @@ use Usf\Core\Base\Traits\Observable;
 class Router extends Component
 {
 
+    /**
+     * Can configure Router
+     */
     use Configurable;
+
+    /**
+     * Can handle event observers and listeners
+     */
     use Observable;
 
     /**
@@ -117,6 +124,9 @@ class Router extends Component
         self::handleObservers( 'afterConstruct', $this );
     }
 
+    /**
+     * Setup Router
+     */
     protected function setup()
     {
         $this->setupConfig($this->configuration);

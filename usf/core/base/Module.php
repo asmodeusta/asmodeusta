@@ -18,7 +18,14 @@ abstract class Module extends Component implements ModuleInterface
      */
     protected $basename;
 
+    /**
+     * @var string
+     */
     protected $controllerName;
+
+    /**
+     * @var string
+     */
     protected $actionName;
 
     /**

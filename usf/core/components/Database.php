@@ -4,15 +4,16 @@ namespace Usf\Core\Components;
 
 use PDO;
 use PDOStatement;
-use Usf\Core\Base\Interfaces\ConfigurableInterface;
-use Usf\Core\Base\Factories\ConfigHandlerFactory;
+use Usf\Core\Base\Traits\Configurable;
 
 /**
  * Class Database abstraction over PDO
  * @package Usf\Core\Components
  */
-class Database extends PDO implements ConfigurableInterface
+class Database extends PDO
 {
+
+    use Configurable;
 
     /**
      * Host
@@ -74,9 +75,14 @@ class Database extends PDO implements ConfigurableInterface
      */
     public function __construct( $configFile )
     {
-        $this->setupConfigFromFile( $configFile );
+        $this->setConfigFile( $configFile )->configure()->setup();
         $dsn = sprintf( 'mysql:host=%s;port=%d;dbname=%s', $this->host, $this->port, $this->name );
         parent::__construct( $dsn, $this->user, $this->pass );
+    }
+
+    protected function setup()
+    {
+        $this->setupConfig($this->configuration);
     }
 
     /**
@@ -110,15 +116,6 @@ class Database extends PDO implements ConfigurableInterface
                 }
             }
         }
-    }
-
-    /**
-     * @param string $file
-     */
-    public function setupConfigFromFile( $file )
-    {
-        $handler = ConfigHandlerFactory::create( $file );
-        $this->setupConfig( $handler->getFullConfig() );
     }
 
     /**
