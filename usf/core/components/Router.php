@@ -8,6 +8,7 @@ use Usf\Core\Base\Exceptions\RouterException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Base\Module;
 use Usf\Core\Base\Traits\Configurable;
+use Usf\Core\Base\Traits\Observable;
 
 
 /**
@@ -18,6 +19,7 @@ class Router extends Component
 {
 
     use Configurable;
+    use Observable;
 
     /**
      * Request URL
@@ -111,6 +113,8 @@ class Router extends Component
          * Adding routes
          */
         $this->setConfigFile( $configFile )->configure();
+
+        self::handleObservers( 'afterConstruct', $this );
     }
 
     protected function setup()
@@ -322,7 +326,7 @@ class Router extends Component
             $this->addErrorMessage( 'Wrong request path!' );
         }
 
-        ret:
+        $this->handleListeners( 'afterParseRequest', $result );
         return $result;
     }
 

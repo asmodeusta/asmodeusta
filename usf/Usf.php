@@ -134,6 +134,24 @@ final class Usf
             // TODO: redirect to setup app
             die( 'Config error!' );
         }
+
+        Router::attachObserver( 'afterConstruct', [ $this, 'testObserver' ], 1, 1 );
+    }
+
+    /**
+     * @param Router $router
+     */
+    public function testObserver( Router $router )
+    {
+        $router->attachListener( 'afterParseRequest', [ $this, 'testListener' ], 1, 2 );
+    }
+
+    public function testListener( Router $router, $result )
+    {
+        echo 'Request is ', ( $result ? '' : 'not ' ), 'parsed!<br/>';
+        if ( ! $result ) {
+            print_r($router->getErrors());
+        }
     }
 
     /**
