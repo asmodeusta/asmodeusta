@@ -10,10 +10,16 @@ trait Observable
 {
 
     /**
-     * Current events stack
+     * Current events observers stack
      * @var array
      */
-    protected static $stack = [];
+    protected static $eventObserversStack = [];
+
+    /**
+     * Current event listeners stack
+     * @var array 
+     */
+    protected $eventListenersStack = [];
 
     /**
      * List of observed class events (static)
@@ -106,8 +112,11 @@ trait Observable
         $args = func_get_args();
         array_shift($args);
         $class = static::class;
+        if ( ! array_key_exists( $class, static::$eventObserversStack ) ) {
+            static::$eventObserversStack[ $class ] = [];
+        }
         if ( array_key_exists( $class, static::$observers ) ) {
-            self::handleEvent( static::$observers[ $class ], $event, $args );
+            self::handleEvent( static::$observers[ $class ], $event, $args, static::$eventObserversStack[ $class ] );
         }
         return $args;
     }
@@ -146,7 +155,7 @@ trait Observable
     {
         $args = func_get_args();
         array_shift($args);
-        self::handleEvent( $this->listeners, $event, $args, $this );
+        self::handleEvent( $this->listeners, $event, $args, $this->eventListenersStack, $this );
         return $args;
     }
 
@@ -201,16 +210,17 @@ trait Observable
      * @param array $eventList
      * @param string $event
      * @param array $args
+     * @param array $stack
      * @param null|object $subject
      */
-    private static function handleEvent( array $eventList, string $event, array &$args, $subject = null )
+    private static function handleEvent( array $eventList, string $event, array &$args, array &$stack, $subject = null )
     {
         // Avoiding recursive deadlock
-        if ( in_array( $event, static::$stack ) ) {
+        if ( in_array( $event, $stack ) ) {
             return;
         }
         // Register event in stack
-        array_push( static::$stack, $event );
+        array_push( $stack, $event );
         // Check if event is registered
         if ( array_key_exists( $event, $eventList ) ) {
             // Sort event handlers by priority
@@ -236,7 +246,7 @@ trait Observable
             }
         }
         // Unregister event from stack
-        array_pop( static::$stack );
+        array_pop( $stack );
     }
 
 }

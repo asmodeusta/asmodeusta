@@ -173,6 +173,7 @@ final class Usf
             die('Cannot connect to database!');
         }
 
+        // TODO: think where define session
         // Session
         try {
             $this->session = new Session( $this->settings->session );
