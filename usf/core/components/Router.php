@@ -6,16 +6,28 @@ use Usf\Core\Base\Component;
 use Usf\Core\Base\ConfigHandler;
 use Usf\Core\Base\Exceptions\RouterException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
-use Usf\Core\Base\Interfaces\ConfigurableInterface;
 use Usf\Core\Base\Module;
+use Usf\Core\Base\Traits\Configurable;
+use Usf\Core\Base\Traits\Observable;
 
 
 /**
  * Class Router
  * @package Core\Components
  */
-class Router extends Component implements ConfigurableInterface
+class Router extends Component
 {
+
+    /**
+     * Can configure Router
+     */
+    use Configurable;
+
+    /**
+     * Can handle event observers and listeners
+     */
+    use Observable;
+
     /**
      * Request URL
      * @var string
@@ -107,16 +119,17 @@ class Router extends Component implements ConfigurableInterface
         /**
          * Adding routes
          */
-        $this->setupConfigFromFile( $configFile );
+        $this->setConfigFile( $configFile )->configure();
+
+        self::handleObservers( 'afterConstruct', $this );
     }
 
     /**
-     * @param string $file
+     * Setup Router
      */
-    public function setupConfigFromFile( $file )
+    protected function setup()
     {
-        $this->configHandler = ConfigHandlerFactory::create( $file );
-        $this->setupConfig( $this->configHandler->getFullConfig() );
+        $this->setupConfig($this->configuration);
     }
 
     /**
@@ -323,7 +336,7 @@ class Router extends Component implements ConfigurableInterface
             $this->addErrorMessage( 'Wrong request path!' );
         }
 
-        ret:
+        $this->handleListeners( 'afterParseRequest', $result );
         return $result;
     }
 

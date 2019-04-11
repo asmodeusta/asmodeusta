@@ -57,5 +57,5 @@ foreach ( scandir( $includeDir ) as $file ) {
  * Start
  * Set global variable $USF
  */
-Usf::start();
-USF::end();
+Usf::start()->init()->run();
+//USF::end();

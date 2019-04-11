@@ -62,8 +62,7 @@
                 {
                   "name": "action",
                   "match": "(index|test)",
-                  "value": "$1",
-                  "default": "test"
+                  "value": "$1"
                 }
               ]
             }

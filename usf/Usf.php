@@ -90,9 +90,14 @@ final class Usf
      */
     public static function start()
     {
-        if ( is_null( self::$usf ) ) {
-            self::$usf= new self();
-        }
+        return self::$usf ?? new self();
+    }
+
+    /**
+     * @return Usf
+     */
+    public static function go()
+    {
         return self::$usf;
     }
 
@@ -118,8 +123,7 @@ final class Usf
         $this->startTime = microtime( true );
 
         // Register global var
-        global $_USF;
-        $_USF = $this;
+        $GLOBALS['_USF'] = $this;
 
         // Connect autoloader
         require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DS . 'AutoloaderNamespaces.php';
@@ -131,14 +135,29 @@ final class Usf
             die( 'Config error!' );
         }
 
-        // Initialize USF
-        $this->init();
+        Router::attachObserver( 'afterConstruct', [ $this, 'testObserver' ], 1, 1 );
+    }
+
+    /**
+     * @param Router $router
+     */
+    public function testObserver( Router $router )
+    {
+        $router->attachListener( 'afterParseRequest', [ $this, 'testListener' ], 1, 2 );
+    }
+
+    public function testListener( Router $router, $result )
+    {
+        echo 'Request is ', ( $result ? '' : 'not ' ), 'parsed!<br/>';
+        if ( ! $result ) {
+            print_r($router->getErrors());
+        }
     }
 
     /**
      * Initialize
      */
-    private function init()
+    public function init()
     {
         // Settings
         $this->settings = new Settings( $this->config[ 'settings' ] );
@@ -154,6 +173,7 @@ final class Usf
             die('Cannot connect to database!');
         }
 
+        // TODO: think where define session
         // Session
         try {
             $this->session = new Session( $this->settings->session );
@@ -170,13 +190,13 @@ final class Usf
         $_USF_ROUTER = $this->router;
 
         // Run USF
-        $this->run();
+        return $this;
     }
 
     /**
      * Run
      */
-    private function run()
+    public function run()
     {
         // Parse request
         if ( $this->router->parseRequest() ) {
@@ -193,6 +213,8 @@ final class Usf
             var_dump( $this->router->getErrors() );
             echo '</pre>';
         }
+
+        return $this;
     }
 
     /**
