@@ -109,9 +109,9 @@ class Request
             throw new RequestException('Lang not found!');
         }
 
-        $this->method = if_null($this->takeDataValue('method'), strtolower($_SERVER['REQUEST_METHOD']));
+        $this->method = $this->takeDataValue('method') ?? strtolower($_SERVER['REQUEST_METHOD']);
 
-        $this->contentType = if_null($this->takeDataValue('type'), 'html');
+        $this->contentType = $this->takeDataValue('type') ?? 'html';
     }
 
     /**

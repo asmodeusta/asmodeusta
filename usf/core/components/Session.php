@@ -15,7 +15,7 @@ class Session extends DbComponent
     protected const COOKIE_NAME = 'usf_slt';
 
     protected $secret = 'this_is_standard_session_salt';
-    protected $duration = 60 * 60 * 24 * 5;
+    protected $duration = 60 * 60 * 24;
     protected $entropy = 1;
     protected $extend = true;
 
@@ -141,7 +141,7 @@ class Session extends DbComponent
      */
     public function get( $name )
     {
-        return if_set( $this->data[ $name ], null );
+        return $this->data[ $name ] ?? null;
     }
 
     /**
@@ -193,8 +193,22 @@ class Session extends DbComponent
         $this->endTime = $this->startTime + $this->duration;
         $this->data = [];
         // Save to database
-        $sql = 'insert into usf_sessions( token, useragent, ip, start_time, end_time, data )
-            values( :token, :useragent, :ip, from_unixtime(:startTime), from_unixtime(:endTime), :data );';
+        $sql = 'insert into usf_sessions(
+                    token,
+                    useragent,
+                    ip,
+                    start_time,
+                    end_time,
+                    data 
+                )
+                values(
+                    :token,
+                    :useragent,
+                    :ip,
+                    from_unixtime(:startTime),
+                    from_unixtime(:endTime),
+                    :data
+                );';
         $this->db->beginTransaction();
         if ( $st = $this->db->prepare( $sql ) ) {
             $st->bindValue( ':token', $this->token, Database::PARAM_STR );
