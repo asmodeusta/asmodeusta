@@ -81,7 +81,13 @@ final class Usf
     private $request;
 
 
-
+    /**
+     * @return Usf
+     */
+    public static function getInstance()
+    {
+        return self::$usf = self::$usf ?? new self();
+    }
 
     /**
      * Starts the app
