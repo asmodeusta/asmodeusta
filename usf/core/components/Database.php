@@ -97,11 +97,11 @@ class Database extends PDO
              */
             if ( array_key_exists( 'credentials', $config ) ) {
                 if ( is_array( $config[ 'credentials' ] ) ) {
-                    $this->host = if_set( $config[ 'credentials' ][ 'host' ], '' );
-                    $this->port = if_set( $config[ 'credentials' ][ 'port' ], '' );
-                    $this->name = if_set( $config[ 'credentials' ][ 'name' ], '' );
-                    $this->user = if_set( $config[ 'credentials' ][ 'user' ], '' );
-                    $this->pass = if_set( $config[ 'credentials' ][ 'pass' ], '' );
+                    $this->host = $config[ 'credentials' ][ 'host' ] ?? '';
+                    $this->port = $config[ 'credentials' ][ 'port' ] ?? '';
+                    $this->name = $config[ 'credentials' ][ 'name' ] ?? '';
+                    $this->user = $config[ 'credentials' ][ 'user' ] ?? '';
+                    $this->pass = $config[ 'credentials' ][ 'pass' ] ?? '';
                 }
             }
 
@@ -110,9 +110,9 @@ class Database extends PDO
              */
             if ( array_key_exists( 'settings', $config ) ) {
                 if ( is_array( $config[ 'settings' ] ) ) {
-                    $this->charset = if_set( $config[ 'settings' ][ 'charset' ], '' );
-                    $this->collate = if_set( $config[ 'settings' ][ 'collate' ], '' );
-                    $this->prefix = if_set( $config[ 'settings' ][ 'prefix' ], '' );
+                    $this->charset = $config[ 'settings' ][ 'charset' ] ?? '';
+                    $this->collate = $config[ 'settings' ][ 'collate' ] ?? '';
+                    $this->prefix = $config[ 'settings' ][ 'prefix' ] ?? '';
                 }
             }
         }

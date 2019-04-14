@@ -1,6 +1,11 @@
 <?php
 
+/**
+ * APP INIT FILE
+ */
+
 use Usf\Usf;
+
 require_once 'Usf.php';
 
 /**
@@ -10,11 +15,16 @@ defined( 'DS' ) or define( 'DS', DIRECTORY_SEPARATOR );
 
 /**
  * Dir constants:
- * - consists of "DIR_"-prefix and name of important part of te application
+ * - contains "DIR_" prefix and path name
  */
 
 /**
- * App directory of the site
+ * Root directory
+ */
+defined( 'DIR_ROOT' ) or define( 'DIR_ROOT', dirname( __FILE__ ) );
+
+/**
+ * Application directory
  */
 defined( 'DIR_APP' ) or define( 'DIR_APP', dirname( __FILE__ ) );
 
@@ -42,15 +52,15 @@ defined( 'DIR_CONFIG' ) or define( 'DIR_CONFIG', DIR_APP . DS . 'config' );
  * Including files in 'include' path
  */
 $includeDir = DIR_USF . '/include';
+ob_start();
 foreach ( scandir( $includeDir ) as $file ) {
-    ob_start();
     // Check if this is php-file
     if ( preg_match( '~(\.php$)~', $file ) ) {
         require_once $includeDir . DS . $file;
     }
-    // Clean output stream
-    ob_clean();
 }
+// Clean output stream
+ob_clean();
 /** */
 
 /**

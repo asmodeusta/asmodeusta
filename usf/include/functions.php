@@ -1,28 +1,6 @@
 <?php
 
 /**
- * If var is null returns default value
- * @param mixed $var
- * @param mixed $default
- * @return mixed
- */
-function if_null( $var, $default )
-{
-    return is_null( $var ) ? $default : $var;
-}
-
-/**
- * If var is null returns default value
- * @param mixed $var
- * @param mixed $default
- * @return mixed
- */
-function if_set( $var, $default  )
-{
-    return isset( $var ) ? $var : $default;
-}
-
-/**
  * Returns last declared class
  * @return string
  */

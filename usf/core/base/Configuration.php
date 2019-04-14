@@ -62,7 +62,7 @@ abstract class Configuration extends Component
      */
     public function get( $name )
     {
-        return if_set( $this->config[ $name ], null );
+        return $this->config[ $name ] ?? null;
     }
 
     /**

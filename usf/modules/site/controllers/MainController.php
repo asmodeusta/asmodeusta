@@ -10,7 +10,7 @@ class MainController extends Controller
 
     public function actionIndex( $page = 1 )
     {
-        echo 'Lang: ', request()->lang, '<br/>Page: ', $page, '<br/>';
+        echo 'Lang: ', usf()->getRouter()->getRequest()->lang, '<br/>Page: ', $page, '<br/>';
         $time = microtime( true );
         echo 'Time: ', $time - usf()->getStartTime(), '<br/>';
     }

@@ -48,19 +48,17 @@ trait Observable
     /**
      * List if listened object events (instance)
      * [
-     *     string 'className' => [
-     *         string 'eventName' => [
-     *             int 'priority => [
-     *                 'callbacks' => [
-     *                     callable listener1,
-     *                     ...
-     *                     callable listenerN,
-     *                 ]
-     *                 'argsNum' => [
-     *                     int argsNum1,
-     *                     ...
-     *                     int argsNumN,
-     *                 ]
+     * string 'eventName' => [
+     *         int priority => [
+     *             'callbacks' => [
+     *                 callable listener1,
+     *                 ...
+     *                 callable listenerN,
+     *             ]
+     *             'argsNum' => [
+     *                 int argsNum1,
+     *                 ...
+     *                 int argsNumN,
      *             ]
      *         ]
      *     ]

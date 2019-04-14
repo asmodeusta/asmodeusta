@@ -146,11 +146,19 @@ final class Usf
         $router->attachListener( 'afterParseRequest', [ $this, 'testListener' ], 1, 2 );
     }
 
+    /**
+     * @param Router $router
+     * @param bool $result
+     */
     public function testListener( Router $router, $result )
     {
-        echo 'Request is ', ( $result ? '' : 'not ' ), 'parsed!<br/>';
-        if ( ! $result ) {
-            print_r($router->getErrors());
+        $module = $router->getRequest()->module ?? '';
+        if ( $module === 'site' ) {
+            echo 'Request is ', ( $result ? '' : 'not ' ), 'parsed!<br/>';
+        } else {
+            if ( ! $result ) {
+                print_r($router->getErrors());
+            }
         }
     }
 

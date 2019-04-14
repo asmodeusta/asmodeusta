@@ -23,10 +23,11 @@ class DataStorage
     /**
      * Data getter
      * @param string $name
+     * @return mixed|null
      */
     public function __get( $name )
     {
-        if_set( $this->data[ $name ], null );
+        return $this->data[ $name ] ?? null;
     }
 
     /**
@@ -53,6 +54,15 @@ class DataStorage
      * @param array $data
      */
     public function setData( array $data )
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * Add data
+     * @param array $data
+     */
+    public function addData( array $data )
     {
         $this->data += $data;
     }
