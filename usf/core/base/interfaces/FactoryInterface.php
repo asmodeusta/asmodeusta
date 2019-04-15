@@ -6,6 +6,6 @@ namespace Usf\Core\Base\Interfaces;
 interface FactoryInterface
 {
 
-    static function create( $params );
+    public static function create( $params );
 
 }

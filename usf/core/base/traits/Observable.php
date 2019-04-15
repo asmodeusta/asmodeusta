@@ -223,6 +223,7 @@ trait Observable
         if ( array_key_exists( $event, $eventList ) ) {
             // Sort event handlers by priority
             krsort( $eventList[ $event ], SORT_NUMERIC );
+            // Map event handlers by priority
             foreach ( $eventList[ $event ] as $priority => $handlers ) {
                 foreach ( $handlers[ 'callback' ] as $position => $handler) {
                     // Get expected number of arguments

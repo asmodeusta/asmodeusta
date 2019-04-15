@@ -11,10 +11,10 @@ interface ConfigurableInterface
     /**
      * @param array $config
      */
-    function setupConfig( array $config );
+    public function setupConfig( array $config );
 
     /**
      * @param string $file
      */
-    function setupConfigFromFile( $file );
+    public function setupConfigFromFile( $file );
 }
