@@ -6,8 +6,6 @@
 
 use Usf\Usf;
 
-require_once 'Usf.php';
-
 /**
  * Directory separator
  */
@@ -63,9 +61,13 @@ foreach ( scandir( $includeDir ) as $file ) {
 ob_clean();
 /** */
 
+require_once DIR_USF . DS . 'Usf.php';
+
 /**
  * Start
- * Set global variable $USF
  */
-Usf::start()->init()->run();
+Usf::start()
+    ->configure()
+    ->init()
+    ->run();
 //USF::end();

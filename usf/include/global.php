@@ -12,7 +12,7 @@ use Usf\Usf;
  */
 function usf()
 {
-    return Usf::getInstance();
+    return Usf::start();
 }
 
 /**

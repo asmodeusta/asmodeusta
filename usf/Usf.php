@@ -4,6 +4,7 @@ namespace Usf;
 
 use Usf\Core\Base\Exceptions\SessionException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
+use Usf\Core\Base\Factories\ModulesFactory;
 use Usf\Core\Components\Database;
 use Usf\Core\Components\Request;
 use Usf\Core\Components\Router;
@@ -19,10 +20,6 @@ use Usf\Core\Src\AutoloaderNamespaces;
  */
 final class Usf
 {
-
-    private const DEFAULT_SETTINGS_CONFIG_FILE = DIR_CONFIG . DS . 'settings.config.json';
-    private const DEFAULT_DATABASE_CONFIG_FILE = DIR_CONFIG . DS . 'db.config.json';
-    private const DEFAULT_ROUTER_CONFIG_FILE = DIR_CONFIG . DS . 'router.config.json';
 
     /**
      * Single instance of the class
@@ -48,7 +45,7 @@ final class Usf
      * Usf configuration file
      * @var array
      */
-    private $config;
+    private $configuration;
 
     /**
      * Settings
@@ -57,16 +54,22 @@ final class Usf
     private $settings;
 
     /**
-     * Session
-     * @var Session
-     */
-    private $session;
-
-    /**
      * Database
      * @var Database
      */
     private $db;
+
+    /**
+     * Modules
+     * @var array
+     */
+    private $modules = [];
+
+    /**
+     * Session
+     * @var Session
+     */
+    private $session;
 
     /**
      * Router
@@ -82,14 +85,6 @@ final class Usf
 
 
     /**
-     * @return Usf
-     */
-    public static function getInstance()
-    {
-        return self::$usf = self::$usf ?? new self();
-    }
-
-    /**
      * Starts the app
      *
      * @return Usf
@@ -97,14 +92,6 @@ final class Usf
     public static function start()
     {
         return self::$usf ?? new self();
-    }
-
-    /**
-     * @return Usf
-     */
-    public static function go()
-    {
-        return self::$usf;
     }
 
     /**
@@ -128,24 +115,23 @@ final class Usf
         // Start time
         $this->startTime = microtime( true );
 
-        // Register global var
-        $GLOBALS['_USF'] = $this;
+        // Register single instance
+        self::$usf = $this;
 
         // Connect autoloader
-        require_once DIR_CORE . DIRECTORY_SEPARATOR . 'src' . DS . 'AutoloaderNamespaces.php';
+        require_once DIR_CORE . DS . 'src' . DS . 'AutoloaderNamespaces.php';
         $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
+    }
 
-        // Configuration
+    public function configure()
+    {
+        $configFile = DIR_CONFIG . DS . 'config.php';
+        $this->configuration = ConfigHandlerFactory::create( $configFile )->getFullConfig();
         if ( ! $this->validateConfig() ) {
             // TODO: redirect to setup app
             die( 'Config error!' );
         }
-
-    }
-
-    public function config()
-    {
-
+        return $this;
     }
 
     /**
@@ -154,36 +140,31 @@ final class Usf
     public function init()
     {
         // Settings
-        $this->settings = new Settings( $this->config[ 'settings' ] );
-        global $_USF_SETTINGS;
-        $_USF_SETTINGS = $this->settings;
+        $this->settings = new Settings( $this->configuration[ 'settings' ] );
 
         // Create Database
         try {
-            $this->db = new Database( $this->config[ 'database' ] );
-            global $_USF_DB;
-            $_USF_DB = $this->db;
+            $this->db = new Database( $this->configuration[ 'database' ] );
         } catch ( \PDOException $exception ) {
             die('Cannot connect to database!');
         }
+
+        // Create Router
+        $this->router = new Router( $this->configuration[ 'router' ] );
+
+        /**
+         * Register modules
+         */
+        $this->registerModules();
 
         // TODO: think where define session
         // Session
         try {
             $this->session = new Session( $this->settings->session );
-            global $_USF_SESSION;
-            $_USF_SESSION = $this->session;
         } catch ( SessionException $exception ) {
             die( '<h1>' . $exception->getMessage() . '</h1>' );
         }
 
-
-        // Create Router
-        $this->router = new Router( $this->config[ 'router' ] );
-        global $_USF_ROUTER;
-        $_USF_ROUTER = $this->router;
-
-        // Run USF
         return $this;
     }
 
@@ -196,8 +177,6 @@ final class Usf
         if ( $this->router->parseRequest() ) {
             // Set request
             $this->request = $this->router->getRequest();
-            global $_USF_REQUEST;
-            $_USF_REQUEST = $this->request;
 
             // Call action
             $this->request->call();
@@ -225,16 +204,19 @@ final class Usf
      */
     private function validateConfig()
     {
-        $configFile = DIR_CONFIG . DS . 'config.php';
-        $this->config = ConfigHandlerFactory::create( $configFile )->getFullConfig();
         return (
-            array_key_exists( 'settings', $this->config )
-            && array_key_exists( 'database', $this->config )
-            && array_key_exists( 'router', $this->config )
-            && is_file( $this->config[ 'settings' ] )
-            && is_file( $this->config[ 'database' ] )
-            && is_file( $this->config[ 'router' ] )
+            array_key_exists( 'settings', $this->configuration )
+            && array_key_exists( 'database', $this->configuration )
+            && array_key_exists( 'router', $this->configuration )
+            && is_file( $this->configuration[ 'settings' ] )
+            && is_file( $this->configuration[ 'database' ] )
+            && is_file( $this->configuration[ 'router' ] )
         );
+    }
+
+    private function registerModules()
+    {
+        $this->modules = ModulesFactory::init( $this->settings->modules );
     }
 
     public function getDb()

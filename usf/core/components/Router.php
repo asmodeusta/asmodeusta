@@ -6,6 +6,7 @@ use Usf\Core\Base\Component;
 use Usf\Core\Base\ConfigHandler;
 use Usf\Core\Base\Exceptions\RouterException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
+use Usf\Core\Base\Factories\ModulesFactory;
 use Usf\Core\Base\Module;
 use Usf\Core\Base\Traits\Configurable;
 use Usf\Core\Base\Traits\Observable;
@@ -297,6 +298,7 @@ class Router extends Component
 
     /**
      * Main method of the Router
+     * Parsing request, generating request object and get callback for current endpoint
      *
      * @return bool
      */
@@ -315,18 +317,14 @@ class Router extends Component
                 $path = $this->createUrl( $data );
                 // Check if generated path is different from actual, then redirect
                 if ( $path !== $this->requestPath ) {
-                    $url = '/' . $path . ( empty( $this->requestQuery ) ? '' : '/' . $this->requestQuery );
+                    $url = DS . $path . ( empty( $this->requestQuery ) ? '' : DS . $this->requestQuery );
                     redirect( $url );
                 }
             }
             $segments[ 'data' ] = $data;
             // Searching callback for current request
             try {
-                $moduleClassName = ucfirst( $data[ 'module' ] ) . 'Module';
-                $moduleFile = DIR_MODULES . '/' . $data[ 'module' ] . '/' . $moduleClassName . '.php';
-                if ( is_file( $moduleFile ) ) {
-                    include_once $moduleFile;
-                    $moduleClass = lastDeclaredClass();
+                if ( $moduleClass = ModulesFactory::create( $data[ 'module' ] ) ) {
                     $segments[ 'callback' ] = ( new $moduleClass( $data[ 'controller' ],
                         $data[ 'action' ] ) )->getCallback();
                     // Generating request object based on request params

@@ -9,7 +9,7 @@ use Usf\Core\Components\Database;
 class User extends Model
 {
 
-    protected static $cache = [];
+
 
     protected static $current = null;
 
