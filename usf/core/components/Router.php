@@ -66,7 +66,7 @@ class Router extends Component
      * - @value (required): the string to replace after comparison match
      * - @nodes (optional): child nodes of the route.
      *      If not set then Router compares all parts of route, and if it's OK - stops searching
-     * - @method (optional): the string of available methods for this and child routes.
+     * - @method ( optional ): the string of available methods for this and child routes.
      *      Available values: get|post
      *      By default route can be called with any method or method of parent route.
      * - @type (optional): available content type to return for this and child routes.
@@ -129,7 +129,7 @@ class Router extends Component
      */
     protected function setup()
     {
-        $this->setupConfig($this->configuration);
+        $this->setupConfig( $this->configuration );
     }
 
     /**
@@ -165,7 +165,7 @@ class Router extends Component
         if ( $this->validateRoute( $route ) ) {
             $routes = [ $route ];
             $routes = $this->addLangToRoutes( $routes );
-            $result =  $this->addRouteRecursive( $this->routes, $routes, $rewrite );
+            $result = $this->addRouteRecursive( $this->routes, $routes, $rewrite );
         }
         return $result;
     }
@@ -177,6 +177,7 @@ class Router extends Component
      */
     protected function addLangToRoutes( array &$routes )
     {
+        // TODO: change hardcoded match pattern to the list of available languages
         $routes = [
             "name" => "lang",
             "match" => "([a-z]{2})",
@@ -238,8 +239,12 @@ class Router extends Component
     protected function compareRoutes( $oldRoute, $newRoute )
     {
         return array_diff(
-            array_filter( $oldRoute, function ( $var ) { return ! is_array( $var ); } ),
-            array_filter( $newRoute, function ( $var ) { return ! is_array( $var ); } )
+            array_filter( $oldRoute, function ( $var ) {
+                return !is_array( $var );
+            } ),
+            array_filter( $newRoute, function ( $var ) {
+                return !is_array( $var );
+            } )
         );
     }
 
@@ -322,14 +327,15 @@ class Router extends Component
                 if ( is_file( $moduleFile ) ) {
                     include_once $moduleFile;
                     $moduleClass = lastDeclaredClass();
-                    $segments['callback'] = ( new $moduleClass( $data['controller'], $data['action'] ) )->getCallback();
+                    $segments[ 'callback' ] = ( new $moduleClass( $data[ 'controller' ],
+                        $data[ 'action' ] ) )->getCallback();
                     // Generating request object based on request params
                     $this->request = new Request( $segments );
                     $result = true;
                 } else {
                     throw new RouterException( 'Module "' . $data[ 'module' ] . '" not found!' );
                 }
-            } catch ( \Exception $exception) {
+            } catch ( \Exception $exception ) {
                 $this->addErrorMessage( $exception->getMessage() );
             }
         } else {
@@ -345,7 +351,7 @@ class Router extends Component
      * @param array $segments
      * @return bool
      */
-    private function checkRequestData(array $segments )
+    private function checkRequestData( array $segments )
     {
         return array_key_exists( 'module', $segments )
             && array_key_exists( 'controller', $segments )
@@ -377,7 +383,7 @@ class Router extends Component
 
         foreach ( $routes as $route ) {
 
-            if ( ! $this->validateRoute( $route ) ) {
+            if ( !$this->validateRoute( $route ) ) {
                 continue;
             }
 
@@ -410,7 +416,7 @@ class Router extends Component
                 } else {
                     $defaultValue = null;
                 }
-                if ( ! $this->matchRoute(
+                if ( !$this->matchRoute(
                     $route,
                     $segments,
                     $path,
@@ -422,7 +428,7 @@ class Router extends Component
 
             // Check nodes
             if ( array_key_exists( 'nodes', $route ) ) {
-                $this->parseRequestPath($path, $route[ 'nodes' ], $segments );
+                $this->parseRequestPath( $path, $route[ 'nodes' ], $segments );
             }
 
             // Check if all sections was processed
@@ -458,12 +464,12 @@ class Router extends Component
         $checkedPath = $path . '/';
 
         $withNodes = array_key_exists( 'nodes', $route );
-        $pattern = '~^' . $route[ 'match' ] . '/' . ( $withNodes ? '(.*)' : '' ) .'$~';
+        $pattern = '~^' . $route[ 'match' ] . '/' . ( $withNodes ? '(.*)' : '' ) . '$~';
 
         if ( preg_match( $pattern, $checkedPath, $matches ) ) {
             $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $checkedPath );
-            $path = $withNodes ? end($matches) : '';
-        } elseif ( ! is_null( $defaultValue ) && preg_match( $pattern, $defaultValue . '/' ) ) {
+            $path = $withNodes ? end( $matches ) : '';
+        } elseif ( !is_null( $defaultValue ) && preg_match( $pattern, $defaultValue . '/' ) ) {
             $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue . '/' );
         } else {
             $result = false;
@@ -508,7 +514,7 @@ class Router extends Component
 
         foreach ( $routes as $route ) {
 
-            if ( ! $this->validateRoute( $route ) ) {
+            if ( !$this->validateRoute( $route ) ) {
                 continue;
             }
 
@@ -539,7 +545,7 @@ class Router extends Component
                     } else {
                         $defaultValue = null;
                     }
-                    if ( ! $this->matchRouteForCreate(
+                    if ( !$this->matchRouteForCreate(
                         $route[ 'name' ],
                         $route[ 'match' ],
                         $route[ 'value' ],
@@ -579,7 +585,7 @@ class Router extends Component
 
         $pattern = "~^" . $value . "$~";
         if ( preg_match( $pattern, $section ) ) {
-            $newValue = preg_replace( $pattern, $match, $section);
+            $newValue = preg_replace( $pattern, $match, $section );
             if ( $newValue !== $defaultValue ) {
                 $path .= "/" . $newValue;
             }
@@ -595,10 +601,11 @@ class Router extends Component
      * @param string $match
      * @param string $value
      */
-    private function remakePattern( &$match, &$value ) {
+    private function remakePattern( &$match, &$value )
+    {
         $oldMatch = $match;
         $pattern = "~([\(](.*)[\)])~U";
-        $valueArr= [];
+        $valueArr = [];
         while ( preg_match( $pattern, $oldMatch, $matches ) ) {
             $valueArr[] = $matches[ 2 ];
             $oldMatch = preg_replace( $pattern, "$2", $oldMatch, 1 );

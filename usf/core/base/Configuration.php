@@ -86,7 +86,7 @@ abstract class Configuration extends Component
      * @param mixed $value
      * @return bool
      */
-    abstract public function validate( $name, &$value ) :bool;
+    abstract public function validate( $name, &$value ) : bool;
 
     /**
      * Refreshing data from config file

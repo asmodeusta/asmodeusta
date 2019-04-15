@@ -17,7 +17,7 @@ trait Observable
 
     /**
      * Current event listeners stack
-     * @var array 
+     * @var array
      */
     protected $eventListenersStack = [];
 
@@ -78,7 +78,7 @@ trait Observable
     public static function attachObserver( string $event, $observer, int $priority = 1, int $argsNum = 0 )
     {
         $class = static::class;
-        if ( ! array_key_exists( $class, static::$observers ) ) {
+        if ( !array_key_exists( $class, static::$observers ) ) {
             static::$observers[ $class ] = [];
         }
         return self::attachCallback( static::$observers[ $class ], $event, $observer, $priority, $argsNum );
@@ -108,9 +108,9 @@ trait Observable
     protected static function handleObservers( string $event )
     {
         $args = func_get_args();
-        array_shift($args);
+        array_shift( $args );
         $class = static::class;
-        if ( ! array_key_exists( $class, static::$eventObserversStack ) ) {
+        if ( !array_key_exists( $class, static::$eventObserversStack ) ) {
             static::$eventObserversStack[ $class ] = [];
         }
         if ( array_key_exists( $class, static::$observers ) ) {
@@ -152,7 +152,7 @@ trait Observable
     protected function handleListeners( string $event )
     {
         $args = func_get_args();
-        array_shift($args);
+        array_shift( $args );
         self::handleEvent( $this->listeners, $event, $args, $this->eventListenersStack, $this );
         return $args;
     }
@@ -166,15 +166,20 @@ trait Observable
      * @param int $argsNum
      * @return bool
      */
-    private static function attachCallback( array &$eventList, string $event, $callback, int $priority = 1, int $argsNum = 1 )
-    {
-        if ( ! array_key_exists( $event, $eventList ) ) {
+    private static function attachCallback(
+        array &$eventList,
+        string $event,
+        $callback,
+        int $priority = 1,
+        int $argsNum = 1
+    ) {
+        if ( !array_key_exists( $event, $eventList ) ) {
             $eventList[ $event ] = [];
         }
-        if ( ! array_key_exists( $priority, $eventList[ $event ] ) ) {
+        if ( !array_key_exists( $priority, $eventList[ $event ] ) ) {
             $eventList[ $event ][ $priority ] = [ 'callback' => [], 'argsNum' => [] ];
         }
-        if ( ! in_array( $callback, $eventList[ $event ][ $priority ][ 'callback' ] ) ) {
+        if ( !in_array( $callback, $eventList[ $event ][ $priority ][ 'callback' ] ) ) {
             $eventList[ $event ][ $priority ][ 'callback' ][] = $callback;
             $eventList[ $event ][ $priority ][ 'argsNum' ][] = $argsNum;
             return true;
@@ -225,12 +230,12 @@ trait Observable
             krsort( $eventList[ $event ], SORT_NUMERIC );
             // Map event handlers by priority
             foreach ( $eventList[ $event ] as $priority => $handlers ) {
-                foreach ( $handlers[ 'callback' ] as $position => $handler) {
+                foreach ( $handlers[ 'callback' ] as $position => $handler ) {
                     // Get expected number of arguments
                     $argsNum = $handlers[ 'argsNum' ][ $position ];
                     if ( is_callable( $handler ) ) {
                         // Adding $subject to arguments ( if not null )
-                        $calledArgs = ( is_null( $subject ) ? $args :  array_merge( [ $subject ], $args ) );
+                        $calledArgs = ( is_null( $subject ) ? $args : array_merge( [ $subject ], $args ) );
                         if ( $argsNum === 0 ) {
                             $result = call_user_func_array( $handler, [] );
                         } elseif ( $argsNum >= count( $calledArgs ) ) {

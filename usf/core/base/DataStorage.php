@@ -9,6 +9,10 @@ namespace Usf\Core\Base;
 class DataStorage
 {
 
+    /**
+     * Data array
+     * @var array
+     */
     protected $data = [];
 
     /**

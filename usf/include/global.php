@@ -12,7 +12,7 @@ use Usf\Usf;
  */
 function usf()
 {
-    return $GLOBALS['_USF'];
+    return Usf::getInstance();
 }
 
 /**
@@ -21,8 +21,7 @@ function usf()
  */
 function db()
 {
-    global $_USF_DB;
-    return $_USF_DB;
+    return usf()->getDb();
 }
 
 /**
@@ -31,8 +30,7 @@ function db()
  */
 function router()
 {
-    global $_USF_ROUTER;
-    return $_USF_ROUTER;
+    return usf()->getRouter();
 }
 
 /**
@@ -41,8 +39,7 @@ function router()
  */
 function request()
 {
-    global $_USF_REQUEST;
-    return $_USF_REQUEST;
+    return usf()->getRequest();
 }
 
 /**
@@ -52,10 +49,5 @@ function request()
  */
 function settings( $name = '' )
 {
-    global $_USF_SETTINGS;
-    if ( $name === '' ) {
-        return $_USF_SETTINGS;
-    } else {
-        return $_USF_SETTINGS->$name;
-    }
+    return usf()->getSettings( $name );
 }

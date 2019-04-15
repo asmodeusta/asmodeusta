@@ -141,31 +141,11 @@ final class Usf
             die( 'Config error!' );
         }
 
-        Router::attachObserver( 'afterConstruct', [ $this, 'testObserver' ], 1, 1 );
     }
 
-    /**
-     * @param Router $router
-     */
-    public function testObserver( Router $router )
+    public function config()
     {
-        $router->attachListener( 'afterParseRequest', [ $this, 'testListener' ], 1, 2 );
-    }
 
-    /**
-     * @param Router $router
-     * @param bool $result
-     */
-    public function testListener( Router $router, $result )
-    {
-        $module = $router->getRequest()->module ?? '';
-        if ( $module === 'site' ) {
-            echo 'Request is ', ( $result ? '' : 'not ' ), 'parsed!<br/>';
-        } else {
-            if ( ! $result ) {
-                print_r($router->getErrors());
-            }
-        }
     }
 
     /**
@@ -262,9 +242,9 @@ final class Usf
         return $this->db;
     }
 
-    public function getSettings()
+    public function getSettings( $name = null )
     {
-        return $this->settings;
+        return is_null($name) ? $this->settings : $this->settings->$name;
     }
 
     public function getSession()

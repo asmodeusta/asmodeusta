@@ -62,7 +62,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
         if ( $this->validateFile( $file ) ) {
             $this->file = $file;
 
-            if ( ! is_null( $section ) ) {
+            if ( !is_null( $section ) ) {
                 $this->section = $section;
             }
 
@@ -107,7 +107,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
     }
 
     /**
-     * Check if THIS section exists
+     * Check if current section exists
      * @return bool
      */
     protected function checkThisSectionExists()
@@ -154,7 +154,8 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $name
      * @return mixed
      */
-    public function get( $name ) {
+    public function get( $name )
+    {
         $result = null;
         $configuration = $this->getConfig();
         if ( array_key_exists( $name, $configuration ) ) {
@@ -223,7 +224,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
     public function set( $name, $value )
     {
         if ( $this->checkThisSectionExists() ) {
-            if ( ! ( array_key_exists( $name, $this->configuration[ $this->section ] )
+            if ( !( array_key_exists( $name, $this->configuration[ $this->section ] )
                 && $this->configuration[ $this->section ][ $name ] === $value ) ) {
                 $this->configuration[ $this->section ][ $name ] = $value;
                 $this->modified = true;

@@ -17,7 +17,7 @@ abstract class Controller extends Component
     protected $module;
 
     /**
-     * Ba
+     * Base name
      * @var string
      */
     protected $basename;
@@ -39,7 +39,12 @@ abstract class Controller extends Component
      */
     public function checkAccess( $actionName = null )
     {
-        return $this->module->checkAccess();
+        if ( is_string( $actionName ) && preg_match( '~(.*)~', $actionName ) ) {
+            $access = true;
+        } else {
+            $access = true;
+        }
+        return $access && $this->module->checkAccess();
     }
 
     /**
@@ -60,6 +65,10 @@ abstract class Controller extends Component
         return $action;
     }
 
+    /**
+     * Get base name
+     * @return string
+     */
     public function getBaseName()
     {
         return $this->basename;
