@@ -66,7 +66,7 @@ abstract class Controller extends Component
     }
 
     /**
-     * Get base name
+     * Get Base name
      * @return string
      */
     public function getBaseName()

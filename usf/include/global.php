@@ -21,7 +21,7 @@ function usf()
  */
 function db()
 {
-    return usf()->getDb();
+    return usf()->db();
 }
 
 /**
@@ -30,7 +30,7 @@ function db()
  */
 function router()
 {
-    return usf()->getRouter();
+    return usf()->router();
 }
 
 /**
@@ -39,7 +39,7 @@ function router()
  */
 function request()
 {
-    return usf()->getRequest();
+    return usf()->request();
 }
 
 /**
@@ -49,5 +49,5 @@ function request()
  */
 function settings( $name = '' )
 {
-    return usf()->getSettings( $name );
+    return usf()->settings( $name );
 }

@@ -40,6 +40,11 @@ abstract class Module extends Component implements ModuleInterface
      */
     protected $views = [];
 
+    public static function initialize()
+    {
+
+    }
+
     /**
      * Module constructor.
      * @param $controller
@@ -66,7 +71,7 @@ abstract class Module extends Component implements ModuleInterface
     }
 
     /**
-     * Returns base name of module file
+     * Returns Base name of module file
      * Can be overwritten to increase executing speed
      * @return string
      */
@@ -101,7 +106,7 @@ abstract class Module extends Component implements ModuleInterface
      */
     public function getControllerFile( $controllerClassName )
     {
-        $controllerFilename = $this->getDirectory() . '/controllers/' . $controllerClassName . '.php';
+        $controllerFilename = $this->getDirectory() . '/Controllers/' . $controllerClassName . '.php';
         if ( ! is_file( $controllerFilename ) ) {
             throw new ModuleException( 'Controller class "' . $controllerClassName . '" not found!' );
         }
@@ -115,7 +120,7 @@ abstract class Module extends Component implements ModuleInterface
      */
     public function getViewFile( $viewClassName )
     {
-        $viewFileName = $this->getDirectory() . '/views/' .  $viewClassName . '.php';
+        $viewFileName = $this->getDirectory() . '/Views/' .  $viewClassName . '.php';
         if ( ! is_file( $viewFileName ) ) {
             throw new ModuleException( 'View class "' . $viewFileName . '" not found!' );
         }
@@ -181,7 +186,7 @@ abstract class Module extends Component implements ModuleInterface
         $filename = $this->basename . DS . $name . '.php';
 
         // Check if file exists in selected theme
-        $themeFile = DIR_USF . DS . 'themes' . DS . usf()->getSettings()->getTheme() . DS . $filename;
+        $themeFile = DIR_USF . DS . 'Themes' . DS . usf()->settings()->getTheme() . DS . $filename;
         if ( is_file( $themeFile ) ) {
             return $themeFile;
         }

@@ -2,6 +2,7 @@
 
 namespace Usf;
 
+use Composer\Autoload\ClassLoader;
 use Usf\Core\Base\Exceptions\SessionException;
 use Usf\Core\Base\Factories\ConfigHandlerFactory;
 use Usf\Core\Base\Factories\ModulesFactory;
@@ -36,8 +37,8 @@ final class Usf
     private $startTime;
 
     /**
-     * Class autoloader by namespaces
-     * @var AutoloaderNamespaces
+     * Composer autoloader
+     * @var ClassLoader
      */
     private $autoloader;
 
@@ -87,11 +88,12 @@ final class Usf
     /**
      * Starts the app
      *
+     * @param ClassLoader $autoloader
      * @return Usf
      */
-    public static function start()
+    public static function start( $autoloader = null )
     {
-        return self::$usf ?? new self();
+        return self::$usf ?? new self( $autoloader );
     }
 
     /**
@@ -109,18 +111,17 @@ final class Usf
 
     /**
      * Usf constructor.
+     * @param ClassLoader $autoloader
      */
-    private function __construct()
+    private function __construct( $autoloader )
     {
         // Start time
         $this->startTime = microtime( true );
 
+        $this->autoloader = $autoloader;
+
         // Register single instance
         self::$usf = $this;
-
-        // Connect autoloader
-        require_once DIR_CORE . DS . 'src' . DS . 'AutoloaderNamespaces.php';
-        $this->autoloader = new AutoloaderNamespaces( DIR_USF, __NAMESPACE__ );
     }
 
     public function configure()
@@ -153,7 +154,7 @@ final class Usf
         $this->router = new Router( $this->configuration[ 'router' ] );
 
         /**
-         * Register modules
+         * Register Modules
          */
         $this->registerModules();
 
@@ -217,27 +218,32 @@ final class Usf
         $this->modules = ModulesFactory::init( $this->settings->modules );
     }
 
-    public function getDb()
+    public function autoloader()
+    {
+        return $this->autoloader;
+    }
+
+    public function db()
     {
         return $this->db;
     }
 
-    public function getSettings( $name = null )
+    public function settings( $name = null )
     {
         return is_null($name) ? $this->settings : $this->settings->$name;
     }
 
-    public function getSession()
+    public function session()
     {
         return $this->session;
     }
 
-    public function getRouter()
+    public function router()
     {
         return $this->router;
     }
 
-    public function getRequest()
+    public function request()
     {
         return $this->request;
     }

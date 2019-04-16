@@ -49,7 +49,7 @@ class Settings extends Configuration
      */
     protected function validateTheme( &$theme )
     {
-        $themesDirs = scandir( DIR_USF . DS. 'themes' );
+        $themesDirs = scandir( DIR_USF . DS. 'Themes' );
         if ( in_array( $theme, $themesDirs ) && $this->config[ 'theme' ] !== $theme ) {
             return true;
         } else {

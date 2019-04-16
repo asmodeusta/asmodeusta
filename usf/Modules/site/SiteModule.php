@@ -4,6 +4,7 @@ namespace Usf\Site;
 
 use Usf\Core\Base\Module;
 use Usf\Core\Src\AutoloaderNamespaces;
+use Usf\Site\Models\NewModel;
 
 class SiteModule extends Module
 {
@@ -13,7 +14,7 @@ class SiteModule extends Module
     public function __construct( $controller, $action )
     {
         parent::__construct( $controller, $action );
-        $this->autoloader = new AutoloaderNamespaces( dirname( __FILE__ ), __NAMESPACE__ );
+        usf()->autoloader()->addPsr4( __NAMESPACE__ . '\\', dirname( __FILE__ ) );
     }
 
 }
