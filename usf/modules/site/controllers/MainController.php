@@ -49,7 +49,11 @@ class MainController extends Controller
             ]
         ];
         echo '<pre>';
-        var_dump( router()->addRoute( $newRoute ) );
+        if( router()->addRoute( $newRoute ) ) {
+            echo 'success!';
+        } else {
+            echo 'failed!';
+        }
         echo '</pre>';
     }
 

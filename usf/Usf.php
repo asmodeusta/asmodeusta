@@ -182,9 +182,7 @@ final class Usf
             $this->request->call();
         } else {
             // TODO: show error page
-            echo '<pre>';
-            var_dump( $this->router->getErrors() );
-            echo '</pre>';
+            echo 'Error! Page not found.';
         }
 
         return $this;
