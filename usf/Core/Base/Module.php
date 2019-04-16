@@ -186,7 +186,7 @@ abstract class Module extends Component implements ModuleInterface
         $filename = $this->basename . DS . $name . '.php';
 
         // Check if file exists in selected theme
-        $themeFile = DIR_USF . DS . 'Themes' . DS . usf()->settings()->getTheme() . DS . $filename;
+        $themeFile = DIR_THEMES . DS . usf()->settings()->getTheme() . DS . $filename;
         if ( is_file( $themeFile ) ) {
             return $themeFile;
         }

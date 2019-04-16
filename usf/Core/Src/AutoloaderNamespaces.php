@@ -13,7 +13,7 @@ class AutoloaderNamespaces
      *
      * @var string
      */
-    protected $directory = DIR_USF;
+    protected $directory = DIR_APP;
 
     /**
      * Namespace of path

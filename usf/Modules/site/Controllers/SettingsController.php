@@ -25,7 +25,7 @@ class SettingsController extends Controller
     public function actionLang()
     {
         if ( isset( $_POST[ 'submit' ] ) ) {
-            $file = DIR_USF . DS . 'data' . DS . 'languages.json';
+            $file = DIR_APP . DS . 'data' . DS . 'languages.json';
             $handler = ConfigHandlerFactory::create($file);
             $languages = $handler->getFullConfig();
             $db = db();
