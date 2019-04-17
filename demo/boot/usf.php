@@ -7,14 +7,8 @@
 use Usf\Usf;
 
 /**
- * Register composer autoloader
- */
-$loader = require_once 'autoload.php';
-
-/**
  * Directory separator
  */
-
 defined( 'DS' ) or define( 'DS', DIRECTORY_SEPARATOR );
 
 /**
@@ -28,24 +22,23 @@ defined( 'DS' ) or define( 'DS', DIRECTORY_SEPARATOR );
 defined( 'DIR_ROOT' ) or define( 'DIR_ROOT', dirname( __DIR__ ) );
 
 /**
- * Application directory
+ * Usf directories
+ */
+defined( 'DIR_USF' ) or define( 'DIR_USF', DIR_ROOT . DS . 'usf' );
+defined( 'DIR_CORE' ) or define( 'DIR_CORE', DIR_USF . DS . 'core' );
+
+/**
+ * Application directories
  */
 defined( 'DIR_APP' ) or define( 'DIR_APP', dirname( __DIR__ ) );
-
-/**
- * Modules directory
- */
 defined( 'DIR_MODULES' ) or define( 'DIR_MODULES', DIR_APP . DS . 'modules' );
-
-/**
- * Themes directory
- */
 defined( 'DIR_THEMES' ) or define( 'DIR_THEMES', DIR_APP . DS . 'themes' );
+defined( 'DIR_CONFIG' ) or define( 'DIR_CONFIG', DIR_APP . DS . 'config' );
 
 /**
- * Config directory
+ * Register composer autoloader
  */
-defined( 'DIR_CONFIG' ) or define( 'DIR_CONFIG', DIR_APP . DS . 'config' );
+$loader = require_once 'autoload.php';
 
 /**
  * Start

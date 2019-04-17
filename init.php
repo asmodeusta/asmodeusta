@@ -1,4 +1,4 @@
 <?php return array (
-    'app' => 'app',
+    'app' => 'usf',
     'file' => 'index.php',
 );

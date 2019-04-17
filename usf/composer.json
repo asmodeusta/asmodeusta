@@ -15,12 +15,15 @@
   "require": {
     "php": ">=7.1.0"
   },
+  "config": {
+    "optimize-autoloader": true
+  },
   "autoload": {
     "files": [
       "include/helper.php"
     ],
     "psr-4": {
-      "Usf\\": "usf/"
+      "Usf\\": "core/"
     }
   }
 }
