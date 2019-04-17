@@ -16,4 +16,41 @@ class ModuleTest extends Component
         ]
     ];
 
+    protected $active = false;
+
+    public function __construct()
+    {
+
+    }
+
+    public function initialize()
+    {
+
+    }
+
+    public function configure()
+    {
+
+    }
+
+    public function run( $controller, $action )
+    {
+
+    }
+
+    public function activate()
+    {
+
+    }
+
+    public function deactivate()
+    {
+
+    }
+
+    public function delete()
+    {
+
+    }
+
 }

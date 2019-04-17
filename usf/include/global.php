@@ -1,9 +1,9 @@
 <?php
 
-use Usf\Core\Components\Database;
-use Usf\Core\Components\Request;
-use Usf\Core\Components\Router;
-use Usf\Core\Components\Settings;
+use Usf\Components\Database;
+use Usf\Components\Request;
+use Usf\Components\Router;
+use Usf\Components\Settings;
 use Usf\Usf;
 
 /**
