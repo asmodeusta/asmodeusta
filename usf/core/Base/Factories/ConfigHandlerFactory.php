@@ -23,7 +23,7 @@ class ConfigHandlerFactory implements FactoryInterface
      * @var array
      */
     protected static $namespaces = [
-        'Usf\Components\ConfigHandlers\\',
+        'Usf\\Components\\ConfigHandlers\\',
     ];
 
     /**

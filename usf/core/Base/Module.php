@@ -40,11 +40,6 @@ abstract class Module extends Component implements ModuleInterface
      */
     protected $views = [];
 
-    public static function initialize()
-    {
-
-    }
-
     /**
      * Module constructor.
      * @param $controller
@@ -54,6 +49,8 @@ abstract class Module extends Component implements ModuleInterface
     public function __construct( $controller, $action )
     {
         $this->basename = $this->baseName();
+
+        $this->getReflector()->getNamespaceName();
 
         if ( $this->checkAccess() ) {
             if ( $this->generateController( $controller ) ) {

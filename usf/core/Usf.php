@@ -3,6 +3,7 @@
 namespace Usf;
 
 use Composer\Autoload\ClassLoader;
+use PDOException;
 use Usf\Base\Exceptions\SessionException;
 use Usf\Base\Factories\ConfigHandlerFactory;
 use Usf\Base\Factories\ModulesFactory;
@@ -145,7 +146,7 @@ final class Usf
         // Create Database
         try {
             $this->db = new Database( $this->configuration[ 'database' ] );
-        } catch ( \PDOException $exception ) {
+        } catch ( PDOException $exception ) {
             die('Cannot connect to database!');
         }
 
@@ -160,7 +161,7 @@ final class Usf
         // TODO: think where define session
         // Session
         try {
-            $this->session = new Session( $this->settings->session );
+            $this->session = new Session( $this->settings->get('session') );
         } catch ( SessionException $exception ) {
             die( '<h1>' . $exception->getMessage() . '</h1>' );
         }
@@ -193,7 +194,7 @@ final class Usf
      */
     public function __destruct()
     {
-        //echo '<pre>', 'Usf execution time: ', microtime( true ) - $this->startTime, ' seconds', '</pre>';
+        // TODO: implement destructor method
     }
 
     /**
@@ -214,7 +215,7 @@ final class Usf
 
     private function registerModules()
     {
-        $this->modules = ModulesFactory::init( $this->settings->modules );
+        $this->modules = ModulesFactory::init( $this->settings->get( 'modules' ) );
     }
 
     public function autoloader()
