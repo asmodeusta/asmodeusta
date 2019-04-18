@@ -3,9 +3,9 @@
 
 namespace Usf\Base\Factories;
 
-use Usf\Base\Interfaces\FactoryInterface;
+use Usf\Base\Interfaces\StaticFactoryInterface;
 
-class ModulesFactory implements FactoryInterface
+class ModulesStaticFactory implements StaticFactoryInterface
 {
 
     protected static $modules = [];

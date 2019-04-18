@@ -2,8 +2,12 @@
 
 namespace Usf\Base;
 
-use Usf\Base\Factories\ConfigHandlerFactory;
+use Usf\Base\Factories\ConfigHandlerStaticFactory;
 
+/**
+ * Class Configuration
+ * @package Usf\Base
+ */
 abstract class Configuration extends Component
 {
 
@@ -31,7 +35,7 @@ abstract class Configuration extends Component
      */
     public function __construct( $file )
     {
-        $this->handler = ConfigHandlerFactory::create( $file );
+        $this->handler = ConfigHandlerStaticFactory::create( $file );
         $this->read();
     }
 

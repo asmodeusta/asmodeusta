@@ -5,8 +5,8 @@ namespace Usf\Components;
 use Usf\Base\Component;
 use Usf\Base\ConfigHandler;
 use Usf\Base\Exceptions\RouterException;
-use Usf\Base\Factories\ConfigHandlerFactory;
-use Usf\Base\Factories\ModulesFactory;
+use Usf\Base\Factories\ConfigHandlerStaticFactory;
+use Usf\Base\Factories\ModulesStaticFactory;
 use Usf\Base\Module;
 use Usf\Base\Traits\Configurable;
 use Usf\Base\Traits\Observable;
@@ -272,7 +272,7 @@ class Router extends Component
      */
     public function addRoutesFromFile( $file )
     {
-        $configHandler = ConfigHandlerFactory::create( $file );
+        $configHandler = ConfigHandlerStaticFactory::create( $file );
         $routes = $configHandler->setSection( 'routes' )->getConfig();
         $this->addRoutes( $routes );
         return $this;
@@ -324,7 +324,7 @@ class Router extends Component
             $segments[ 'data' ] = $data;
             // Searching callback for current request
             try {
-                if ( $moduleClass = ModulesFactory::create( $data[ 'module' ] ) ) {
+                if ( $moduleClass = ModulesStaticFactory::create( $data[ 'module' ] ) ) {
                     $segments[ 'callback' ] = ( new $moduleClass( $data[ 'controller' ],
                         $data[ 'action' ] ) )->getCallback();
                     // Generating request object based on request params

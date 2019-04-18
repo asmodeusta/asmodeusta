@@ -3,7 +3,7 @@
 namespace Usf\Base\Traits;
 
 use Usf\Base\ConfigHandler;
-use Usf\Base\Factories\ConfigHandlerFactory;
+use Usf\Base\Factories\ConfigHandlerStaticFactory;
 
 /**
  * Trait Configurable
@@ -41,7 +41,7 @@ trait Configurable
      */
     public function configure()
     {
-        $this->configHandler = ConfigHandlerFactory::create( $this->configFile );
+        $this->configHandler = ConfigHandlerStaticFactory::create( $this->configFile );
         $this->configuration = $this->configHandler->getFullConfig();
         $this->setup();
         return $this;

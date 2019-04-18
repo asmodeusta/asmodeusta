@@ -3,16 +3,21 @@
 namespace Usf\Components;
 
 use Exception;
-use Usf\Base\DbComponent;
+use Usf\Base\Component;
 use Usf\Base\Exceptions\SessionException;
 
 /**
  * Class Session
  * @package Usf\Core\Components
  */
-class Session extends DbComponent
+class Session extends Component
 {
     protected const COOKIE_NAME = 'usf_slt';
+
+    /**
+     * @var Database
+     */
+    protected $db;
 
     protected $secret = 'this_is_standard_session_salt';
     protected $duration = 60 * 60 * 24;
@@ -42,7 +47,7 @@ class Session extends DbComponent
      */
     public function __construct( array $settings = [] )
     {
-        parent::__construct();
+        $this->db = db();
         // Settings
         if ( $settings !== [] ) {
             array_key_exists( 'secret', $settings ) ? $this->secret = $settings[ 'secret' ] : null;

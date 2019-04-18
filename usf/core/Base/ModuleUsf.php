@@ -2,10 +2,11 @@
 
 namespace Usf\Base;
 
-class ModuleTest extends Component
+abstract class ModuleUsf extends Component
 {
 
     protected $information = [
+        'slag' =>'module-test',
         'name' => 'Module test',
         'description' => 'This is basic module class',
         'version' => '0.0.1',
@@ -16,9 +17,9 @@ class ModuleTest extends Component
         ]
     ];
 
-    protected $active = false;
+    protected $active;
 
-    public function __construct()
+    public function __construct( $slag, $name, $description, $version, $active = true )
     {
 
     }
@@ -33,7 +34,15 @@ class ModuleTest extends Component
 
     }
 
-    public function run( $controller, $action )
+    public function getCallback( $args )
+    {
+
+    }
+
+    /**
+     *
+     */
+    public function install()
     {
 
     }
@@ -48,9 +57,13 @@ class ModuleTest extends Component
 
     }
 
-    public function delete()
+    public function uninstall()
     {
 
     }
+    /**
+     *
+     */
+
 
 }

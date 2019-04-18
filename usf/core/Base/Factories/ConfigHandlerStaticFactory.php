@@ -2,7 +2,7 @@
 
 namespace Usf\Base\Factories;
 
-use Usf\Base\Interfaces\FactoryInterface;
+use Usf\Base\Interfaces\StaticFactoryInterface;
 use Usf\Base\ConfigHandler;
 use Usf\Base\EmptyConfigHandler;
 
@@ -10,7 +10,7 @@ use Usf\Base\EmptyConfigHandler;
  * Class ConfigHandlerFactory
  * @package Usf\Core\Components\Factories
  */
-class ConfigHandlerFactory implements FactoryInterface
+class ConfigHandlerStaticFactory implements StaticFactoryInterface
 {
     /**
      * List of recently created ConfigHandlers

@@ -5,8 +5,8 @@ namespace Usf;
 use Composer\Autoload\ClassLoader;
 use PDOException;
 use Usf\Base\Exceptions\SessionException;
-use Usf\Base\Factories\ConfigHandlerFactory;
-use Usf\Base\Factories\ModulesFactory;
+use Usf\Base\Factories\ConfigHandlerStaticFactory;
+use Usf\Base\Factories\ModulesStaticFactory;
 use Usf\Components\Database;
 use Usf\Components\Request;
 use Usf\Components\Router;
@@ -127,7 +127,7 @@ final class Usf
     public function configure()
     {
         $configFile = DIR_CONFIG . DS . 'config.php';
-        $this->configuration = ConfigHandlerFactory::create( $configFile )->getFullConfig();
+        $this->configuration = ConfigHandlerStaticFactory::create( $configFile )->getFullConfig();
         if ( ! $this->validateConfig() ) {
             // TODO: redirect to setup app
             die( 'Config error!' );
@@ -215,7 +215,7 @@ final class Usf
 
     private function registerModules()
     {
-        $this->modules = ModulesFactory::init( $this->settings->get( 'modules' ) );
+        $this->modules = ModulesStaticFactory::init( $this->settings->get( 'modules' ) );
     }
 
     public function autoloader()

@@ -2,7 +2,7 @@
 
 namespace Usf\Site\Controllers;
 
-use Usf\Base\Factories\ConfigHandlerFactory;
+use Usf\Base\Factories\ConfigHandlerStaticFactory;
 use Usf\Base\Controller;
 
 class SettingsController extends Controller
@@ -26,7 +26,7 @@ class SettingsController extends Controller
     {
         if ( isset( $_POST[ 'submit' ] ) ) {
             $file = DIR_APP . DS . 'data' . DS . 'languages.json';
-            $handler = ConfigHandlerFactory::create($file);
+            $handler = ConfigHandlerStaticFactory::create($file);
             $languages = $handler->getFullConfig();
             $db = db();
             $sql = "truncate table usf_languages;
