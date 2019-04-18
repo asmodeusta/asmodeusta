@@ -17,6 +17,8 @@ abstract class ModuleUsf extends Component
         ]
     ];
 
+    protected $id;
+
     protected $active;
 
     public function __construct( $slag, $name, $description, $version, $active = true )
