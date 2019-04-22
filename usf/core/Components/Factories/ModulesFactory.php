@@ -3,7 +3,8 @@
 namespace Usf\Components\Factories;
 
 use Usf\Base\Interfaces\FactoryInterface;
-use Usf\Base\ModuleUsf;
+use Usf\Base\Extension;
+use Usf\Base\ModuleExtension;
 use Usf\Base\Traits\Cacheable;
 
 class ModulesFactory implements FactoryInterface
@@ -32,18 +33,10 @@ class ModulesFactory implements FactoryInterface
                 $moduleItem = $this->modules[ $slag ];
                 $filePath = DIR_MODULES . DS . $moduleItem[ 'path' ] . DS . $moduleItem[ 'file' ];
                 if (is_file($filePath)) {
-                    require_once $filePath;
-                    $moduleClass = lastDeclaredClass();
-                    $module = new $moduleClass(
-                        $moduleItem[ 'slag' ],
-                        $moduleItem[ 'name' ],
-                        $moduleItem[ 'description' ],
-                        $moduleItem[ 'version' ],
-                        true
-                    );
+                    $module = require_once $filePath;
                 }
             }
-            if ($module instanceof ModuleUsf) {
+            if ($module instanceof ModuleExtension) {
                 $this->cache($slag, $module);
             } else {
                 $module = null;

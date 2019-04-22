@@ -1,0 +1,12 @@
+{
+  "slag": "site",
+  "name": "Site Module",
+  "description": "Basic site module",
+  "version": "0.0.1",
+  "author": {
+    "name": "asmodeusta",
+    "email": "asmodeusta@gmail.com",
+    "site": "asmodeusta.com"
+  },
+  "active": false
+}

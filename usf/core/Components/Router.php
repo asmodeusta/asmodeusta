@@ -326,7 +326,7 @@ class Router extends Component
             try {
                 if ($moduleClass = ModulesStaticFactory::create($data[ 'module' ])) {
                     $segments[ 'callback' ] = (new $moduleClass($data[ 'controller' ],
-                        $data[ 'action' ]))->getCallback();
+                        $data[ 'action' ]))->getCallback($data);
                     // Generating request object based on request params
                     $this->request = new Request($segments);
                     $result = true;

@@ -2,7 +2,7 @@
 
 namespace Usf\Base\Interfaces;
 
-use Usf\Base\ModuleUsf;
+use Usf\Base\Extension;
 
 /**
  * Interface FactoryInterface
@@ -13,7 +13,7 @@ interface FactoryInterface
 
     /**
      * @param $params
-     * @return ModuleUsf|Null
+     * @return Extension|Null
      */
     public function create($params);
 

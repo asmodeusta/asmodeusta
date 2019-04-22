@@ -4,11 +4,13 @@ namespace Usf\Models;
 
 use Exception;
 use Usf\Base\Model;
+use Usf\Base\Traits\StaticCacheable;
 use Usf\Components\Database;
 
 class User extends Model
 {
 
+    use StaticCacheable;
 
     protected static $current = null;
 
@@ -18,7 +20,7 @@ class User extends Model
     public static function get($id)
     {
         try {
-            $user = static::$cache[ $id ] ?? new static($id);
+            $user = static::staticCache($id) ?? new static($id);
         } catch (Exception $exception) {
             $user = null;
         }

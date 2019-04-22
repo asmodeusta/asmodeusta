@@ -94,8 +94,7 @@ class Options
             $this->options[ $key ][ 'autosave' ] = $autosave;
             $this->options[ $key ][ 'save' ] = $autosave;
         }
-        $this->options[ $key ][ 'delete' ] = false;
-        $this->options[ $key ][ 'active' ] = true;
+        $this->options[ $key ][ 'delete' ] = ! ( $this->options[ $key ][ 'active' ] = true );
         return $value;
     }
 
@@ -109,8 +108,7 @@ class Options
                 return;
             }
         }
-        $this->options[ $key ][ 'active' ] = false;
-        $this->options[ $key ][ 'delete' ] = true;
+        $this->options[ $key ][ 'delete' ] = ! ( $this->options[ $key ][ 'active' ] = false );
     }
 
     /**

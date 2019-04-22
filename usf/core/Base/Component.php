@@ -2,6 +2,9 @@
 
 namespace Usf\Base;
 
+use ReflectionClass;
+use ReflectionException;
+
 /**
  * Class Component
  * @package Usf\Core\Base
@@ -11,7 +14,7 @@ abstract class Component
 
     /**
      * Reflector for getting information about class
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     protected $reflector = null;
 
@@ -30,13 +33,13 @@ abstract class Component
 
     /**
      * Get reflector
-     * @return \ReflectionClass
+     * @return ReflectionClass
      */
     protected function getReflector()
     {
         try {
-            return $this->reflector ?? new \ReflectionClass(get_class($this));
-        } catch (\ReflectionException $exception) {
+            return $this->reflector ?? new ReflectionClass(get_class($this));
+        } catch (ReflectionException $exception) {
             $this->addErrorMessage($exception->getMessage());
         }
         return null;
@@ -75,7 +78,7 @@ abstract class Component
         if (array_key_exists($group, $this->errors)) {
             $result = [];
             asort($this->errors[ $group ]);
-            array_walk_recursive($this->errors[ $group ], function ($item, $key) use (&$result) {
+            array_walk_recursive($this->errors[ $group ], function ($item) use (&$result) {
                 if (!is_array($item)) {
                     $result[] = $item;
                 }

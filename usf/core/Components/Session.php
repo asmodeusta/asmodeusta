@@ -332,11 +332,21 @@ class Session extends Component
         return $result;
     }
 
+    /**
+     * Encoding token
+     * @param string $token
+     * @return string Encoded token
+     */
     public function encodeToken($token)
     {
         return md5($token . $this->secret);
     }
 
+    /**
+     * Validating token
+     * @param string $token
+     * @param $dbToken
+     */
     public function validateToken($token, $dbToken)
     {
 

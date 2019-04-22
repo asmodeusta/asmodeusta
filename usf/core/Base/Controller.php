@@ -50,7 +50,7 @@ abstract class Controller extends Component
     /**
      * Get action
      * @param $actionName
-     * @return array
+     * @return callable
      * @throws ControllerException
      */
     public function getAction($actionName)

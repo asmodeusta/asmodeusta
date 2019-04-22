@@ -9,6 +9,10 @@ namespace Usf\Base\Interfaces;
 interface ModuleInterface
 {
 
-    public function getCallback();
+    /**
+     * @param array $params
+     * @return callable|false
+     */
+    public function getCallback(array $params);
 
 }

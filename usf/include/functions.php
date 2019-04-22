@@ -19,3 +19,18 @@ function redirect($url)
     header('Location: ' . $url);
     die;
 }
+
+/**
+ * Searches key in array, and if exists unset it, returning the value
+ * @param string $needle
+ * @param array $haystack
+ * @return mixed|null
+ */
+function array_take(string $needle, array $haystack)
+{
+    $result = null;
+    if (array_key_exists($needle, $haystack)) {
+        $result = $haystack[ $needle ];
+    }
+    return $result;
+}

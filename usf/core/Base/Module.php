@@ -79,10 +79,11 @@ abstract class Module extends Component implements ModuleInterface
 
     /**
      * Returns action callback
+     * @param array $params
      * @return callable
      * @throws Exceptions\ControllerException
      */
-    public function getCallback()
+    public function getCallback(array $params)
     {
         return $this->controller->getAction($this->actionName);
     }
