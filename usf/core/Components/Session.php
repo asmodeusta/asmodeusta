@@ -45,46 +45,46 @@ class Session extends Component
      * @param array $settings
      * @throws SessionException
      */
-    public function __construct( array $settings = [] )
+    public function __construct(array $settings = [])
     {
         $this->db = db();
         // Settings
-        if ( $settings !== [] ) {
-            array_key_exists( 'secret', $settings ) ? $this->secret = $settings[ 'secret' ] : null;
-            array_key_exists( 'duration', $settings ) ? $this->duration = $settings[ 'duration' ] : null;
-            array_key_exists( 'entropy', $settings ) ? $this->entropy = $settings[ 'entropy' ] : null;
-            array_key_exists( 'extend', $settings ) ? $this->extend = $settings[ 'extend' ] : null;
-            if ( array_key_exists( 'use', $settings ) && is_array( $settings[ 'use' ] ) ) {
+        if ($settings !== []) {
+            array_key_exists('secret', $settings) ? $this->secret = $settings[ 'secret' ] : null;
+            array_key_exists('duration', $settings) ? $this->duration = $settings[ 'duration' ] : null;
+            array_key_exists('entropy', $settings) ? $this->entropy = $settings[ 'entropy' ] : null;
+            array_key_exists('extend', $settings) ? $this->extend = $settings[ 'extend' ] : null;
+            if (array_key_exists('use', $settings) && is_array($settings[ 'use' ])) {
                 $this->use = $settings[ 'use' ];
             }
         }
         // Verifications
         // Check cookie
-        if ( array_key_exists( self::COOKIE_NAME, $_COOKIE ) ) {
+        if (array_key_exists(self::COOKIE_NAME, $_COOKIE)) {
             $this->token = $_COOKIE[ self::COOKIE_NAME ];
             // Read session from db
-            if ( $this->read() ) {
+            if ($this->read()) {
                 $result = true;
                 // Useragent verification
-                if ( array_key_exists( 'useragent', $this->use ) && $this->use[ 'useragent' ] ) {
+                if (array_key_exists('useragent', $this->use) && $this->use[ 'useragent' ]) {
                     $result = $this->useragent === $_SERVER[ 'HTTP_USER_AGENT' ];
                 } else {
-                    if ( $this->useragent !== $_SERVER[ 'HTTP_USER_AGENT' ] ) {
+                    if ($this->useragent !== $_SERVER[ 'HTTP_USER_AGENT' ]) {
                         $this->useragent = $_SERVER[ 'HTTP_USER_AGENT' ];
                         $this->modified = true;
                     }
                 }
                 // IP verification
-                if ( $result && array_key_exists( 'ip', $this->use ) && $this->use[ 'ip' ] ) {
-                    $result = $this->ip === $_SERVER['REMOTE_ADDR'];
+                if ($result && array_key_exists('ip', $this->use) && $this->use[ 'ip' ]) {
+                    $result = $this->ip === $_SERVER[ 'REMOTE_ADDR' ];
                 } else {
-                    if ( $this->ip !== $_SERVER[ 'REMOTE_ADDR' ] ) {
+                    if ($this->ip !== $_SERVER[ 'REMOTE_ADDR' ]) {
                         $this->ip = $_SERVER[ 'REMOTE_ADDR' ];
                         $this->modified = true;
                     }
                 }
                 // Extend session duration
-                if ( $this->extend ) {
+                if ($this->extend) {
                     $this->endTime = time() + $this->duration;
                     $this->modified = true;
                     setcookie(
@@ -92,21 +92,21 @@ class Session extends Component
                         $this->token,
                         $this->endTime,
                         '/',
-                        settings( 'host' ),
-                        settings( 'secure' ),
+                        settings('host'),
+                        settings('secure'),
                         true
                     );
                 }
                 // If all verifications complete return
-                if ( $result ) {
+                if ($result) {
                     return;
                 }
             }
         }
         // If session not verified
         // Create new session
-        if ( ! $this->new() ) {
-            throw new SessionException( 'Cannot start session' );
+        if (!$this->new()) {
+            throw new SessionException('Cannot start session');
         }
     }
 
@@ -115,9 +115,9 @@ class Session extends Component
      * @param string $name
      * @return mixed
      */
-    public function __get( $name )
+    public function __get($name)
     {
-        return $this->get( $name );
+        return $this->get($name);
     }
 
     /**
@@ -125,18 +125,18 @@ class Session extends Component
      * @param string $name
      * @param mixed $value
      */
-    public function __set( $name, $value )
+    public function __set($name, $value)
     {
-        $this->set( $name, $value );
+        $this->set($name, $value);
     }
 
     /**
      * Unset data var
      * @param string $name
      */
-    public function __unset( $name )
+    public function __unset($name)
     {
-        $this->unset( $name );
+        $this->unset($name);
     }
 
     /**
@@ -144,7 +144,7 @@ class Session extends Component
      * @param string $name
      * @return mixed
      */
-    public function get( $name )
+    public function get($name)
     {
         return $this->data[ $name ] ?? null;
     }
@@ -154,9 +154,9 @@ class Session extends Component
      * @param string $name
      * @param mixed $value
      */
-    public function set( $name, $value )
+    public function set($name, $value)
     {
-        if ( array_key_exists( $name, $this->data ) && $this->data[ $name ] !== $value ) {
+        if (array_key_exists($name, $this->data) && $this->data[ $name ] !== $value) {
             $this->data[ $name ] = $value;
             $this->modified = true;
         }
@@ -166,10 +166,10 @@ class Session extends Component
      * Unset data var
      * @param string $name
      */
-    public function unset( $name )
+    public function unset($name)
     {
-        if ( array_key_exists( $name, $this->data ) ) {
-            unset( $this->data[ $name ] );
+        if (array_key_exists($name, $this->data)) {
+            unset($this->data[ $name ]);
             $this->modified = true;
         }
     }
@@ -179,7 +179,7 @@ class Session extends Component
      */
     public function __destruct()
     {
-        if ( $this->modified ) {
+        if ($this->modified) {
             // Save data if modified
             $this->saveData();
         }
@@ -193,7 +193,7 @@ class Session extends Component
     {
         $this->token = $this->createToken();
         $this->useragent = $_SERVER[ 'HTTP_USER_AGENT' ];
-        $this->ip = $_SERVER['REMOTE_ADDR'];
+        $this->ip = $_SERVER[ 'REMOTE_ADDR' ];
         $this->startTime = time();
         $this->endTime = $this->startTime + $this->duration;
         $this->data = [];
@@ -215,14 +215,14 @@ class Session extends Component
                     :data
                 );';
         $this->db->beginTransaction();
-        if ( $st = $this->db->prepare( $sql ) ) {
-            $st->bindValue( ':token', $this->token, Database::PARAM_STR );
-            $st->bindValue( ':useragent', $this->useragent, Database::PARAM_STR );
-            $st->bindValue( ':ip', $this->ip, Database::PARAM_STR );
-            $st->bindValue( ':startTime', $this->startTime, Database::PARAM_INT );
-            $st->bindValue( ':endTime', $this->endTime, Database::PARAM_INT );
-            $st->bindValue( ':data', serialize($this->data), Database::PARAM_STR );
-            if ( $queryResult = $st->execute() ) {
+        if ($st = $this->db->prepare($sql)) {
+            $st->bindValue(':token', $this->token, Database::PARAM_STR);
+            $st->bindValue(':useragent', $this->useragent, Database::PARAM_STR);
+            $st->bindValue(':ip', $this->ip, Database::PARAM_STR);
+            $st->bindValue(':startTime', $this->startTime, Database::PARAM_INT);
+            $st->bindValue(':endTime', $this->endTime, Database::PARAM_INT);
+            $st->bindValue(':data', serialize($this->data), Database::PARAM_STR);
+            if ($queryResult = $st->execute()) {
                 $this->id = $this->db->lastInsertId();
                 $this->db->commit();
                 return setcookie(
@@ -230,8 +230,8 @@ class Session extends Component
                     $this->token,
                     $this->endTime,
                     '/',
-                    settings( 'host' ),
-                    settings( 'secure' ),
+                    settings('host'),
+                    settings('secure'),
                     true
                 );
             }
@@ -260,16 +260,16 @@ class Session extends Component
             where token = :token
             and active = 1
             and unix_timestamp(end_time) > :time;';
-        if ( $st = $this->db->prepare( $sql ) ) {
-            $st->bindValue( ':token', $this->token, Database::PARAM_STR );
-            $st->bindValue( ':time', time(), Database::PARAM_INT );
-            if ( $st->execute() && $queryResult = $st->fetch( Database::FETCH_ASSOC ) ) {
+        if ($st = $this->db->prepare($sql)) {
+            $st->bindValue(':token', $this->token, Database::PARAM_STR);
+            $st->bindValue(':time', time(), Database::PARAM_INT);
+            if ($st->execute() && $queryResult = $st->fetch(Database::FETCH_ASSOC)) {
                 $this->id = $queryResult[ 'id' ];
                 $this->useragent = $queryResult[ 'useragent' ];
                 $this->ip = $queryResult[ 'ip' ];
-                $this->startTime = intval( $queryResult[ 'startTime' ] );
-                $this->endTime = intval( $queryResult[ 'endTime' ] );
-                $this->data = unserialize( $queryResult[ 'data' ] ) or $this->data = [];
+                $this->startTime = intval($queryResult[ 'startTime' ]);
+                $this->endTime = intval($queryResult[ 'endTime' ]);
+                $this->data = unserialize($queryResult[ 'data' ]) or $this->data = [];
                 // TODO: get user by id
                 $this->user = $queryResult[ 'user' ];
                 $result = true;
@@ -291,12 +291,12 @@ class Session extends Component
                 ip = :ip,
                 end_time = from_unixtime(:endTime)
                 where id = :id';
-        if ( $st = $this->db->prepare( $sql ) ) {
-            $st->bindValue( ":data", serialize($this->data), Database::PARAM_STR );
-            $st->bindValue( ":useragent", $this->useragent, Database::PARAM_STR );
-            $st->bindValue( ":ip", $this->ip, Database::PARAM_STR );
-            $st->bindValue( ":endTime", $this->endTime, Database::PARAM_INT );
-            $st->bindValue( ":id", $this->id, Database::PARAM_INT );
+        if ($st = $this->db->prepare($sql)) {
+            $st->bindValue(":data", serialize($this->data), Database::PARAM_STR);
+            $st->bindValue(":useragent", $this->useragent, Database::PARAM_STR);
+            $st->bindValue(":ip", $this->ip, Database::PARAM_STR);
+            $st->bindValue(":endTime", $this->endTime, Database::PARAM_INT);
+            $st->bindValue(":id", $this->id, Database::PARAM_INT);
             $result = $st->execute();
         }
         return $result;
@@ -310,7 +310,7 @@ class Session extends Component
     {
         do {
             $token = $this->generateToken();
-        } while ( $this->checkTokenExists( $token ) );
+        } while ($this->checkTokenExists($token));
         return $token;
     }
 
@@ -324,20 +324,20 @@ class Session extends Component
         $result = $this->secret;
         do {
             try {
-                $result = md5( $result . random_bytes( 32 ) . $this->secret );
-            } catch ( Exception $e ) {
-                $result = md5( $result . microtime( true ) . $this->secret );
+                $result = md5($result . random_bytes(32) . $this->secret);
+            } catch (Exception $e) {
+                $result = md5($result . microtime(true) . $this->secret);
             }
-        } while ( --$count );
+        } while (--$count);
         return $result;
     }
 
-    public function encodeToken( $token )
+    public function encodeToken($token)
     {
-        return md5( $token . $this->secret );
+        return md5($token . $this->secret);
     }
 
-    public function validateToken( $token, $dbToken )
+    public function validateToken($token, $dbToken)
     {
 
     }
@@ -347,13 +347,13 @@ class Session extends Component
      * @param string $token
      * @return bool
      */
-    protected function checkTokenExists( $token )
+    protected function checkTokenExists($token)
     {
         $result = false;
         $sql = 'select count(id) id from usf_sessions where token = :token;';
-        if ( $st = $this->db->prepare( $sql ) ) {
-            $st->bindValue( ':token', $token, Database::PARAM_STR );
-            if ( $st->execute() && $queryResult = $st->fetch( Database::FETCH_ASSOC ) ) {
+        if ($st = $this->db->prepare($sql)) {
+            $st->bindValue(':token', $token, Database::PARAM_STR);
+            if ($st->execute() && $queryResult = $st->fetch(Database::FETCH_ASSOC)) {
                 $result = $queryResult[ 'id' ] > 0;
             }
         }

@@ -16,12 +16,12 @@ class Settings extends Configuration
      * @param mixed $value
      * @return bool
      */
-    public function validate($name, &$value): bool
+    public function validate($name, &$value) : bool
     {
         $result = false;
-        switch ( $name ) {
+        switch ($name) {
             case 'theme':
-                $result = $this->validateTheme( $value );
+                $result = $this->validateTheme($value);
                 break;
         }
         return $result;
@@ -32,35 +32,34 @@ class Settings extends Configuration
      */
     public function getTheme()
     {
-        return $this->get( 'theme' );
+        return $this->get('theme');
     }
 
     /**
      * @param mixed $theme
      */
-    public function setTheme( $theme ): void
+    public function setTheme($theme) : void
     {
-        $this->set( 'theme', $theme );
+        $this->set('theme', $theme);
     }
 
     /**
      * @param string $theme
      * @return bool
      */
-    protected function validateTheme( &$theme )
+    protected function validateTheme(&$theme)
     {
-        $themesDirs = scandir( DIR_THEMES );
-        if ( in_array( $theme, $themesDirs ) && $this->config[ 'theme' ] !== $theme ) {
+        $themesDirs = scandir(DIR_THEMES);
+        if (in_array($theme, $themesDirs) && $this->config[ 'theme' ] !== $theme) {
             return true;
         } else {
-            if ( in_array( 'default', $themesDirs ) ) {
+            if (in_array('default', $themesDirs)) {
                 $theme = 'default';
                 return true;
             }
         }
         return false;
     }
-
 
 
 }

@@ -9,10 +9,10 @@ class SiteModule extends Module
 
     protected $autoloader;
 
-    public function __construct( $controller, $action )
+    public function __construct($controller, $action)
     {
-        parent::__construct( $controller, $action );
-        usf()->autoloader()->addPsr4( __NAMESPACE__ . '\\', dirname( __FILE__ ) );
+        parent::__construct($controller, $action);
+        usf()->autoloader()->addPsr4(__NAMESPACE__ . '\\', dirname(__FILE__));
     }
 
 }

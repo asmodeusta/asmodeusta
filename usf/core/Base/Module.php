@@ -46,24 +46,24 @@ abstract class Module extends Component implements ModuleInterface
      * @param $action
      * @throws ModuleException
      */
-    public function __construct( $controller, $action )
+    public function __construct($controller, $action)
     {
         $this->basename = $this->baseName();
 
         $this->getReflector()->getNamespaceName();
 
-        if ( $this->checkAccess() ) {
-            if ( $this->generateController( $controller ) ) {
-                if ( $this->controller->checkAccess() ) {
+        if ($this->checkAccess()) {
+            if ($this->generateController($controller)) {
+                if ($this->controller->checkAccess()) {
                     $this->actionName = $action;
                 } else {
-                    throw new ModuleException( 'Access denied' );
+                    throw new ModuleException('Access denied');
                 }
             } else {
-                throw new ModuleException( 'Controller "' . $controller . '" not found!' );
+                throw new ModuleException('Controller "' . $controller . '" not found!');
             }
         } else {
-            throw new ModuleException( 'Access denied' );
+            throw new ModuleException('Access denied');
         }
     }
 
@@ -74,7 +74,7 @@ abstract class Module extends Component implements ModuleInterface
      */
     protected function baseName()
     {
-        return basename( dirname( $this->getReflector()->getFileName() ) );
+        return basename(dirname($this->getReflector()->getFileName()));
     }
 
     /**
@@ -84,7 +84,7 @@ abstract class Module extends Component implements ModuleInterface
      */
     public function getCallback()
     {
-        return $this->controller->getAction( $this->actionName );
+        return $this->controller->getAction($this->actionName);
     }
 
     /**
@@ -101,11 +101,11 @@ abstract class Module extends Component implements ModuleInterface
      * @return string
      * @throws ModuleException
      */
-    public function getControllerFile( $controllerClassName )
+    public function getControllerFile($controllerClassName)
     {
         $controllerFilename = $this->getDirectory() . '/Controllers/' . $controllerClassName . '.php';
-        if ( ! is_file( $controllerFilename ) ) {
-            throw new ModuleException( 'Controller class "' . $controllerClassName . '" not found!' );
+        if (!is_file($controllerFilename)) {
+            throw new ModuleException('Controller class "' . $controllerClassName . '" not found!');
         }
         return $controllerFilename;
     }
@@ -115,11 +115,11 @@ abstract class Module extends Component implements ModuleInterface
      * @return string
      * @throws ModuleException
      */
-    public function getViewFile( $viewClassName )
+    public function getViewFile($viewClassName)
     {
-        $viewFileName = $this->getDirectory() . '/Views/' .  $viewClassName . '.php';
-        if ( ! is_file( $viewFileName ) ) {
-            throw new ModuleException( 'View class "' . $viewFileName . '" not found!' );
+        $viewFileName = $this->getDirectory() . '/Views/' . $viewClassName . '.php';
+        if (!is_file($viewFileName)) {
+            throw new ModuleException('View class "' . $viewFileName . '" not found!');
         }
         return $viewFileName;
     }
@@ -128,21 +128,21 @@ abstract class Module extends Component implements ModuleInterface
      * @param $name
      * @return bool
      */
-    protected function generateController( $name )
+    protected function generateController($name)
     {
         $result = false;
-        $controllerClassName = ucfirst( $name ) . 'Controller';
+        $controllerClassName = ucfirst($name) . 'Controller';
         try {
-            $controllerFile = $this->getControllerFile( $controllerClassName );
+            $controllerFile = $this->getControllerFile($controllerClassName);
             require_once $controllerFile;
             $controllerClass = lastDeclaredClass();
-            $this->controller = new $controllerClass( $this );
+            $this->controller = new $controllerClass($this);
             $this->controllerName = $name;
             $result = true;
-        } catch ( ModuleException $exception ) {
-            $this->addErrorMessage( $exception->getMessage() );
-        } catch ( Exception $exception ) {
-            $this->addErrorMessage( $exception->getMessage() );
+        } catch (ModuleException $exception) {
+            $this->addErrorMessage($exception->getMessage());
+        } catch (Exception $exception) {
+            $this->addErrorMessage($exception->getMessage());
         }
         return $result;
     }
@@ -152,21 +152,21 @@ abstract class Module extends Component implements ModuleInterface
      * @param array $data
      * @return bool|View
      */
-    public function getView( $name, $data = [] )
+    public function getView($name, $data = [])
     {
         try {
-            if ( ! array_key_exists( $name, $this->views ) ) {
-                $viewClassName = ucfirst( $name ) . 'View';
-                $viewFile = $this->getViewFile( $viewClassName );
+            if (!array_key_exists($name, $this->views)) {
+                $viewClassName = ucfirst($name) . 'View';
+                $viewFile = $this->getViewFile($viewClassName);
                 require_once $viewFile;
                 $this->views[ $name ] = lastDeclaredClass();
             }
             $viewClass = $this->views[ $name ];
-            return new $viewClass( $this, $data );
-        } catch ( ModuleException $exception ) {
-            $this->addErrorMessage( $exception->getMessage() );
-        } catch ( Exception $exception ) {
-            $this->addErrorMessage( $exception->getMessage() );
+            return new $viewClass($this, $data);
+        } catch (ModuleException $exception) {
+            $this->addErrorMessage($exception->getMessage());
+        } catch (Exception $exception) {
+            $this->addErrorMessage($exception->getMessage());
         }
         return false;
     }
@@ -177,20 +177,20 @@ abstract class Module extends Component implements ModuleInterface
      * @param string $name
      * @return bool|string
      */
-    public function getTemplateFile( $name )
+    public function getTemplateFile($name)
     {
         // Make filename with nodule name and extension
         $filename = $this->basename . DS . $name . '.php';
 
         // Check if file exists in selected theme
         $themeFile = DIR_THEMES . DS . usf()->settings()->getTheme() . DS . $filename;
-        if ( is_file( $themeFile ) ) {
+        if (is_file($themeFile)) {
             return $themeFile;
         }
 
         // Check if file exists in module directory
         $moduleFile = DIR_MODULES . DS . $filename;
-        if ( is_file( $moduleFile ) ) {
+        if (is_file($moduleFile)) {
             return $moduleFile;
         }
 

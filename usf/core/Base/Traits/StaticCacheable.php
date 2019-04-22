@@ -20,19 +20,19 @@ trait StaticCacheable
      * @param mixed|null $data
      * @return array|null
      */
-    protected static function staticCache( $key = null, $data = null )
+    protected static function staticCache($key = null, $data = null)
     {
-        if ( is_null( $key ) ) {
-            if ( is_null( $data ) ) {
+        if (is_null($key)) {
+            if (is_null($data)) {
                 return self::$staticCache;
             } else {
                 self::$staticCache = $data;
             }
         } else {
-            if ( is_null( $data ) ) {
-                return self::getStaticCache( $key );
+            if (is_null($data)) {
+                return self::getStaticCache($key);
             } else {
-                self::setStaticCache( $key, $data );
+                self::setStaticCache($key, $data);
             }
         }
         return null;
@@ -42,9 +42,9 @@ trait StaticCacheable
      * @param $key
      * @return mixed|null
      */
-    protected static function getStaticCache( $key )
+    protected static function getStaticCache($key)
     {
-        return self::$staticCache[ md5( $key ) ] ?? null;
+        return self::$staticCache[ md5($key) ] ?? null;
     }
 
     /**
@@ -52,26 +52,26 @@ trait StaticCacheable
      * @param mixed $data
      * @return mixed
      */
-    protected static function setStaticCache( $key, $data )
+    protected static function setStaticCache($key, $data)
     {
-        return self::$staticCache[ md5( $key ) ] = $data;
+        return self::$staticCache[ md5($key) ] = $data;
     }
 
     /**
      * @param mixed $key
      */
-    protected static function unsetStaticCache( $key )
+    protected static function unsetStaticCache($key)
     {
-        unset( self::$staticCache[ md5( $key ) ] );
+        unset(self::$staticCache[ md5($key) ]);
     }
 
     /**
      * @param $key
      * @return bool
      */
-    protected static function issetStaticCache( $key )
+    protected static function issetStaticCache($key)
     {
-        return isset( self::$staticCache[ md5( $key ) ] );
+        return isset(self::$staticCache[ md5($key) ]);
     }
 
 }

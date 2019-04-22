@@ -19,17 +19,17 @@ abstract class View extends DataStorage
      * @param Module $module
      * @param array $data
      */
-    public function __construct( Module $module, array $data = [] )
+    public function __construct(Module $module, array $data = [])
     {
-        parent::__construct( $data );
+        parent::__construct($data);
         $this->module = $module;
 
         $this->render();
     }
 
-    protected function getTemplateFile( $name )
+    protected function getTemplateFile($name)
     {
-        return $this->module->getTemplateFile( $name );
+        return $this->module->getTemplateFile($name);
     }
 
     /**

@@ -26,20 +26,20 @@ abstract class Controller extends Component
      * Controller constructor.
      * @param Module $module
      */
-    public function __construct( Module $module )
+    public function __construct(Module $module)
     {
         $this->module = $module;
         $shortName = $this->getReflector()->getShortName();
-        $this->basename = lcfirst( substr( $shortName, 0, strpos( 'Controller', $shortName ) ) );
+        $this->basename = lcfirst(substr($shortName, 0, strpos('Controller', $shortName)));
     }
 
     /**
      * @param string|null $actionName
      * @return bool
      */
-    public function checkAccess( $actionName = null )
+    public function checkAccess($actionName = null)
     {
-        if ( is_string( $actionName ) && preg_match( '~(.*)~', $actionName ) ) {
+        if (is_string($actionName) && preg_match('~(.*)~', $actionName)) {
             $access = true;
         } else {
             $access = true;
@@ -53,14 +53,14 @@ abstract class Controller extends Component
      * @return array
      * @throws ControllerException
      */
-    public function getAction( $actionName )
+    public function getAction($actionName)
     {
         //$action = [ $this, 'actionDefaultError' ];
-        $actionMethodName = 'action' . ucfirst( $actionName );
-        if ( $this->checkAccess( $actionName ) && method_exists( $this, $actionMethodName ) ) {
-            $action = [ $this, $actionMethodName ];
+        $actionMethodName = 'action' . ucfirst($actionName);
+        if ($this->checkAccess($actionName) && method_exists($this, $actionMethodName)) {
+            $action = [$this, $actionMethodName];
         } else {
-            throw new ControllerException( 'Action "' . $actionName . '" does not exist!' );
+            throw new ControllerException('Action "' . $actionName . '" does not exist!');
         }
         return $action;
     }

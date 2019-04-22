@@ -33,9 +33,9 @@ abstract class Configuration extends Component
      * Configuration constructor.
      * @param string $file - path of the config file
      */
-    public function __construct( $file )
+    public function __construct($file)
     {
-        $this->handler = ConfigHandlerStaticFactory::create( $file );
+        $this->handler = ConfigHandlerStaticFactory::create($file);
         $this->read();
     }
 
@@ -44,9 +44,9 @@ abstract class Configuration extends Component
      * @param string $name - name of configuration value
      * @return mixed - configuration parameter value
      */
-    public function __get( $name )
+    public function __get($name)
     {
-        return $this->get( $name );
+        return $this->get($name);
     }
 
     /**
@@ -54,9 +54,9 @@ abstract class Configuration extends Component
      * @param string $name
      * @param mixed $value
      */
-    public function __set( $name, $value )
+    public function __set($name, $value)
     {
-        $this->set( $name, $value );
+        $this->set($name, $value);
     }
 
     /**
@@ -64,7 +64,7 @@ abstract class Configuration extends Component
      * @param string $name - name of configuration value
      * @return mixed - configuration parameter value
      */
-    public function get( $name )
+    public function get($name)
     {
         return $this->config[ $name ] ?? null;
     }
@@ -74,10 +74,10 @@ abstract class Configuration extends Component
      * @param string $name
      * @param mixed $value
      */
-    public function set( $name, $value )
+    public function set($name, $value)
     {
-        if ( $this->validate( $name, $value ) ) {
-            if ( $this->config[ $name ] !== $value ) {
+        if ($this->validate($name, $value)) {
+            if ($this->config[ $name ] !== $value) {
                 $this->config[ $name ] = $value;
                 $this->modified = true;
             }
@@ -90,7 +90,7 @@ abstract class Configuration extends Component
      * @param mixed $value
      * @return bool
      */
-    abstract public function validate( $name, &$value ) : bool;
+    abstract public function validate($name, &$value) : bool;
 
     /**
      * Refreshing data from config file
@@ -106,9 +106,9 @@ abstract class Configuration extends Component
      */
     public function save()
     {
-        if ( $this->modified ) {
-            $this->handler->setFullConfig( $this->config );
-            if ( $this->handler->save() ) {
+        if ($this->modified) {
+            $this->handler->setFullConfig($this->config);
+            if ($this->handler->save()) {
                 $this->modified = false;
                 return true;
             }

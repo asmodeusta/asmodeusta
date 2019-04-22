@@ -6,7 +6,7 @@ abstract class ModuleUsf extends Component
 {
 
     protected $information = [
-        'slag' =>'module-test',
+        'slag' => 'module-test',
         'name' => 'Module test',
         'description' => 'This is basic module class',
         'version' => '0.0.1',
@@ -21,7 +21,7 @@ abstract class ModuleUsf extends Component
 
     protected $active;
 
-    public function __construct( $slag, $name, $description, $version, $active = true )
+    public function __construct($slag, $name, $description, $version, $active = true)
     {
 
     }
@@ -36,7 +36,7 @@ abstract class ModuleUsf extends Component
 
     }
 
-    public function getCallback( $args )
+    public function getCallback($args)
     {
 
     }

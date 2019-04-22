@@ -14,7 +14,7 @@ class Model extends Component
 
     public static function init()
     {
-        if ( is_null( self::$db ) ) {
+        if (is_null(self::$db)) {
             self::$db = db();
         }
     }

@@ -10,12 +10,12 @@ class ModulesStaticFactory implements StaticFactoryInterface
 
     protected static $modules = [];
 
-    public static function init( $modules )
+    public static function init($modules)
     {
-        foreach ( $modules as $module ) {
-            $moduleClassName = ucfirst( $module ) . 'Module';
+        foreach ($modules as $module) {
+            $moduleClassName = ucfirst($module) . 'Module';
             $moduleFile = DIR_MODULES . DS . $module . DS . $moduleClassName . '.php';
-            if ( is_file( $moduleFile ) ) {
+            if (is_file($moduleFile)) {
                 include_once $moduleFile;
                 $moduleClass = lastDeclaredClass();
                 static::$modules[ $module ] = $moduleClass;
@@ -24,10 +24,10 @@ class ModulesStaticFactory implements StaticFactoryInterface
         return static::$modules;
     }
 
-    public static function create( $name )
+    public static function create($name)
     {
         $moduleClassName = null;
-        if ( array_key_exists( $name, static::$modules ) ) {
+        if (array_key_exists($name, static::$modules)) {
             $moduleClassName = static::$modules[ $name ];
         }
         return $moduleClassName;

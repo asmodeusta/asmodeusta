@@ -67,7 +67,7 @@ class Router extends Component
      * - @value (required): the string to replace after comparison match
      * - @nodes (optional): child nodes of the route.
      *      If not set then Router compares all parts of route, and if it's OK - stops searching
-     * - @method ( optional ): the string of available methods for this and child routes.
+     * - @method (optional): the string of available methods for this and child routes.
      *      Available values: get|post
      *      By default route can be called with any method or method of parent route.
      * - @type (optional): available content type to return for this and child routes.
@@ -98,19 +98,19 @@ class Router extends Component
      * Router constructor.
      * @param string $configFile
      */
-    public function __construct( $configFile )
+    public function __construct($configFile)
     {
         /**
          * Setting request data
          */
-        $requestData = parse_url( $_SERVER[ 'REQUEST_URI' ] );
-        $this->requestQuery = array_key_exists( 'query', $requestData ) ? '?' . $requestData[ 'query' ] : '';
-        $this->requestPath = array_key_exists( 'path', $requestData ) ? trim( $requestData[ 'path' ], '/' ) : '';
+        $requestData = parse_url($_SERVER[ 'REQUEST_URI' ]);
+        $this->requestQuery = array_key_exists('query', $requestData) ? '?' . $requestData[ 'query' ] : '';
+        $this->requestPath = array_key_exists('path', $requestData) ? trim($requestData[ 'path' ], '/') : '';
 
         /**
          * Setting request method
          */
-        $this->requestMethod = strtolower( $_SERVER[ 'REQUEST_METHOD' ] );
+        $this->requestMethod = strtolower($_SERVER[ 'REQUEST_METHOD' ]);
 
         /**
          * Setting content type
@@ -120,9 +120,9 @@ class Router extends Component
         /**
          * Adding routes
          */
-        $this->setConfigFile( $configFile )->configure();
+        $this->setConfigFile($configFile)->configure();
 
-        self::handleObservers( 'afterConstruct', $this );
+        self::handleObservers('afterConstruct', $this);
     }
 
     /**
@@ -130,25 +130,25 @@ class Router extends Component
      */
     protected function setup()
     {
-        $this->setupConfig( $this->configuration );
+        $this->setupConfig($this->configuration);
     }
 
     /**
      * @param array $config
      */
-    public function setupConfig( array $config )
+    public function setupConfig(array $config)
     {
         /**
          * Setup routes
          */
-        if ( empty( $this->routes ) && array_key_exists( 'routes', $config ) ) {
+        if (empty($this->routes) && array_key_exists('routes', $config)) {
             $this->routes = $config[ 'routes' ];
         }
 
         /**
          * Setup defaults
          */
-        if ( empty( $this->defaults ) && array_key_exists( 'defaults', $config ) ) {
+        if (empty($this->defaults) && array_key_exists('defaults', $config)) {
             $this->defaults = $config[ 'defaults' ];
         }
     }
@@ -160,13 +160,13 @@ class Router extends Component
      * @param bool $rewrite
      * @return bool
      */
-    public function addRoute( $route, $rewrite = false )
+    public function addRoute($route, $rewrite = false)
     {
         $result = false;
-        if ( $this->validateRoute( $route ) ) {
-            $routes = [ $route ];
-            $routes = $this->addLangToRoutes( $routes );
-            $result = $this->addRouteRecursive( $this->routes, $routes, $rewrite );
+        if ($this->validateRoute($route)) {
+            $routes = [$route];
+            $routes = $this->addLangToRoutes($routes);
+            $result = $this->addRouteRecursive($this->routes, $routes, $rewrite);
         }
         return $result;
     }
@@ -176,7 +176,7 @@ class Router extends Component
      * @param array $routes
      * @return array
      */
-    protected function addLangToRoutes( array &$routes )
+    protected function addLangToRoutes(array &$routes)
     {
         // TODO: change hardcoded match pattern to the list of available languages
         $routes = [
@@ -196,27 +196,27 @@ class Router extends Component
      * @param bool $rewrite
      * @return bool
      */
-    protected function addRouteRecursive( &$routes, $newRoute, $rewrite = false )
+    protected function addRouteRecursive(&$routes, $newRoute, $rewrite = false)
     {
         $result = false;
-        if ( $this->validateRoute( $newRoute ) ) {
+        if ($this->validateRoute($newRoute)) {
             //Find route
             $found = false;
             $oldRoute = [];
-            foreach ( $routes as &$oldRoute ) {
-                if ( $this->validateRoute( $oldRoute ) && empty( $this->compareRoutes( $oldRoute, $newRoute ) ) ) {
+            foreach ($routes as &$oldRoute) {
+                if ($this->validateRoute($oldRoute) && empty($this->compareRoutes($oldRoute, $newRoute))) {
                     $found = true;
                     break;
                 }
             }
 
             // If route has been found, compare
-            if ( $found ) {
-                if ( array_key_exists( 'nodes', $newRoute ) ) {
-                    if ( array_key_exists( 'nodes', $oldRoute ) ) {
+            if ($found) {
+                if (array_key_exists('nodes', $newRoute)) {
+                    if (array_key_exists('nodes', $oldRoute)) {
                         $result = true;
-                        foreach ( $newRoute[ 'nodes' ] as $node ) {
-                            $result = $result && $this->addRouteRecursive( $oldRoute[ 'nodes' ], $node, $rewrite );
+                        foreach ($newRoute[ 'nodes' ] as $node) {
+                            $result = $result && $this->addRouteRecursive($oldRoute[ 'nodes' ], $node, $rewrite);
                         }
                     } else {
                         $routes[ 'nodes' ] = $newRoute[ 'nodes' ];
@@ -237,15 +237,15 @@ class Router extends Component
      * @param array $newRoute
      * @return array
      */
-    protected function compareRoutes( $oldRoute, $newRoute )
+    protected function compareRoutes($oldRoute, $newRoute)
     {
         return array_diff(
-            array_filter( $oldRoute, function ( $var ) {
-                return !is_array( $var );
-            } ),
-            array_filter( $newRoute, function ( $var ) {
-                return !is_array( $var );
-            } )
+            array_filter($oldRoute, function ($var) {
+                return !is_array($var);
+            }),
+            array_filter($newRoute, function ($var) {
+                return !is_array($var);
+            })
         );
     }
 
@@ -256,10 +256,10 @@ class Router extends Component
      * @param bool $overwrite
      * @return Router
      */
-    public function addRoutes( array $routes, $overwrite = false )
+    public function addRoutes(array $routes, $overwrite = false)
     {
-        foreach ( $this->addLangToRoutes( $routes ) as $route ) {
-            $this->addRoute( $route, $overwrite );
+        foreach ($this->addLangToRoutes($routes) as $route) {
+            $this->addRoute($route, $overwrite);
         }
         return $this;
     }
@@ -270,11 +270,11 @@ class Router extends Component
      * @param $file
      * @return $this
      */
-    public function addRoutesFromFile( $file )
+    public function addRoutesFromFile($file)
     {
-        $configHandler = ConfigHandlerStaticFactory::create( $file );
-        $routes = $configHandler->setSection( 'routes' )->getConfig();
-        $this->addRoutes( $routes );
+        $configHandler = ConfigHandlerStaticFactory::create($file);
+        $routes = $configHandler->setSection('routes')->getConfig();
+        $this->addRoutes($routes);
         return $this;
     }
 
@@ -285,9 +285,9 @@ class Router extends Component
      * @param bool $overwrite
      * @return Router
      */
-    public function addDefaults( array $defaults, $overwrite = false )
+    public function addDefaults(array $defaults, $overwrite = false)
     {
-        if ( $overwrite ) {
+        if ($overwrite) {
             $this->defaults = $defaults;
         } else {
             $this->defaults = $defaults + $this->defaults;
@@ -308,39 +308,39 @@ class Router extends Component
 
         $path = $this->requestPath;
         // Parsing request path to get module, controller, action and other request params
-        $data = $this->parseRequestPath( $path, $this->routes );
+        $data = $this->parseRequestPath($path, $this->routes);
         // Checking request data
-        if ( $this->checkRequestData( $data ) ) {
+        if ($this->checkRequestData($data)) {
             // Checking if url is valid
-            if ( $this->requestMethod === 'get' ) {
+            if ($this->requestMethod === 'get') {
                 // Creating url based on parsed request params
-                $path = $this->createUrl( $data );
+                $path = $this->createUrl($data);
                 // Check if generated path is different from actual, then redirect
-                if ( $path !== $this->requestPath ) {
-                    $url = DS . $path . ( empty( $this->requestQuery ) ? '' : DS . $this->requestQuery );
-                    redirect( $url );
+                if ($path !== $this->requestPath) {
+                    $url = DS . $path . (empty($this->requestQuery) ? '' : DS . $this->requestQuery);
+                    redirect($url);
                 }
             }
             $segments[ 'data' ] = $data;
             // Searching callback for current request
             try {
-                if ( $moduleClass = ModulesStaticFactory::create( $data[ 'module' ] ) ) {
-                    $segments[ 'callback' ] = ( new $moduleClass( $data[ 'controller' ],
-                        $data[ 'action' ] ) )->getCallback();
+                if ($moduleClass = ModulesStaticFactory::create($data[ 'module' ])) {
+                    $segments[ 'callback' ] = (new $moduleClass($data[ 'controller' ],
+                        $data[ 'action' ]))->getCallback();
                     // Generating request object based on request params
-                    $this->request = new Request( $segments );
+                    $this->request = new Request($segments);
                     $result = true;
                 } else {
-                    throw new RouterException( 'Module "' . $data[ 'module' ] . '" not found!' );
+                    throw new RouterException('Module "' . $data[ 'module' ] . '" not found!');
                 }
-            } catch ( \Exception $exception ) {
-                $this->addErrorMessage( $exception->getMessage() );
+            } catch (\Exception $exception) {
+                $this->addErrorMessage($exception->getMessage());
             }
         } else {
-            $this->addErrorMessage( 'Wrong request path!' );
+            $this->addErrorMessage('Wrong request path!');
         }
 
-        $this->handleListeners( 'afterParseRequest', $result );
+        $this->handleListeners('afterParseRequest', $result);
         return $result;
     }
 
@@ -349,11 +349,11 @@ class Router extends Component
      * @param array $segments
      * @return bool
      */
-    private function checkRequestData( array $segments )
+    private function checkRequestData(array $segments)
     {
-        return array_key_exists( 'module', $segments )
-            && array_key_exists( 'controller', $segments )
-            && array_key_exists( 'action', $segments );
+        return array_key_exists('module', $segments)
+            && array_key_exists('controller', $segments)
+            && array_key_exists('action', $segments);
     }
 
     /**
@@ -373,21 +373,21 @@ class Router extends Component
      * @param array $segments
      * @return array
      */
-    private function parseRequestPath( &$path, $routes, &$segments = [] )
+    private function parseRequestPath(&$path, $routes, &$segments = [])
     {
-        $path = trim( $path, '/' );
+        $path = trim($path, '/');
         $oldPath = $path;
         $oldSegments = $segments;
 
-        foreach ( $routes as $route ) {
+        foreach ($routes as $route) {
 
-            if ( !$this->validateRoute( $route ) ) {
+            if (!$this->validateRoute($route)) {
                 continue;
             }
 
             // Check method
-            if ( array_key_exists( 'method', $route ) ) {
-                if ( strpos( $route[ 'method' ], $this->requestMethod ) === false ) {
+            if (array_key_exists('method', $route)) {
+                if (strpos($route[ 'method' ], $this->requestMethod) === false) {
                     continue;
                 } else {
                     $segments[ 'method' ] = $this->requestMethod;
@@ -395,8 +395,8 @@ class Router extends Component
             }
 
             // Check content type
-            if ( array_key_exists( 'type', $route ) ) {
-                if ( strpos( $route[ 'type' ], $this->contentType ) === false ) {
+            if (array_key_exists('type', $route)) {
+                if (strpos($route[ 'type' ], $this->contentType) === false) {
                     continue;
                 } else {
                     $segments[ 'type' ] = $this->contentType;
@@ -404,33 +404,33 @@ class Router extends Component
             }
 
             // Check match
-            if ( $route[ 'match' ] === 0 ) {
+            if ($route[ 'match' ] === 0) {
                 $segments[ $route[ 'name' ] ] = $route[ 'value' ];
             } else {
-                if ( array_key_exists( 'default', $route ) ) {
+                if (array_key_exists('default', $route)) {
                     $defaultValue = $route[ 'default' ];
-                } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                } elseif (array_key_exists($route[ 'name' ], $this->defaults)) {
                     $defaultValue = $this->defaults[ $route[ 'name' ] ];
                 } else {
                     $defaultValue = null;
                 }
-                if ( !$this->matchRoute(
+                if (!$this->matchRoute(
                     $route,
                     $segments,
                     $path,
                     $defaultValue
-                ) ) {
+                )) {
                     continue;
                 }
             }
 
             // Check nodes
-            if ( array_key_exists( 'nodes', $route ) ) {
-                $this->parseRequestPath( $path, $route[ 'nodes' ], $segments );
+            if (array_key_exists('nodes', $route)) {
+                $this->parseRequestPath($path, $route[ 'nodes' ], $segments);
             }
 
             // Check if all sections was processed
-            if ( $path === "" ) {
+            if ($path === "") {
                 break;
             } else {
                 $path = $oldPath;
@@ -440,7 +440,7 @@ class Router extends Component
         }
 
         //
-        if ( $path !== "" ) {
+        if ($path !== "") {
             $segments = [];
         }
 
@@ -456,19 +456,19 @@ class Router extends Component
      * @param null $defaultValue
      * @return bool
      */
-    private function matchRoute( $route, &$segments, &$path, $defaultValue = null )
+    private function matchRoute($route, &$segments, &$path, $defaultValue = null)
     {
         $result = true;
         $checkedPath = $path . '/';
 
-        $withNodes = array_key_exists( 'nodes', $route );
-        $pattern = '~^' . $route[ 'match' ] . '/' . ( $withNodes ? '(.*)' : '' ) . '$~';
+        $withNodes = array_key_exists('nodes', $route);
+        $pattern = '~^' . $route[ 'match' ] . '/' . ($withNodes ? '(.*)' : '') . '$~';
 
-        if ( preg_match( $pattern, $checkedPath, $matches ) ) {
-            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $checkedPath );
-            $path = $withNodes ? end( $matches ) : '';
-        } elseif ( !is_null( $defaultValue ) && preg_match( $pattern, $defaultValue . '/' ) ) {
-            $segments[ $route[ 'name' ] ] = preg_replace( $pattern, $route[ 'value' ], $defaultValue . '/' );
+        if (preg_match($pattern, $checkedPath, $matches)) {
+            $segments[ $route[ 'name' ] ] = preg_replace($pattern, $route[ 'value' ], $checkedPath);
+            $path = $withNodes ? end($matches) : '';
+        } elseif (!is_null($defaultValue) && preg_match($pattern, $defaultValue . '/')) {
+            $segments[ $route[ 'name' ] ] = preg_replace($pattern, $route[ 'value' ], $defaultValue . '/');
         } else {
             $result = false;
         }
@@ -481,11 +481,11 @@ class Router extends Component
      * @param array $route
      * @return bool
      */
-    private function validateRoute( array $route )
+    private function validateRoute(array $route)
     {
-        return array_key_exists( 'name', $route )
-            && array_key_exists( 'match', $route )
-            && array_key_exists( 'value', $route );
+        return array_key_exists('name', $route)
+            && array_key_exists('match', $route)
+            && array_key_exists('value', $route);
     }
 
     /**
@@ -494,9 +494,9 @@ class Router extends Component
      * @param array $segments
      * @return string
      */
-    public function createUrl( array $segments )
+    public function createUrl(array $segments)
     {
-        return $this->generateUrl( $segments, $this->routes );
+        return $this->generateUrl($segments, $this->routes);
     }
 
     /**
@@ -506,62 +506,62 @@ class Router extends Component
      * @param array $routes
      * @return string
      */
-    public function generateUrl( array &$segments, array $routes )
+    public function generateUrl(array &$segments, array $routes)
     {
         $path = "";
 
-        foreach ( $routes as $route ) {
+        foreach ($routes as $route) {
 
-            if ( !$this->validateRoute( $route ) ) {
+            if (!$this->validateRoute($route)) {
                 continue;
             }
 
             // Check method
-            if ( array_key_exists( 'method', $route ) && array_key_exists( 'method', $segments ) ) {
-                if ( strpos( $route[ 'method' ], $segments[ 'method' ] ) === false ) {
+            if (array_key_exists('method', $route) && array_key_exists('method', $segments)) {
+                if (strpos($route[ 'method' ], $segments[ 'method' ]) === false) {
                     continue;
                 }
             }
 
             // Check content type
-            if ( array_key_exists( 'type', $route ) && array_key_exists( 'type', $segments ) ) {
-                if ( strpos( $route[ 'type' ], $segments[ 'type' ] ) === false ) {
+            if (array_key_exists('type', $route) && array_key_exists('type', $segments)) {
+                if (strpos($route[ 'type' ], $segments[ 'type' ]) === false) {
                     continue;
                 }
             }
 
             // Check match
-            if ( array_key_exists( $route[ 'name' ], $segments ) ) {
+            if (array_key_exists($route[ 'name' ], $segments)) {
 
-                if ( $route[ 'match' ] === 0 ) {
+                if ($route[ 'match' ] === 0) {
                     //
                 } else {
-                    if ( array_key_exists( 'default', $route ) ) {
+                    if (array_key_exists('default', $route)) {
                         $defaultValue = $route[ 'default' ];
-                    } elseif ( array_key_exists( $route[ 'name' ], $this->defaults ) ) {
+                    } elseif (array_key_exists($route[ 'name' ], $this->defaults)) {
                         $defaultValue = $this->defaults[ $route[ 'name' ] ];
                     } else {
                         $defaultValue = null;
                     }
-                    if ( !$this->matchRouteForCreate(
+                    if (!$this->matchRouteForCreate(
                         $route[ 'name' ],
                         $route[ 'match' ],
                         $route[ 'value' ],
                         $segments,
                         $path,
                         $defaultValue
-                    ) ) {
+                    )) {
                         continue;
                     }
                 }
 
-                if ( array_key_exists( 'nodes', $route ) ) {
-                    $path .= '/' . $this->generateUrl( $segments, $route[ 'nodes' ] );
+                if (array_key_exists('nodes', $route)) {
+                    $path .= '/' . $this->generateUrl($segments, $route[ 'nodes' ]);
                 }
             }
         }
 
-        return trim( $path, '/' );
+        return trim($path, '/');
     }
 
     /**
@@ -575,16 +575,16 @@ class Router extends Component
      * @param null|string $defaultValue
      * @return bool
      */
-    private function matchRouteForCreate( $name, $match, $value, $segments, &$path, $defaultValue = null )
+    private function matchRouteForCreate($name, $match, $value, $segments, &$path, $defaultValue = null)
     {
         $result = true;
         $section = $segments[ $name ];
-        $this->remakePattern( $match, $value );
+        $this->remakePattern($match, $value);
 
         $pattern = "~^" . $value . "$~";
-        if ( preg_match( $pattern, $section ) ) {
-            $newValue = preg_replace( $pattern, $match, $section );
-            if ( $newValue !== $defaultValue ) {
+        if (preg_match($pattern, $section)) {
+            $newValue = preg_replace($pattern, $match, $section);
+            if ($newValue !== $defaultValue) {
                 $path .= "/" . $newValue;
             }
         } else {
@@ -599,18 +599,18 @@ class Router extends Component
      * @param string $match
      * @param string $value
      */
-    private function remakePattern( &$match, &$value )
+    private function remakePattern(&$match, &$value)
     {
         $oldMatch = $match;
         $pattern = "~([\(](.*)[\)])~U";
         $valueArr = [];
-        while ( preg_match( $pattern, $oldMatch, $matches ) ) {
+        while (preg_match($pattern, $oldMatch, $matches)) {
             $valueArr[] = $matches[ 2 ];
-            $oldMatch = preg_replace( $pattern, "$2", $oldMatch, 1 );
+            $oldMatch = preg_replace($pattern, "$2", $oldMatch, 1);
         }
-        for ( $count = 0; $count < count( $valueArr ); $count++ ) {
-            $match = str_replace( "(" . $valueArr[ $count ] . ")", "$" . ( $count + 1 ), $match );
-            $value = str_replace( "$" . ( $count + 1 ), "(" . $valueArr[ $count ] . ")", $value );
+        for ($count = 0; $count < count($valueArr); $count++) {
+            $match = str_replace("(" . $valueArr[ $count ] . ")", "$" . ($count + 1), $match);
+            $value = str_replace("$" . ($count + 1), "(" . $valueArr[ $count ] . ")", $value);
         }
     }
 

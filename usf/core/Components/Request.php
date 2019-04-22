@@ -70,21 +70,21 @@ class Request
      * @param array $segments
      * @throws RequestException
      */
-    public function __construct( array $segments )
+    public function __construct(array $segments)
     {
-        $this->url = trim( $_SERVER[ 'REQUEST_URI' ], '/' );
+        $this->url = trim($_SERVER[ 'REQUEST_URI' ], '/');
 
-        if ( array_key_exists( 'callback', $segments ) ) {
+        if (array_key_exists('callback', $segments)) {
             $this->callback = $segments[ 'callback' ];
         } else {
-            throw new RequestException( 'Callback not found!' );
+            throw new RequestException('Callback not found!');
         }
 
-        if ( array_key_exists( 'data', $segments ) ) {
+        if (array_key_exists('data', $segments)) {
             $this->data = $segments[ 'data' ];
             $this->parseData();
         } else {
-            throw new RequestException( 'Data not found!' );
+            throw new RequestException('Data not found!');
         }
     }
 
@@ -93,25 +93,25 @@ class Request
      */
     protected function parseData()
     {
-        if ( is_null( $this->module = $this->takeDataValue( 'module' ) ) ) {
-            throw new RequestException( 'Module not found!' );
+        if (is_null($this->module = $this->takeDataValue('module'))) {
+            throw new RequestException('Module not found!');
         }
 
-        if ( is_null( $this->controller = $this->takeDataValue( 'controller' ) ) ) {
-            throw new RequestException( 'Controller not found!' );
+        if (is_null($this->controller = $this->takeDataValue('controller'))) {
+            throw new RequestException('Controller not found!');
         }
 
-        if ( is_null( $this->action = $this->takeDataValue( 'action' ) ) ) {
-            throw new RequestException( 'Action not found!' );
+        if (is_null($this->action = $this->takeDataValue('action'))) {
+            throw new RequestException('Action not found!');
         }
 
-        if ( is_null( $this->lang = $this->takeDataValue( 'lang' ) ) ) {
-            throw new RequestException( 'Lang not found!' );
+        if (is_null($this->lang = $this->takeDataValue('lang'))) {
+            throw new RequestException('Lang not found!');
         }
 
-        $this->method = $this->takeDataValue( 'method' ) ?? strtolower( $_SERVER[ 'REQUEST_METHOD' ] );
+        $this->method = $this->takeDataValue('method') ?? strtolower($_SERVER[ 'REQUEST_METHOD' ]);
 
-        $this->contentType = $this->takeDataValue( 'type' ) ?? 'html';
+        $this->contentType = $this->takeDataValue('type') ?? 'html';
     }
 
     /**
@@ -120,7 +120,7 @@ class Request
      * @param string $name
      * @return mixed
      */
-    public function __get( $name )
+    public function __get($name)
     {
         return $this->$name ?? null;
     }
@@ -129,12 +129,12 @@ class Request
      * @param string $key
      * @return mixed|null
      */
-    public function takeDataValue( $key )
+    public function takeDataValue($key)
     {
         $result = null;
-        if ( array_key_exists( $key, $this->data ) ) {
+        if (array_key_exists($key, $this->data)) {
             $result = $this->data[ $key ];
-            unset( $this->data[ $key ] );
+            unset($this->data[ $key ]);
         }
         return $result;
     }
@@ -143,7 +143,7 @@ class Request
      * @param string $key
      * @return mixed|null
      */
-    public function getDataValue( $key )
+    public function getDataValue($key)
     {
         return $this->data[ $key ] ?? null;
     }
@@ -153,7 +153,7 @@ class Request
      */
     public function call()
     {
-        call_user_func_array( $this->callback, $this->data );
+        call_user_func_array($this->callback, $this->data);
     }
 
 }

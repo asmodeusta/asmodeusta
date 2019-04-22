@@ -35,9 +35,9 @@ abstract class Component
     protected function getReflector()
     {
         try {
-            return $this->reflector ?? new \ReflectionClass( get_class( $this ) );
-        } catch ( \ReflectionException $exception ) {
-            $this->addErrorMessage( $exception->getMessage() );
+            return $this->reflector ?? new \ReflectionClass(get_class($this));
+        } catch (\ReflectionException $exception) {
+            $this->addErrorMessage($exception->getMessage());
         }
         return null;
     }
@@ -48,7 +48,7 @@ abstract class Component
      */
     protected function getDirectory()
     {
-        return $this->directory ?? dirname( $this->getReflector()->getFileName() );
+        return $this->directory ?? dirname($this->getReflector()->getFileName());
     }
 
     /**
@@ -58,7 +58,7 @@ abstract class Component
      * @param string $group
      * @param int $importance
      */
-    protected function addErrorMessage( $message, $group = 'main', $importance = 5 )
+    protected function addErrorMessage($message, $group = 'main', $importance = 5)
     {
         $this->errors[ $group ][ $importance ][] = $message;
     }
@@ -69,17 +69,17 @@ abstract class Component
      * @param string $group
      * @return array|null
      */
-    public function getErrors( $group = 'main' )
+    public function getErrors($group = 'main')
     {
         $result = null;
-        if ( array_key_exists( $group, $this->errors ) ) {
+        if (array_key_exists($group, $this->errors)) {
             $result = [];
-            asort( $this->errors[ $group ] );
-            array_walk_recursive($this->errors[ $group ], function ( $item, $key ) use ( &$result ) {
-                if ( !is_array( $item ) ) {
+            asort($this->errors[ $group ]);
+            array_walk_recursive($this->errors[ $group ], function ($item, $key) use (&$result) {
+                if (!is_array($item)) {
                     $result[] = $item;
                 }
-            } );
+            });
         }
         return $result;
     }
@@ -90,10 +90,10 @@ abstract class Component
      * @param string $group
      * @return $this
      */
-    public function cleanErrors( $group = 'main' )
+    public function cleanErrors($group = 'main')
     {
-        if ( array_key_exists( $group, $this->errors ) ) {
-            unset( $this->errors[ $group ] );
+        if (array_key_exists($group, $this->errors)) {
+            unset($this->errors[ $group ]);
         }
         return $this;
     }

@@ -32,7 +32,7 @@ trait Configurable
      */
     protected function saveConfiguration()
     {
-        $this->configHandler->setFullConfig( $this->configuration )->save();
+        $this->configHandler->setFullConfig($this->configuration)->save();
     }
 
     /**
@@ -41,7 +41,7 @@ trait Configurable
      */
     public function configure()
     {
-        $this->configHandler = ConfigHandlerStaticFactory::create( $this->configFile );
+        $this->configHandler = ConfigHandlerStaticFactory::create($this->configFile);
         $this->configuration = $this->configHandler->getFullConfig();
         $this->setup();
         return $this;
@@ -52,7 +52,7 @@ trait Configurable
      * @param string $file
      * @return $this
      */
-    public function setConfigFile( $file )
+    public function setConfigFile($file)
     {
         $this->configFile = $file;
         return $this;

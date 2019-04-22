@@ -15,6 +15,6 @@ interface FactoryInterface
      * @param $params
      * @return ModuleUsf|Null
      */
-    public function create( $params );
+    public function create($params);
 
 }

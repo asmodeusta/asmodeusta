@@ -24,9 +24,9 @@ class JsonConfigHandler extends ConfigHandler
     protected function read()
     {
         $result = false;
-        $json = file_get_contents( $this->file );
-        $config = json_decode( $json, true, 512, JSON_BIGINT_AS_STRING );
-        if ( ! is_null( $config ) ) {
+        $json = file_get_contents($this->file);
+        $config = json_decode($json, true, 512, JSON_BIGINT_AS_STRING);
+        if (!is_null($config)) {
             $this->configuration = $config;
             $result = true;
         }
@@ -40,13 +40,13 @@ class JsonConfigHandler extends ConfigHandler
     protected function write()
     {
         $result = false;
-        $json = json_encode( $this->configuration );
-        if ( $json !== false ) {
-            if ( ! $result = file_put_contents( $this->filePath, $json, LOCK_EX ) ) {
-                $this->addErrorMessage( 'Could not write file "' . $this->filePath . '"' );
+        $json = json_encode($this->configuration);
+        if ($json !== false) {
+            if (!$result = file_put_contents($this->filePath, $json, LOCK_EX)) {
+                $this->addErrorMessage('Could not write file "' . $this->filePath . '"');
             }
         }
-        return (bool) $result;
+        return (bool)$result;
     }
 
 }

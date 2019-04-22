@@ -13,7 +13,7 @@ class ModuleOptionsFactory implements FactoryInterface
 
     public function create($module)
     {
-        if ( $this->issetCache($module) ) {
+        if ($this->issetCache($module)) {
             return $this->cache($module);
         } else {
             $options = new Options($module);

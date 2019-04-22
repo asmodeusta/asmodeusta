@@ -25,7 +25,7 @@ class PhpConfigHandler extends ConfigHandler
     {
         $result = false;
         $this->configuration = include $this->file;
-        if ( is_array( $this->configuration ) ) {
+        if (is_array($this->configuration)) {
             $result = true;
         } else {
             $this->configuration = [];
@@ -40,9 +40,9 @@ class PhpConfigHandler extends ConfigHandler
     protected function write()
     {
         $result = false;
-        if ( file_put_contents( $this->filePath,
-            '<?php return ' . var_export( $this->configuration, true ) . ';',
-            LOCK_EX ) ) {
+        if (file_put_contents($this->filePath,
+            '<?php return ' . var_export($this->configuration, true) . ';',
+            LOCK_EX)) {
             $result = true;
         }
         return $result;

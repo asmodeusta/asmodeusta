@@ -8,10 +8,10 @@ use Usf\Site\Views\MainHeartView;
 class MainController extends Controller
 {
 
-    public function actionIndex( $page = 1 )
+    public function actionIndex($page = 1)
     {
         echo 'Lang: ', usf()->router()->getRequest()->lang, '<br/>Page: ', $page, '<br/>';
-        $time = microtime( true );
+        $time = microtime(true);
         echo 'Time: ', $time - usf()->getStartTime(), '<br/>';
     }
 
@@ -49,7 +49,7 @@ class MainController extends Controller
             ]
         ];
         echo '<pre>';
-        if( router()->addRoute( $newRoute ) ) {
+        if (router()->addRoute($newRoute)) {
             echo 'success!';
         } else {
             echo 'failed!';
@@ -59,7 +59,7 @@ class MainController extends Controller
 
     public function actionHeart()
     {
-        new MainHeartView( $this->module );
+        new MainHeartView($this->module);
     }
 
 }

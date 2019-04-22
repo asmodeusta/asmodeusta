@@ -47,7 +47,7 @@ function request()
  * @param string $name
  * @return Settings|mixed
  */
-function settings( $name = '' )
+function settings($name = '')
 {
-    return usf()->settings( $name );
+    return usf()->settings($name);
 }

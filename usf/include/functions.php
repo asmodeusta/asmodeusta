@@ -7,15 +7,15 @@
 function lastDeclaredClass()
 {
     $classes = get_declared_classes();
-    return end( $classes );
+    return end($classes);
 }
 
 /**
  * Redirect
  * @param string $url
  */
-function redirect( $url )
+function redirect($url)
 {
-    header( 'Location: ' . $url );
+    header('Location: ' . $url);
     die;
 }

@@ -40,7 +40,7 @@ class TestController extends Controller
         $usfEndTime = microtime(true);
 
         echo '<pre>';
-        echo '/usf() time on '.$iterations.' iterations: '.($usfEndTime - $usfStartTime).PHP_EOL;
+        echo '/usf() time on ' . $iterations . ' iterations: ' . ($usfEndTime - $usfStartTime) . PHP_EOL;
         echo '</pre>';
     }
 

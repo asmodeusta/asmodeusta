@@ -73,11 +73,11 @@ class Database extends PDO
      * Database constructor.
      * @param string $configFile
      */
-    public function __construct( $configFile )
+    public function __construct($configFile)
     {
-        $this->setConfigFile( $configFile )->configure()->setup();
-        $dsn = sprintf( 'mysql:host=%s;port=%d;dbname=%s', $this->host, $this->port, $this->name );
-        parent::__construct( $dsn, $this->user, $this->pass );
+        $this->setConfigFile($configFile)->configure()->setup();
+        $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s', $this->host, $this->port, $this->name);
+        parent::__construct($dsn, $this->user, $this->pass);
     }
 
     protected function setup()
@@ -88,15 +88,15 @@ class Database extends PDO
     /**
      * @param array $config
      */
-    public function setupConfig( array $config )
+    public function setupConfig(array $config)
     {
-        if ( ! $this->connected ) {
+        if (!$this->connected) {
 
             /**
              * Connection credentials
              */
-            if ( array_key_exists( 'credentials', $config ) ) {
-                if ( is_array( $config[ 'credentials' ] ) ) {
+            if (array_key_exists('credentials', $config)) {
+                if (is_array($config[ 'credentials' ])) {
                     $this->host = $config[ 'credentials' ][ 'host' ] ?? '';
                     $this->port = $config[ 'credentials' ][ 'port' ] ?? '';
                     $this->name = $config[ 'credentials' ][ 'name' ] ?? '';
@@ -108,8 +108,8 @@ class Database extends PDO
             /**
              * Database settings
              */
-            if ( array_key_exists( 'settings', $config ) ) {
-                if ( is_array( $config[ 'settings' ] ) ) {
+            if (array_key_exists('settings', $config)) {
+                if (is_array($config[ 'settings' ])) {
                     $this->charset = $config[ 'settings' ][ 'charset' ] ?? '';
                     $this->collate = $config[ 'settings' ][ 'collate' ] ?? '';
                     $this->prefix = $config[ 'settings' ][ 'prefix' ] ?? '';
@@ -129,9 +129,9 @@ class Database extends PDO
     /**
      * @param string $statement
      */
-    protected function fillTablePrefixes( &$statement )
+    protected function fillTablePrefixes(&$statement)
     {
-        $statement = str_replace( 'usf_', $this->prefix, $statement );
+        $statement = str_replace('usf_', $this->prefix, $statement);
     }
 
     /**
@@ -139,20 +139,20 @@ class Database extends PDO
      * @param null $driver_options
      * @return bool|PDOStatement
      */
-    public function prepare ( $statement, $driver_options = null )
+    public function prepare($statement, $driver_options = null)
     {
-        $this->fillTablePrefixes( $statement );
-        return parent::prepare( $statement, [] );
+        $this->fillTablePrefixes($statement);
+        return parent::prepare($statement, []);
     }
 
     /**
      * @param string $statement
      * @return int
      */
-    public function exec ( $statement )
+    public function exec($statement)
     {
-        $this->fillTablePrefixes( $statement );
-        return parent::exec( $statement );
+        $this->fillTablePrefixes($statement);
+        return parent::exec($statement);
     }
 
     /**
@@ -162,10 +162,10 @@ class Database extends PDO
      * @param array $ctorargs
      * @return false|PDOStatement
      */
-    public function query ($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = array())
+    public function query($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = array())
     {
-        $this->fillTablePrefixes( $statement );
-        return parent::query( $statement, $mode, $arg3, $ctorargs );
+        $this->fillTablePrefixes($statement);
+        return parent::query($statement, $mode, $arg3, $ctorargs);
     }
 
 }

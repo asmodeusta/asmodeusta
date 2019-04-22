@@ -19,9 +19,9 @@ class DataStorage
      * DataStorage constructor.
      * @param array $data
      */
-    public function __construct( array $data )
+    public function __construct(array $data)
     {
-        $this->setData( $data );
+        $this->setData($data);
     }
 
     /**
@@ -29,7 +29,7 @@ class DataStorage
      * @param string $name
      * @return mixed|null
      */
-    public function __get( $name )
+    public function __get($name)
     {
         return $this->data[ $name ] ?? null;
     }
@@ -39,7 +39,7 @@ class DataStorage
      * @param string $name
      * @param mixed $value
      */
-    public function __set( $name, $value )
+    public function __set($name, $value)
     {
         $this->data[ $name ] = $value;
     }
@@ -48,16 +48,16 @@ class DataStorage
      * Data cleaner
      * @param string $name
      */
-    public function __unset( $name )
+    public function __unset($name)
     {
-        unset( $this->data[ $name ] );
+        unset($this->data[ $name ]);
     }
 
     /**
      * Set data
      * @param array $data
      */
-    public function setData( array $data )
+    public function setData(array $data)
     {
         $this->data = $data;
     }
@@ -66,7 +66,7 @@ class DataStorage
      * Add data
      * @param array $data
      */
-    public function addData( array $data )
+    public function addData(array $data)
     {
         $this->data += $data;
     }

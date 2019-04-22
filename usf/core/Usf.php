@@ -91,9 +91,9 @@ final class Usf
      * @param ClassLoader $autoloader
      * @return Usf
      */
-    public static function start( $autoloader = null )
+    public static function start($autoloader = null)
     {
-        return self::$usf ?? new self( $autoloader );
+        return self::$usf ?? new self($autoloader);
     }
 
     /**
@@ -113,10 +113,10 @@ final class Usf
      * Usf constructor.
      * @param ClassLoader $autoloader
      */
-    private function __construct( $autoloader )
+    private function __construct($autoloader)
     {
         // Start time
-        $this->startTime = microtime( true );
+        $this->startTime = microtime(true);
 
         $this->autoloader = $autoloader;
 
@@ -127,10 +127,10 @@ final class Usf
     public function configure()
     {
         $configFile = DIR_CONFIG . DS . 'config.php';
-        $this->configuration = ConfigHandlerStaticFactory::create( $configFile )->getFullConfig();
-        if ( ! $this->validateConfig() ) {
+        $this->configuration = ConfigHandlerStaticFactory::create($configFile)->getFullConfig();
+        if (!$this->validateConfig()) {
             // TODO: redirect to setup app
-            die( 'Config error!' );
+            die('Config error!');
         }
         return $this;
     }
@@ -141,17 +141,17 @@ final class Usf
     public function init()
     {
         // Settings
-        $this->settings = new Settings( $this->configuration[ 'settings' ] );
+        $this->settings = new Settings($this->configuration[ 'settings' ]);
 
         // Create Database
         try {
-            $this->db = new Database( $this->configuration[ 'database' ] );
-        } catch ( PDOException $exception ) {
+            $this->db = new Database($this->configuration[ 'database' ]);
+        } catch (PDOException $exception) {
             die('Cannot connect to database!');
         }
 
         // Create Router
-        $this->router = new Router( $this->configuration[ 'router' ] );
+        $this->router = new Router($this->configuration[ 'router' ]);
 
         /**
          * Register Modules
@@ -161,9 +161,9 @@ final class Usf
         // TODO: think where define session
         // Session
         try {
-            $this->session = new Session( $this->settings->get('session') );
-        } catch ( SessionException $exception ) {
-            die( '<h1>' . $exception->getMessage() . '</h1>' );
+            $this->session = new Session($this->settings->get('session'));
+        } catch (SessionException $exception) {
+            die('<h1>' . $exception->getMessage() . '</h1>');
         }
 
         return $this;
@@ -175,7 +175,7 @@ final class Usf
     public function run()
     {
         // Parse request
-        if ( $this->router->parseRequest() ) {
+        if ($this->router->parseRequest()) {
             // Set request
             $this->request = $this->router->getRequest();
 
@@ -204,18 +204,18 @@ final class Usf
     private function validateConfig()
     {
         return (
-            array_key_exists( 'settings', $this->configuration )
-            && array_key_exists( 'database', $this->configuration )
-            && array_key_exists( 'router', $this->configuration )
-            && is_file( $this->configuration[ 'settings' ] )
-            && is_file( $this->configuration[ 'database' ] )
-            && is_file( $this->configuration[ 'router' ] )
+            array_key_exists('settings', $this->configuration)
+            && array_key_exists('database', $this->configuration)
+            && array_key_exists('router', $this->configuration)
+            && is_file($this->configuration[ 'settings' ])
+            && is_file($this->configuration[ 'database' ])
+            && is_file($this->configuration[ 'router' ])
         );
     }
 
     private function registerModules()
     {
-        $this->modules = ModulesStaticFactory::init( $this->settings->get( 'modules' ) );
+        $this->modules = ModulesStaticFactory::init($this->settings->get('modules'));
     }
 
     public function autoloader()
@@ -228,7 +228,7 @@ final class Usf
         return $this->db;
     }
 
-    public function settings( $name = null )
+    public function settings($name = null)
     {
         return is_null($name) ? $this->settings : $this->settings->$name;
     }

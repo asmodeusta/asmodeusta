@@ -57,12 +57,12 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $file
      * @param string|null $section
      */
-    public function __construct( $file, $section = null )
+    public function __construct($file, $section = null)
     {
-        if ( $this->validateFile( $file ) ) {
+        if ($this->validateFile($file)) {
             $this->file = $file;
 
-            if ( !is_null( $section ) ) {
+            if (!is_null($section)) {
                 $this->section = $section;
             }
 
@@ -76,7 +76,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      */
     public function __destruct()
     {
-        if ( static::WRITE_ON_DESTRUCT && $this->modified ) {
+        if (static::WRITE_ON_DESTRUCT && $this->modified) {
             $this->write();
         }
     }
@@ -86,11 +86,11 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param $file
      * @return bool
      */
-    protected function validateFile( $file )
+    protected function validateFile($file)
     {
         $result = false;
-        if ( is_file( $file ) ) {
-            $result = (bool) preg_match( $this->fileMatch, $file );
+        if (is_file($file)) {
+            $result = (bool)preg_match($this->fileMatch, $file);
         }
         return $result;
     }
@@ -100,10 +100,10 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $section
      * @return bool
      */
-    protected function checkSectionExists( $section )
+    protected function checkSectionExists($section)
     {
-        return array_key_exists( $section, $this->configuration )
-            && is_array( $this->configuration[ $section ] );
+        return array_key_exists($section, $this->configuration)
+            && is_array($this->configuration[ $section ]);
     }
 
     /**
@@ -112,7 +112,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      */
     protected function checkThisSectionExists()
     {
-        return $this->checkSectionExists( $this->section );
+        return $this->checkSectionExists($this->section);
     }
 
     /**
@@ -143,7 +143,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
     public function getConfig()
     {
         $result = [];
-        if ( $this->checkThisSectionExists() ) {
+        if ($this->checkThisSectionExists()) {
             $result = $this->configuration[ $this->section ];
         }
         return $result;
@@ -154,11 +154,11 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $name
      * @return mixed
      */
-    public function get( $name )
+    public function get($name)
     {
         $result = null;
         $configuration = $this->getConfig();
-        if ( array_key_exists( $name, $configuration ) ) {
+        if (array_key_exists($name, $configuration)) {
             $result = $configuration[ $name ];
         }
         return $result;
@@ -169,9 +169,9 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $name
      * @return mixed
      */
-    public function __get( $name )
+    public function __get($name)
     {
-        return $this->get( $name );
+        return $this->get($name);
     }
 
     /**
@@ -179,9 +179,9 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $section
      * @return ConfigHandler
      */
-    public function setSection( $section )
+    public function setSection($section)
     {
-        if ( is_string( $section ) ) {
+        if (is_string($section)) {
             $this->section = $section;
         }
         return $this;
@@ -192,9 +192,9 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param array $config
      * @return $this
      */
-    public function setFullConfig( array $config )
+    public function setFullConfig(array $config)
     {
-        if ( $this->configuration !== $config ) {
+        if ($this->configuration !== $config) {
             $this->configuration = $config;
             $this->modified = true;
         }
@@ -206,10 +206,10 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param array $config
      * @param string $section
      */
-    public function setConfig( array $config, $section = null )
+    public function setConfig(array $config, $section = null)
     {
-        $this->setSection( $section );
-        if ( $this->configuration[ $this->section ] !== $config ) {
+        $this->setSection($section);
+        if ($this->configuration[ $this->section ] !== $config) {
             $this->configuration[ $this->section ] = $config;
             $this->modified = true;
         }
@@ -221,11 +221,11 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param mixed $value
      * @return ConfigHandler
      */
-    public function set( $name, $value )
+    public function set($name, $value)
     {
-        if ( $this->checkThisSectionExists() ) {
-            if ( !( array_key_exists( $name, $this->configuration[ $this->section ] )
-                && $this->configuration[ $this->section ][ $name ] === $value ) ) {
+        if ($this->checkThisSectionExists()) {
+            if (!(array_key_exists($name, $this->configuration[ $this->section ])
+                && $this->configuration[ $this->section ][ $name ] === $value)) {
                 $this->configuration[ $this->section ][ $name ] = $value;
                 $this->modified = true;
             }
@@ -238,9 +238,9 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      * @param string $name
      * @param mixed $value
      */
-    public function __set( $name, $value )
+    public function __set($name, $value)
     {
-        $this->set( $name, $value );
+        $this->set($name, $value);
     }
 
     /**
@@ -249,7 +249,7 @@ abstract class ConfigHandler extends Component implements ConfigHandlerInterface
      */
     public function save()
     {
-        if ( $this->modified ) {
+        if ($this->modified) {
             return $this->write();
         } else {
             return false;

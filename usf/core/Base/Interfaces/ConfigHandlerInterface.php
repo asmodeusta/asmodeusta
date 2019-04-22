@@ -19,27 +19,27 @@ interface ConfigHandlerInterface
      * @param string $name
      * @return mixed
      */
-    public function get( $name );
+    public function get($name);
 
     /**
      * Set section
      * @param string $section
      */
-    public function setSection( $section );
+    public function setSection($section);
 
     /**
      * Set configuration
      * @param array $config
      * @param string $section
      */
-    public function setConfig( array $config, $section = null );
+    public function setConfig(array $config, $section = null);
 
     /**
      * Set configuration value
      * @param string $name
      * @param mixed $value
      */
-    public function set( $name, $value );
+    public function set($name, $value);
 
     /**
      * Save configuration to file

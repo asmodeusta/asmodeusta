@@ -40,9 +40,9 @@ class ConfigHandlerStaticFactory implements StaticFactoryInterface
                 $file = realpath($file);
             }
             if (array_key_exists($file, static::$list)) {
-                $handler = static::$list[$file];
+                $handler = static::$list[ $file ];
             } else {
-                $ext = $matches[1];
+                $ext = $matches[ 1 ];
                 $configHandlerClassname = ucfirst($ext) . 'ConfigHandler';
                 foreach (static::$namespaces as $namespace) {
                     $configHandlerNamespace = $namespace . $configHandlerClassname;
@@ -57,7 +57,7 @@ class ConfigHandlerStaticFactory implements StaticFactoryInterface
         if (is_null($handler)) {
             $handler = new EmptyConfigHandler($file);
         }
-        static::$list[$file] = $handler;
+        static::$list[ $file ] = $handler;
         return $handler;
     }
 

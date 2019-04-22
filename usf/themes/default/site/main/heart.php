@@ -15,6 +15,7 @@
             left: 45%;
             transform: rotate(-45deg);
         }
+
         .heart:before, .heart:after {
             content: "";
             height: 50px;
@@ -23,14 +24,17 @@
             background-color: red;
             border-radius: 50%;
         }
+
         .heart:before {
             top: -25px;
             left: 0;
         }
+
         .heart:after {
             left: 25px;
             top: 0;
         }
+
         @keyframes heartbeat {
             0% {
                 transform: scale(0) rotate(-45deg);

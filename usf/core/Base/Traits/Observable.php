@@ -75,13 +75,13 @@ trait Observable
      * @param int $argsNum
      * @return bool
      */
-    public static function attachObserver( string $event, $observer, int $priority = 1, int $argsNum = 0 )
+    public static function attachObserver(string $event, $observer, int $priority = 1, int $argsNum = 0)
     {
         $class = static::class;
-        if ( !array_key_exists( $class, static::$observers ) ) {
+        if (!array_key_exists($class, static::$observers)) {
             static::$observers[ $class ] = [];
         }
-        return self::attachCallback( static::$observers[ $class ], $event, $observer, $priority, $argsNum );
+        return self::attachCallback(static::$observers[ $class ], $event, $observer, $priority, $argsNum);
     }
 
     /**
@@ -91,11 +91,11 @@ trait Observable
      * @param int $priority
      * @return bool
      */
-    public static function detachObserver( string $event, $observer, int $priority = 1 )
+    public static function detachObserver(string $event, $observer, int $priority = 1)
     {
         $class = static::class;
-        if ( array_key_exists( $class, static::$observers ) ) {
-            return self::detachCallback( static::$observers[ $class ], $event, $observer, $priority );
+        if (array_key_exists($class, static::$observers)) {
+            return self::detachCallback(static::$observers[ $class ], $event, $observer, $priority);
         }
         return false;
     }
@@ -105,16 +105,16 @@ trait Observable
      * @param string $event
      * @return array
      */
-    protected static function handleObservers( string $event )
+    protected static function handleObservers(string $event)
     {
         $args = func_get_args();
-        array_shift( $args );
+        array_shift($args);
         $class = static::class;
-        if ( !array_key_exists( $class, static::$eventObserversStack ) ) {
+        if (!array_key_exists($class, static::$eventObserversStack)) {
             static::$eventObserversStack[ $class ] = [];
         }
-        if ( array_key_exists( $class, static::$observers ) ) {
-            self::handleEvent( static::$observers[ $class ], $event, $args, static::$eventObserversStack[ $class ] );
+        if (array_key_exists($class, static::$observers)) {
+            self::handleEvent(static::$observers[ $class ], $event, $args, static::$eventObserversStack[ $class ]);
         }
         return $args;
     }
@@ -127,9 +127,9 @@ trait Observable
      * @param int $argsNum
      * @return bool
      */
-    public function attachListener( string $event, $listener, int $priority = 1, int $argsNum = 1 )
+    public function attachListener(string $event, $listener, int $priority = 1, int $argsNum = 1)
     {
-        return self::attachCallback( $this->listeners, $event, $listener, $priority, $argsNum );
+        return self::attachCallback($this->listeners, $event, $listener, $priority, $argsNum);
     }
 
     /**
@@ -139,9 +139,9 @@ trait Observable
      * @param int $priority
      * @return bool
      */
-    public function detachListener( string $event, $listener, int $priority = 1 )
+    public function detachListener(string $event, $listener, int $priority = 1)
     {
-        return self::detachCallback( $this->listeners, $event, $listener, $priority );
+        return self::detachCallback($this->listeners, $event, $listener, $priority);
     }
 
     /**
@@ -149,11 +149,11 @@ trait Observable
      * @param string $event
      * @return array
      */
-    protected function handleListeners( string $event )
+    protected function handleListeners(string $event)
     {
         $args = func_get_args();
-        array_shift( $args );
-        self::handleEvent( $this->listeners, $event, $args, $this->eventListenersStack, $this );
+        array_shift($args);
+        self::handleEvent($this->listeners, $event, $args, $this->eventListenersStack, $this);
         return $args;
     }
 
@@ -173,13 +173,13 @@ trait Observable
         int $priority = 1,
         int $argsNum = 1
     ) {
-        if ( !array_key_exists( $event, $eventList ) ) {
+        if (!array_key_exists($event, $eventList)) {
             $eventList[ $event ] = [];
         }
-        if ( !array_key_exists( $priority, $eventList[ $event ] ) ) {
-            $eventList[ $event ][ $priority ] = [ 'callback' => [], 'argsNum' => [] ];
+        if (!array_key_exists($priority, $eventList[ $event ])) {
+            $eventList[ $event ][ $priority ] = ['callback' => [], 'argsNum' => []];
         }
-        if ( !in_array( $callback, $eventList[ $event ][ $priority ][ 'callback' ] ) ) {
+        if (!in_array($callback, $eventList[ $event ][ $priority ][ 'callback' ])) {
             $eventList[ $event ][ $priority ][ 'callback' ][] = $callback;
             $eventList[ $event ][ $priority ][ 'argsNum' ][] = $argsNum;
             return true;
@@ -195,13 +195,13 @@ trait Observable
      * @param int $priority
      * @return bool
      */
-    private static function detachCallback( array &$eventList, string $event, $callback, int $priority = 1 )
+    private static function detachCallback(array &$eventList, string $event, $callback, int $priority = 1)
     {
-        if ( array_key_exists( $event, $eventList )
-            && array_key_exists( $priority, $eventList[ $event ] ) ) {
-            if ( $position = array_search( $callback, $eventList ) ) {
-                unset( $eventList[ $event ][ $priority ][ 'callback' ][ $position ] );
-                unset( $eventList[ $event ][ $priority ][ 'argsNum' ][ $position ] );
+        if (array_key_exists($event, $eventList)
+            && array_key_exists($priority, $eventList[ $event ])) {
+            if ($position = array_search($callback, $eventList)) {
+                unset($eventList[ $event ][ $priority ][ 'callback' ][ $position ]);
+                unset($eventList[ $event ][ $priority ][ 'argsNum' ][ $position ]);
                 return true;
             }
         }
@@ -216,41 +216,41 @@ trait Observable
      * @param array $stack
      * @param null|object $subject
      */
-    private static function handleEvent( array $eventList, string $event, array &$args, array &$stack, $subject = null )
+    private static function handleEvent(array $eventList, string $event, array &$args, array &$stack, $subject = null)
     {
         // Avoiding recursive deadlock
-        if ( in_array( $event, $stack ) ) {
+        if (in_array($event, $stack)) {
             return;
         }
         // Register event in stack
-        array_push( $stack, $event );
+        array_push($stack, $event);
         // Check if event is registered
-        if ( array_key_exists( $event, $eventList ) ) {
+        if (array_key_exists($event, $eventList)) {
             // Sort event handlers by priority
-            krsort( $eventList[ $event ], SORT_NUMERIC );
+            krsort($eventList[ $event ], SORT_NUMERIC);
             // Map event handlers by priority
-            foreach ( $eventList[ $event ] as $priority => $handlers ) {
-                foreach ( $handlers[ 'callback' ] as $position => $handler ) {
+            foreach ($eventList[ $event ] as $priority => $handlers) {
+                foreach ($handlers[ 'callback' ] as $position => $handler) {
                     // Get expected number of arguments
                     $argsNum = $handlers[ 'argsNum' ][ $position ];
-                    if ( is_callable( $handler ) ) {
+                    if (is_callable($handler)) {
                         // Adding $subject to arguments ( if not null )
-                        $calledArgs = ( is_null( $subject ) ? $args : array_merge( [ $subject ], $args ) );
-                        if ( $argsNum === 0 ) {
-                            $result = call_user_func_array( $handler, [] );
-                        } elseif ( $argsNum >= count( $calledArgs ) ) {
-                            $result = call_user_func_array( $handler, $calledArgs );
+                        $calledArgs = (is_null($subject) ? $args : array_merge([$subject], $args));
+                        if ($argsNum === 0) {
+                            $result = call_user_func_array($handler, []);
+                        } elseif ($argsNum >= count($calledArgs)) {
+                            $result = call_user_func_array($handler, $calledArgs);
                         } else {
-                            $result = call_user_func_array( $handler, array_slice( $calledArgs, 0, $argsNum ) );
+                            $result = call_user_func_array($handler, array_slice($calledArgs, 0, $argsNum));
                         }
                         // Adding callback result to arguments
-                        $args = ( is_array( $result ) ? $result : ( is_null( $result ) ? [] : [ $result ] ) ) + $args;
+                        $args = (is_array($result) ? $result : (is_null($result) ? [] : [$result])) + $args;
                     }
                 }
             }
         }
         // Unregister event from stack
-        array_pop( $stack );
+        array_pop($stack);
     }
 
 }

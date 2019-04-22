@@ -9,12 +9,12 @@ class SettingsController extends Controller
 {
     public function actionIndex()
     {
-        
+
     }
 
     public function actionGuid()
     {
-        
+
     }
 
     public function actionCheck()
@@ -24,7 +24,7 @@ class SettingsController extends Controller
 
     public function actionLang()
     {
-        if ( isset( $_POST[ 'submit' ] ) ) {
+        if (isset($_POST[ 'submit' ])) {
             $file = DIR_APP . DS . 'data' . DS . 'languages.json';
             $handler = ConfigHandlerStaticFactory::create($file);
             $languages = $handler->getFullConfig();
@@ -38,12 +38,12 @@ class SettingsController extends Controller
                         "'$code'",
                         "'{$names[ 'name' ]}'",
                         "'{$names[ 'nativeName' ]}'",
-                        in_array($names['name'], ['Ukrainian', 'English']) ? 1 : 0
+                        in_array($names[ 'name' ], ['Ukrainian', 'English']) ? 1 : 0
                     ]) . ')';
             }
             $sql .= implode(',', $values) . ";";
             echo '<pre>';
-            if ( $result = $db->query($sql) ) {
+            if ($result = $db->query($sql)) {
                 echo 'Languages imported successfully';
             } else {
                 echo 'Import error!';

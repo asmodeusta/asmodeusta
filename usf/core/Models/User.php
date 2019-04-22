@@ -10,7 +10,6 @@ class User extends Model
 {
 
 
-
     protected static $current = null;
 
     protected $id;
@@ -19,7 +18,7 @@ class User extends Model
     public static function get($id)
     {
         try {
-            $user = static::$cache[$id] ?? new static($id);
+            $user = static::$cache[ $id ] ?? new static($id);
         } catch (Exception $exception) {
             $user = null;
         }
@@ -33,7 +32,7 @@ class User extends Model
         if ($st = self::$db->prepare($sql)) {
             $st->bindValue(':id', $id, Database::PARAM_INT);
             if ($st->execute() && $queryResult = $st->fetch(Database::FETCH_ASSOC)) {
-                $result = $queryResult['id'] === '1';
+                $result = $queryResult[ 'id' ] === '1';
             }
         }
         return $result;
