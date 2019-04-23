@@ -49,9 +49,19 @@ class ModulesFactory implements FactoryInterface
         return $this->modules;
     }
 
-    public function installModule($slag)
+    public function installModule(string $path, string $file)
     {
+        $filePath = DIR_MODULES . DS . $path . DS . $file;
+        if (is_file($filePath)) {
+            $module = require_once $filePath;
+            if ($module instanceof ModuleExtension) {
+                $slag = $module->getSlag();
+                if (!array_key_exists($slag, $this->modules)) {
 
+                }
+            }
+        }
+        return false;
     }
 
     public function activateModule($slag)
@@ -79,6 +89,11 @@ class ModulesFactory implements FactoryInterface
             return true;
         }
         return false;
+    }
+
+    protected function saveModule($slag, $name, $description, $version, $path, $file, $active = false)
+    {
+
     }
 
 }

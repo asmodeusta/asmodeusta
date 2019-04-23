@@ -54,10 +54,10 @@ class Options
      */
     public function get(string $key)
     {
-        if (!array_key_exists($key, $this->options)) {
+        if ( !array_key_exists($key, $this->options)) {
             if ($this->issetCache($key)) {
                 return null;
-            } elseif (!$this->read($key)) {
+            } elseif ( !$this->read($key)) {
                 return null;
             }
         }
@@ -73,8 +73,8 @@ class Options
      */
     public function set(string $key, $value, $autoload = 0, $autosave = 1)
     {
-        if (!array_key_exists($key, $this->options)) {
-            if (!$this->read($key)) {
+        if ( !array_key_exists($key, $this->options)) {
+            if ( !$this->read($key)) {
                 $this->options[ $key ] = [
                     'id' => 0,
                     'save' => true,
@@ -94,7 +94,7 @@ class Options
             $this->options[ $key ][ 'autosave' ] = $autosave;
             $this->options[ $key ][ 'save' ] = $autosave;
         }
-        $this->options[ $key ][ 'delete' ] = ! ( $this->options[ $key ][ 'active' ] = true );
+        $this->options[ $key ][ 'delete' ] = !($this->options[ $key ][ 'active' ] = true);
         return $value;
     }
 
@@ -103,12 +103,12 @@ class Options
      */
     public function unset(string $key)
     {
-        if (!array_key_exists($key, $this->options)) {
-            if (!$this->read($key)) {
+        if ( !array_key_exists($key, $this->options)) {
+            if ( !$this->read($key)) {
                 return;
             }
         }
-        $this->options[ $key ][ 'delete' ] = ! ( $this->options[ $key ][ 'active' ] = false );
+        $this->options[ $key ][ 'delete' ] = !($this->options[ $key ][ 'active' ] = false);
     }
 
     /**
@@ -162,10 +162,6 @@ class Options
         $delete = [];
         $update = [];
         $modified = 'from_unixtime(' . time() . ')';
-        function formatBoolInt($val)
-        {
-            return $val ? 1 : 0;
-        }
 
         foreach ($this->options as $key => $option) {
             if ($option[ 'id' ] === 0) {
@@ -173,9 +169,9 @@ class Options
                         $this->db->quote($key),
                         intval($this->module),
                         $this->db->quote(serialize($option[ 'value' ])),
-                        formatBoolInt($option[ 'autoload' ]),
-                        formatBoolInt($option[ 'autosave' ]),
-                        formatBoolInt($option[ 'active' ]),
+                        format01($option[ 'autoload' ]),
+                        format01($option[ 'autosave' ]),
+                        format01($option[ 'active' ]),
                     ]) . ')';
             } elseif ($option[ 'delete' ]) {
                 $delete[] = $option[ 'id' ];
@@ -186,20 +182,20 @@ class Options
                         $this->db->quote($key),
                         $this->db->quote(serialize($option[ 'value' ])),
                         $modified,
-                        formatBoolInt($option[ 'autoload' ]),
-                        formatBoolInt($option[ 'autosave' ]),
-                        formatBoolInt($option[ 'active' ]),
+                        format01($option[ 'autoload' ]),
+                        format01($option[ 'autosave' ]),
+                        format01($option[ 'active' ]),
                     ]) . ')';
             }
         }
         $sql = '';
-        if (!empty($delete)) {
+        if ( !empty($delete)) {
             $deleteIds = implode(', ', $delete);
             $sql .= 'delete from usf_options where id in (' . $deleteIds . ');';
         }
-        if (!empty($update)) {
+        if ( !empty($update)) {
             $updateValues = implode(', ', $update);
-            $sql .= 'insert into usf_options(id, module, `key`, value, modified, autoload, autosave, active) 
+            $sql .= 'insert into usf_options(`id`, `module`, `key`, `value`, `modified`, `autoload`, `autosave`, `active`) 
                     values ' . $updateValues . ' on duplicate key update 
                     `module` = values(`module`),
                     `key` = values(`key`),
@@ -209,11 +205,11 @@ class Options
                     `autosave` = values(`autosave`),
                     `active` = values(`active`);';
         }
-        if (!empty($insert)) {
+        if ( !empty($insert)) {
             $insertValues = implode(', ', $insert);
             $sql .= 'insert into usf_options(`key`, module, value, autoload, autosave, active) values ' . $insertValues . ';';
         }
-        if (!empty($sql)) {
+        if ( !empty($sql)) {
             $this->db->exec($sql);
         }
     }
