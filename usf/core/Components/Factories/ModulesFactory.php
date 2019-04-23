@@ -3,7 +3,6 @@
 namespace Usf\Components\Factories;
 
 use Usf\Base\Interfaces\FactoryInterface;
-use Usf\Base\Extension;
 use Usf\Base\ModuleExtension;
 use Usf\Base\Traits\Cacheable;
 
@@ -50,7 +49,7 @@ class ModulesFactory implements FactoryInterface
         return $this->modules;
     }
 
-    public function installModule($slag, $name, $description, $version, $path, $file)
+    public function installModule($slag)
     {
 
     }

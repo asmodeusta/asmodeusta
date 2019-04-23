@@ -11,7 +11,7 @@ interface ModuleInterface
 
     /**
      * @param array $params
-     * @return callable|false
+     * @return callable|false Callable on success. False when callback not found.
      */
     public function getCallback(array $params);
 

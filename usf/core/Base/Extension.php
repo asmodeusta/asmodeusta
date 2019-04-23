@@ -10,18 +10,39 @@ abstract class Extension extends Component implements ExtensionInstallationInter
 
     use Configurable;
 
+    /**
+     * @var int
+     */
     protected $id;
 
+    /**
+     * @var string
+     */
     protected $slag;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string
+     */
     protected $description;
 
+    /**
+     * @var string
+     */
     protected $version;
 
+    /**
+     * @var array|string
+     */
     protected $author;
 
+    /**
+     * @var bool
+     */
     protected $active;
 
     public function __construct()
@@ -29,7 +50,65 @@ abstract class Extension extends Component implements ExtensionInstallationInter
         $this->initialize();
     }
 
-    public function initialize()
+    public function save()
+    {
+        $this->saveInformation()->saveConfiguration();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlag()
+    {
+        return $this->slag;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+
+    /**
+     * Initialize
+     * @return $this
+     */
+    protected function initialize()
     {
         $configDir = $this->getDirectory() . DS . 'config';
         $configFile = $configDir . DS . 'info.config.json';
@@ -41,9 +120,22 @@ abstract class Extension extends Component implements ExtensionInstallationInter
         } else {
             $this->setup();
         }
+        return $this;
     }
 
+    /**
+     * Setup
+     */
     protected function setup()
+    {
+        $this->setupInformation();
+    }
+
+    /**
+     * Setup information
+     * @return $this
+     */
+    protected function setupInformation()
     {
         $this->slag = $this->configuration['slag'] ?? null;
         $this->name = $this->configuration['name'] ?? null;
@@ -51,6 +143,22 @@ abstract class Extension extends Component implements ExtensionInstallationInter
         $this->version = $this->configuration['version'] ?? null;
         $this->author = $this->configuration['author'] ?? null;
         $this->active = $this->configuration['author'] ?? false;
+        return $this;
+    }
+
+    /**
+     * Save information
+     * @return $this
+     */
+    protected function saveInformation()
+    {
+        $this->configuration['slag'] = $this->slag;
+        $this->configuration['name'] = $this->name;
+        $this->configuration['description'] = $this->description;
+        $this->configuration['version'] = $this->version;
+        $this->configuration['author'] = $this->author;
+        $this->configuration['active'] = $this->active;
+        return $this;
     }
 
 }
