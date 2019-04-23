@@ -51,7 +51,13 @@ class ModulesFactory implements FactoryInterface
 
     public function installModule($slag)
     {
+        if (array_key_exists($slag, $this->modules)) {
+            $moduleItem = $this->modules[$slag];
+            if (!$moduleItem['active']) {
 
+            }
+        }
+        return false;
     }
 
     public function activateModule($slag)

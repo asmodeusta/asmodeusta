@@ -103,6 +103,11 @@ abstract class Extension extends Component implements ExtensionInstallationInter
         return $this->author;
     }
 
+    public function active()
+    {
+        return $this->active;
+    }
+
 
     /**
      * Initialize
