@@ -103,9 +103,12 @@ abstract class Extension extends Component implements ExtensionInstallationInter
         return $this->author;
     }
 
-    public function active()
+    /**
+     * @return bool
+     */
+    public function isActive()
     {
-        return $this->active;
+        return (bool) $this->active;
     }
 
 
@@ -120,7 +123,7 @@ abstract class Extension extends Component implements ExtensionInstallationInter
         if (is_file($configFile)) {
             $this->setConfigFile($configFile);
         }
-        if ( empty($this->configuration) ) {
+        if (empty($this->configuration)) {
             $this->configure();
         } else {
             $this->setup();
@@ -142,12 +145,12 @@ abstract class Extension extends Component implements ExtensionInstallationInter
      */
     protected function setupInformation()
     {
-        $this->slag = $this->configuration['slag'] ?? null;
-        $this->name = $this->configuration['name'] ?? null;
-        $this->description = $this->configuration['description'] ?? null;
-        $this->version = $this->configuration['version'] ?? null;
-        $this->author = $this->configuration['author'] ?? null;
-        $this->active = $this->configuration['author'] ?? false;
+        $this->slag = $this->configuration[ 'slag' ] ?? null;
+        $this->name = $this->configuration[ 'name' ] ?? null;
+        $this->description = $this->configuration[ 'description' ] ?? null;
+        $this->version = $this->configuration[ 'version' ] ?? null;
+        $this->author = $this->configuration[ 'author' ] ?? null;
+        $this->active = $this->configuration[ 'author' ] ?? false;
         return $this;
     }
 
@@ -157,12 +160,12 @@ abstract class Extension extends Component implements ExtensionInstallationInter
      */
     protected function saveInformation()
     {
-        $this->configuration['slag'] = $this->slag;
-        $this->configuration['name'] = $this->name;
-        $this->configuration['description'] = $this->description;
-        $this->configuration['version'] = $this->version;
-        $this->configuration['author'] = $this->author;
-        $this->configuration['active'] = $this->active;
+        $this->configuration[ 'slag' ] = $this->slag;
+        $this->configuration[ 'name' ] = $this->name;
+        $this->configuration[ 'description' ] = $this->description;
+        $this->configuration[ 'version' ] = $this->version;
+        $this->configuration[ 'author' ] = $this->author;
+        $this->configuration[ 'active' ] = $this->active;
         return $this;
     }
 

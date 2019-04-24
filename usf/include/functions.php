@@ -34,3 +34,13 @@ function array_take(string $needle, array $haystack)
     }
     return $result;
 }
+
+/**
+ * Formatting $value into 0 or 1
+ * @param $value
+ * @return int 0|1
+ */
+function format01($value)
+{
+    return boolval($value) ? 1 : 0;
+}
