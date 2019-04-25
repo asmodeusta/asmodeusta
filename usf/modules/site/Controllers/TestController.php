@@ -3,6 +3,8 @@
 namespace Usf\Admin\Controllers;
 
 use Usf\Base\Controller;
+use Usf\Base\Exceptions\FileManagerException;
+use Usf\Components\FileManager;
 use Usf\Models\Options;
 
 class TestController extends Controller
@@ -12,18 +14,19 @@ class TestController extends Controller
     {
         $startTime = microtime(true);
         echo '<pre>';
-        $options = new Options(0);
-        var_dump($options->isset('url'));
-        var_dump($options->get('url'));
-        var_dump($options->isset('url'));
-        $options->set('url', 'asmodeusta.loc');
-        var_dump($options->isset('url'));
-        var_dump($options->get('url'));
-        $options->unset('url');
-        var_dump($options->isset('url'));
-        var_dump($options->get('url'));
-        $options->set('url', 'asmodeusta.loc');
-        var_dump($options->get('url'));
+        try {
+            $fm1 = new FileManager();
+            $fm2 = new FileManager($this->getDirectory());
+            $fm3 = new FileManager(DIR_ROOT);
+
+            var_dump($dirs = $fm1->dir());
+            foreach ($fm1->mapDir() as $path) {
+                var_dump($path);
+            }
+        } catch (FileManagerException $exception) {
+            print_r($exception->getMessage());
+        }
+
         echo microtime(true) - $startTime, '<br/>';
         echo microtime(true) - usf()->getStartTime(), '<br/>';
         echo '</pre>';
