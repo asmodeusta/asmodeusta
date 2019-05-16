@@ -44,3 +44,14 @@ function format01($value)
 {
     return boolval($value) ? 1 : 0;
 }
+
+/**
+ * `str_split` for unicode
+ * @param string $str
+ * @return array
+ */
+function mb_str_split($str)
+{
+    preg_match_all('~.{1}~uis', $str, $out);
+    return $out[0];
+}
