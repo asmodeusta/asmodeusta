@@ -27,11 +27,11 @@ class MainController extends Controller
         </form>
         <?php
         if (isset($words)) {
-            echo '<ul>';
+            echo '<ol>';
             foreach ($words as $word) {
                 echo '<li>' . $word . '</li>';
             }
-            echo '</ul>';
+            echo '</ol>';
         }
     }
 
@@ -42,10 +42,12 @@ class MainController extends Controller
         foreach ($this->generateWord($symbols, $num) as $word) {
             $words[] = $word;
         }
-        return array_unique($words);
+        $result = array_unique($words);
+        sort($result);
+        return $result;
     }
 
-    protected function generateWord(array $symbols, int $num, string $word = '')
+    protected function generateWord(array $symbols, int $num, $word = '')
     {
         foreach ($symbols as $symbol) {
             $pos = array_search($symbol, $symbols);
@@ -64,6 +66,31 @@ class MainController extends Controller
                 }
             }
         }
+    }
+
+    public function actionFact($num=1)
+    {
+        if (is_array($num)) {
+            var_dump($num);
+            $num = array_shift($num);
+        }
+        if (isset($_POST)
+            && array_key_exists('num', $_POST)) {
+            $num = $_POST['num'];
+        }
+        $fact = $this->factorial($num);
+        echo $fact, '<br/>';
+        ?>
+        <form method="post">
+            <input type="number" name="num" value="<?php echo $num; ?>" min="1" max="25">
+            <input type="submit" value="Generate">
+        </form>
+        <?php
+    }
+
+    protected function factorial($number)
+    {
+        return $number <= 1 ? $number : $number * $this->factorial($number-1);
     }
 
     public function actionUpdate()

@@ -424,6 +424,10 @@ class Router extends Component
                 }
             }
 
+            // Check recursive
+            if (array_key_exists('recursive', $route)) {
+                $this->parseRequestPath($path, [$route], $segments);
+            }
             // Check nodes
             if (array_key_exists('nodes', $route)) {
                 $this->parseRequestPath($path, $route[ 'nodes' ], $segments);
@@ -462,13 +466,28 @@ class Router extends Component
         $checkedPath = $path . '/';
 
         $withNodes = array_key_exists('nodes', $route);
-        $pattern = '~^' . $route[ 'match' ] . '/' . ($withNodes ? '(.*)' : '') . '$~';
+        $recursive = array_key_exists('recursive', $route);
+        $pattern = '~^' . $route[ 'match' ] . '/' . ($withNodes || $recursive ? '(.*)' : '') . '$~';
 
         if (preg_match($pattern, $checkedPath, $matches)) {
-            $segments[ $route[ 'name' ] ] = preg_replace($pattern, $route[ 'value' ], $checkedPath);
-            $path = $withNodes ? end($matches) : '';
+            if ($recursive) {
+                if ( ! isset($segments[ $route[ 'name' ] ] ) ){
+                    $segments[ $route[ 'name' ] ] = [];
+                }
+                $segments[ $route[ 'name' ] ][] = preg_replace($pattern, $route[ 'value' ], $checkedPath);
+            } else {
+                $segments[ $route[ 'name' ] ] = preg_replace($pattern, $route[ 'value' ], $checkedPath);
+            }
+            $path = $withNodes || $recursive ? end($matches) : '';
         } elseif (!is_null($defaultValue) && preg_match($pattern, $defaultValue . '/')) {
-            $segments[ $route[ 'name' ] ] = preg_replace($pattern, $route[ 'value' ], $defaultValue . '/');
+            if ($recursive) {
+                if ( ! isset($segments[ $route[ 'name' ] ] ) ){
+                    $segments[ $route[ 'name' ] ] = [];
+                }
+                $segments[ $route[ 'name' ] ][] = preg_replace($pattern, $route[ 'value' ], $checkedPath . '/');
+            } else {
+                $segments[ $route[ 'name' ] ] = preg_replace($pattern, $route[ 'value' ], $defaultValue . '/');
+            }
         } else {
             $result = false;
         }
@@ -544,9 +563,7 @@ class Router extends Component
                         $defaultValue = null;
                     }
                     if (!$this->matchRouteForCreate(
-                        $route[ 'name' ],
-                        $route[ 'match' ],
-                        $route[ 'value' ],
+                        $route,
                         $segments,
                         $path,
                         $defaultValue
@@ -555,6 +572,9 @@ class Router extends Component
                     }
                 }
 
+                if (array_key_exists('recursive', $route)) {
+                    $path .= '/' . $this->generateUrl($segments, [ $route ]);
+                }
                 if (array_key_exists('nodes', $route)) {
                     $path .= '/' . $this->generateUrl($segments, $route[ 'nodes' ]);
                 }
@@ -567,18 +587,24 @@ class Router extends Component
     /**
      * Matching routes to create url
      *
-     * @param string $name
-     * @param string $match
-     * @param string $value
+     * @param array $route
      * @param array $segments
      * @param string $path
      * @param null|string $defaultValue
      * @return bool
      */
-    private function matchRouteForCreate($name, $match, $value, $segments, &$path, $defaultValue = null)
+    private function matchRouteForCreate($route, &$segments, &$path, $defaultValue = null)
     {
+        $name = $route["name"];
+        $match = $route["match"];
+        $value = $route["value"];
+
         $result = true;
-        $section = $segments[ $name ];
+        if (array_key_exists('recursive', $route)) {
+            $section = array_shift($segments[ $name ]);
+        } else {
+            $section = $segments[ $name ];
+        }
         $this->remakePattern($match, $value);
 
         $pattern = "~^" . $value . "$~";

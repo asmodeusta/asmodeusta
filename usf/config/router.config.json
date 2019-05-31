@@ -37,6 +37,20 @@
                   "name": "action",
                   "match": "(heart|add)",
                   "value": "$1"
+                },
+                {
+                  "name": "action",
+                  "match": "fact",
+                  "value": "fact",
+                  "nodes":
+                  [
+                    {
+                      "name": "num",
+                      "match": "([1-9]|1[0-9]|20)",
+                      "value": "$1",
+                      "recursive": true
+                    }
+                  ]
                 }
               ]
             },
