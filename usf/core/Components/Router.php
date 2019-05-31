@@ -73,6 +73,7 @@ class Router extends Component
      * - @type (optional): available content type to return for this and child routes.
      *      Available values: html|xml|json|ajax
      *      By default route can be used to return any type of content, or it can be declared later in Controller
+     * - @recursive (optional): this route can be used as many times as it need (some hierarchical data as categories e.t.c.)
      *
      * @var array
      */

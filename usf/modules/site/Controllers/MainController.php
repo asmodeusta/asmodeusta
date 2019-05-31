@@ -71,15 +71,19 @@ class MainController extends Controller
     public function actionFact($num=1)
     {
         if (is_array($num)) {
-            var_dump($num);
-            $num = array_shift($num);
+            $numArr = $num;
+            foreach ($numArr as $num) {
+                $fact = $this->factorial($num);
+                echo $num . '! = ' . $fact . '<br/>';
+            }
+        } else {
+            if (isset($_POST)
+                && array_key_exists('num', $_POST)) {
+                $num = $_POST['num'];
+            }
+            $fact = $this->factorial($num);
+            echo $num . '! = ' . $fact . '<br/>';
         }
-        if (isset($_POST)
-            && array_key_exists('num', $_POST)) {
-            $num = $_POST['num'];
-        }
-        $fact = $this->factorial($num);
-        echo $fact, '<br/>';
         ?>
         <form method="post">
             <input type="number" name="num" value="<?php echo $num; ?>" min="1" max="25">
@@ -90,7 +94,7 @@ class MainController extends Controller
 
     protected function factorial($number)
     {
-        return $number <= 1 ? $number : $number * $this->factorial($number-1);
+        return $number <= 1 || $number >= 25 ? $number : $number * $this->factorial($number-1);
     }
 
     public function actionUpdate()
