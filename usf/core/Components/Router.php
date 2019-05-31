@@ -426,7 +426,8 @@ class Router extends Component
             }
 
             // Check recursive
-            if (array_key_exists('recursive', $route)) {
+            if (array_key_exists('recursive', $route) && $route['recursive']) {
+                $route['recursive']--;
                 $this->parseRequestPath($path, [$route], $segments);
             }
             // Check nodes
@@ -573,7 +574,8 @@ class Router extends Component
                     }
                 }
 
-                if (array_key_exists('recursive', $route)) {
+                if (array_key_exists('recursive', $route) && $route['recursive']) {
+                    $route['recursive']--;
                     $path .= '/' . $this->generateUrl($segments, [ $route ]);
                 }
                 if (array_key_exists('nodes', $route)) {
@@ -594,7 +596,7 @@ class Router extends Component
      * @param null|string $defaultValue
      * @return bool
      */
-    private function matchRouteForCreate($route, &$segments, &$path, $defaultValue = null)
+    private function matchRouteForCreate(&$route, &$segments, &$path, $defaultValue = null)
     {
         $name = $route["name"];
         $match = $route["match"];
@@ -602,7 +604,11 @@ class Router extends Component
 
         $result = true;
         if (array_key_exists('recursive', $route)) {
-            $section = array_shift($segments[ $name ]);
+            if ($route['recursive']) {
+                $section = array_shift($segments[ $name ]);
+            } else {
+                return false;
+            }
         } else {
             $section = $segments[ $name ];
         }
