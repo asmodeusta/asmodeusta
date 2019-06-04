@@ -62,18 +62,18 @@ class Router extends Component
     /**
      * Routes
      * @Keys:
-     * - @name (required): name of route segment (module, controller, action or other param name)
-     * - @match (required): pattern for comparison or 0 for empty segment
-     * - @value (required): the string to replace after comparison match
-     * - @nodes (optional): child nodes of the route.
+     * - string @name (required): name of route segment (module, controller, action or other param name)
+     * - string @match (required): pattern for comparison or 0 for empty segment
+     * - string @value (required): the string to replace after comparison match
+     * - array @nodes (optional): child nodes of the route.
      *      If not set then Router compares all parts of route, and if it's OK - stops searching
-     * - @method (optional): the string of available methods for this and child routes.
+     * - string @method (optional): the string of available methods for this and child routes.
      *      Available values: get|post
      *      By default route can be called with any method or method of parent route.
-     * - @type (optional): available content type to return for this and child routes.
+     * - string @type (optional): available content type to return for this and child routes.
      *      Available values: html|xml|json|ajax
      *      By default route can be used to return any type of content, or it can be declared later in Controller
-     * - @recursive (optional): this route can be used as many times as it need (some hierarchical data as categories e.t.c.)
+     * - int @recursive (optional): number of times that this route can be used (some hierarchical data as categories e.t.c.)
      *
      * @var array
      */
