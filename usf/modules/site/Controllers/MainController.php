@@ -2,6 +2,8 @@
 
 namespace Usf\Site\Controllers;
 
+use function Combinatorics\combination;
+use function Combinatorics\partitions;
 use Usf\Base\Controller;
 use Usf\Site\Views\MainHeartView;
 
@@ -73,15 +75,24 @@ class MainController extends Controller
         if (is_array($num)) {
             $numArr = $num;
             foreach ($numArr as $num) {
-                $fact = $this->factorial($num);
-                echo $num . '! = ' . $fact . '<br/>';
+                $fact = factorial($num);
+                $part = null;
+                $comb = null;
+                if ($num > 3) {
+                    $part = partitions($num, $num-2);
+                    $comb = combination($num, $num-2);
+                }
+                echo $num . '! = ' . $fact;
+                echo is_null($part) ? '' : '; A(' . $num . ', ' . ($num-2) . ') = ' . $part;
+                echo is_null($comb) ? '' : '; C(' . $num . ', ' . ($num-2) . ') = ' . $comb;
+                echo '<br/>';
             }
         } else {
             if (isset($_POST)
                 && array_key_exists('num', $_POST)) {
                 $num = $_POST['num'];
             }
-            $fact = $this->factorial($num);
+            $fact = factorial($num);
             echo $num . '! = ' . $fact . '<br/>';
         }
         ?>
@@ -90,11 +101,6 @@ class MainController extends Controller
             <input type="submit" value="Generate">
         </form>
         <?php
-    }
-
-    protected function factorial($number)
-    {
-        return $number <= 1 || $number >= 25 ? $number : $number * $this->factorial($number-1);
     }
 
     public function actionUpdate()
