@@ -68,7 +68,7 @@ class DataStorage
      */
     public function addData(array $data)
     {
-        $this->data += $data;
+        $this->data += array_merge($this->data, $data);
     }
 
     /**

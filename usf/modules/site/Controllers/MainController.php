@@ -35,6 +35,10 @@ class MainController extends Controller
             }
             echo '</ol>';
         }
+        $arr1 = ['1' => 1, '2' => 2, '3' => 3];
+        $arr2 = ['1' => 4, '2' => 5, '3' => 6];
+        $arr1 += $arr2;
+        var_dump($arr1);
     }
 
     protected function generateWords(string $symbols, int $num)
