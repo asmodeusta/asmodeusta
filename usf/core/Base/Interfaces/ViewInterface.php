@@ -35,6 +35,13 @@ interface ViewInterface
     public function set(string $key, $value);
 
     /**
+     * Get data value
+     * @param string $key
+     * @return mixed
+     */
+    public function get(string $key);
+
+    /**
      * Set data
      * @param array $data
      * @return bool
@@ -53,12 +60,5 @@ interface ViewInterface
      * @return array
      */
     public function getData() : array ;
-
-    /**
-     * Get data value
-     * @param string $key
-     * @return mixed
-     */
-    public function get(string $key);
 
 }
