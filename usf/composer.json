@@ -14,8 +14,15 @@
   ],
   "require": {
     "php": ">=7.1.0",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "usf/html-generator": "master"
   },
+  "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/asmodeusta/html-generator"
+    }
+  ],
   "config": {
     "optimize-autoloader": true
   },
