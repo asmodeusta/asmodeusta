@@ -15,11 +15,12 @@
   "require": {
     "php": ">=7.1.0",
     "ext-pdo": "*",
-    "usf/html-generator": "master"
+    "asmodeusta/html-generator": "master"
   },
   "repositories": [
     {
-      "type": "github",
+      "vendor-alias": "usf",
+      "type": "git",
       "url": "https://github.com/asmodeusta/html-generator"
     }
   ],
