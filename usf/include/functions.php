@@ -66,3 +66,40 @@ function factorial(int $number) : int
     return $number <= 1 ? $number : $number * factorial($number - 1);
 }
 
+/**
+ * Generates random string
+ * @param int $length
+ * @param array $excludingSymbols
+ * @return string
+ */
+function randomString(int $length, array $excludingSymbols = ['0', 'o', 'O', '1', 'l'] )
+{
+    static $symbols = [
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', '.', ',',
+        '+', '=', '-', '_', '(', ')', '*', '?',
+        '!', '[', ']', '{', '}', '\\', '/', '|',
+        ';', ':', '<', '>', '@', '#', '%', '^',
+        '&', '$', '~', '\'', '"',
+        ];
+    $usingSymbols = array_values(array_diff($symbols, $excludingSymbols));
+    try {
+        $randHex = bin2hex(random_bytes($length));
+    } catch (Exception $exception) {
+        $randHex = dechex(rand());
+    }
+    $string = '';
+    for($i = 0; $i < $length; $i++) {
+        $code = substr($randHex, $i*2, 2);
+        $position = hexdec($code) % count($usingSymbols);
+        $symbol = $usingSymbols[$position];
+        $string .= $symbol;
+    }
+    return $string;
+}

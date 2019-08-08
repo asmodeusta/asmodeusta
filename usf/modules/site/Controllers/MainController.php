@@ -12,7 +12,11 @@ class MainController extends Controller
 
     public function actionIndex($page = 1)
     {
-        echo 'This is page #' . $page;
+        echo 'This is page #' . $page . '<br/>';
+        $start = microtime(true);
+        echo 'Random string: <code>' . randomString() . '</code><br/>';
+        $end = microtime(true);
+        echo 'Timing: ' . ($end - $start);
     }
 
     public function actionFact($num=1)
